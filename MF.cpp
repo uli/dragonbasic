@@ -1889,6 +1889,9 @@ emit_num:
 		codeAsm("sp", "4", "(#", "r0", "ldr,");
 	} else if (W("@")) {
 		codeAsm("r0", "0@", "r0", "ldr,");
+	} else if (W("@a")) {
+		codeAsm("r0", "push");
+		codeAsm("r1", "4", "(#", "r0", "ldr,");
 	} else if (W("c@a")) {
 		codeAsm("r0", "push");
 		codeAsm("r1", "1", "(#", "r0", "ldrb,");
