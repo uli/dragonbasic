@@ -1728,6 +1728,9 @@ parse_next:
 			if (getNextWordIf("n/")) {
 				codeAsm("r0");
 				codeAsm(num, "#lsr", "r0", "mov,");
+			} else if (getNextWordIf("a/")) {
+				codeAsm("r0");
+				codeAsm(num, "#asr", "r0", "mov,");
 			} else if (getNextWordIf("n*")) {
 				if (getNextWordIf("+")) {
 					codeAsm("r5", "pop");

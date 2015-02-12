@@ -18,7 +18,7 @@ icode poke ( a h -- ) w pop w 0@ tos strh, tos pop end-code
 : >= ( n1 n2 -- flag ) - 0< com ;
 
 \ fixed point math operations
-: f* ( n1 n2 -- n3 ) * 8 # n/ ;
+: f* ( n1 n2 -- n3 ) * 8 # a/ ;
 : f/ ( n1 n2 -- n3 ) a! 8 # n* 6 swi ;
 
 \ send a string to the VBA console
