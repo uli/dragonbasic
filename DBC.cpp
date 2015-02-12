@@ -2553,11 +2553,11 @@ BasicObject *Parser::retrieveNextBasicObject()
 		bobj = cur_basic_obj->next;
 	else
 		bobj = basic_obj_head;
-	if (!bobj->otype) {
+	if (bobj && !bobj->otype) {
 		bobj_sym = symbol_head->getBasicObj(bobj->val.symbolic);
 		if (bobj_sym) {
-			bobj = bobj_sym;
 			insertBasicObjectList(bobj_sym);
+			bobj = cur_basic_obj->next;
 		}
 	}
 	return bobj;
@@ -2590,7 +2590,7 @@ bool Parser::requireRop(enum rop_t rop)
 	BasicObject *bobj;
 
 	bobj = retrieveNextBasicObject();
-	if (bobj->otype == OBJ_ROP) {
+	if (bobj && bobj->otype == OBJ_ROP) {
 		if (bobj->val.numeric == rop) {
 			cur_basic_obj = bobj;
 			result = true;
