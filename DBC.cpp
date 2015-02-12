@@ -2334,7 +2334,8 @@ BasicObject *Parser::parseDecimal()
 					 '0') / (double)power + fval;
 			power *= 10;
 		}
-		bobj->val.numeric = fval * 256.0;
+		bobj->val.numeric <<= 8;
+		bobj->val.numeric |= (int)(fval * 256.0);
 	} else {
 		if (*text_ptr == '#') {  // fixed point
 			bobj->val.numeric <<= 8;
