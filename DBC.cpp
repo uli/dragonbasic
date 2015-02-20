@@ -49,22 +49,8 @@ bool option_mod;
 
 void GLB_error(enum error_t error_code, ...);
 void GLB_failWithMbox(const char *msg, const char *func, int line);
-void GLB_exitWithMbox(const char *msg, ...);
-void GLB_getAppDir(char *lpFilename);
-void GLB_checkFileInAppdir(const char *filename);
-void GLB_runProgram(const char *lpApplicationName, const char *args,
-		    bool show_window);
-void GLB_runProgramWithArgs(const char *lpApplicationName, const char *options,
-			    const char *lpFileName, const char *outfile,
-			    char del_output);
 void GLB_pushDir(const char *lpPathName);
 void GLB_popDir();
-int GLB_parseOneOption(int optind, char **argv);
-int GLB_parseAllOptions(int *optind, char **argv);
-void GLB_runMF(const char *lpFileName, const char *outfile);
-void GLB_main(int argc, char **argv);
-void WIN_splitCommandLine(const char *cmdline);
-
 
 Subroutine::Subroutine(const char *ident, bool is_function,
 		       enum vartype_t rtype)
