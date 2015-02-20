@@ -1893,7 +1893,7 @@ parse_next:
 		codeToArm(); codeAsm("0", "##", "r0", "pl?", "mov,");
 		codeToArm(); codeAsm("0", "##", "r0", "mi?", "mvn,");
 	} else if (W("1+")) {
-		codeToArm(); codeAsm("1", "##", "r0", "r0", "add,");
+		codeToThumb(); codeAsm("1", "##", "r0", "r0", "add,");
 	} else if (W("com")) {
 		if (getNextWordIf("1+")) {
 			codeToArm(); codeAsm("0", "##", "r0", "r0", "rsb,");
@@ -1954,7 +1954,10 @@ parse_next:
 				}
 			} else if (getNextWordIf("+")) {
 				if (num != 0) {
-					if (can_immrot(num)) {
+					if (num < 8) {
+						codeToThumb(); codeAsm(num, "##", "r0",
+							"r0", "add,");
+					} else if (can_immrot(num)) {
 						codeToArm(); codeAsm(num, "##", "r0",
 							"r0", "add,");
 					} else
@@ -2138,7 +2141,7 @@ emit_num:
 	} else if (W("+")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
-		codeToArm(); codeAsm("r0", "r5", "r0", "add,");
+		codeToThumb(); codeAsm("r0", "r5", "r0", "add,");
 	} else if (W("-")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
