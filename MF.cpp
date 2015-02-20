@@ -1905,7 +1905,7 @@ parse_next:
 			r5_const = false;
 			codeToThumb(); codeAsm("sp", "0@", "r5", "ldr,");
 			codeToArm(); codeAsm("sp", "db!", "r5", "stm,");
-			codeToArm(); codeAsm("sp", "4", "#(", "r0", "str,");
+			codeToThumb(); codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
 			codeToArm(); codeAsm("sp", "ia!", "r2", "r3", "ldm,");
 			codeToThumb(); codeAsm("r2", "0@", "r0", "str,");
@@ -1931,7 +1931,7 @@ parse_next:
 			codeToArm(); codeAsm("r5", "r0", "mov,");
 		} else {
 			codeToThumb(); codeAsm("r0", "push");
-			codeToArm(); codeAsm("sp", "4", "#(", "r0", "ldr,");
+			codeToThumb(); codeAsm("sp", "4", "#(", "r0", "ldr,");
 		}
 	} else if (W("pop")) {
 		codeToThumb(); codeAsm("r0", "push");
