@@ -152,6 +152,7 @@ public:
 	void emitPalette(const char *bmp);
 	void patch32(unsigned int addr, unsigned int val);
 	void reloc12(Literal *lit);
+	void reloc24(unsigned int addr, unsigned int target);
 	void emitSound(const char *wav);
 	void emitMusic(const char *mod);
 	void fixCartHeader();
@@ -818,6 +819,21 @@ void Output::reloc12(Literal *lit)
 
 	//printf("ninsn 0x%x\n", insn);
 	fseek(fp, lit->reloc - 0x8000000, SEEK_SET);
+	fwrite(&insn, 1, 4, fp);
+	fseek(fp, cur, SEEK_SET);
+}
+
+void Output::reloc24(unsigned int addr, unsigned int target)
+{
+	unsigned int insn;
+	long cur = ftell(fp);
+	fseek(fp, addr - 0x8000000, SEEK_SET);
+	fread(&insn, 1, 4, fp);
+
+	insn &= 0xff000000;
+	insn |= ((target - addr - 8) >> 2) & 0x00ffffff;
+
+	fseek(fp, addr - 0x8000000, SEEK_SET);
 	fwrite(&insn, 1, 4, fp);
 	fseek(fp, cur, SEEK_SET);
 }
@@ -2107,39 +2123,38 @@ emit_num:
 	} else if (W("if")) {
 		assert(!currently_naked);
 		r5_const = false;
-		codeBranch(RT__tin_t_eq_0, "bl,");
+		codeAsm("r0", "r0", "tst,");
+		codeAsm("r0", "pop");
 		loop_stack[lpsp++] = out->addr;
-		code(0);
+		codeBranch(out->addr, "eq?", "b,");
 	} else if (W("else")) {
 		assert(!currently_naked);
 		r5_const = false;
-		codeBranch(RT__tin_goto, "bl,");
-		code(0);
-		out->patch32(loop_stack[--lpsp], out->addr);
+		codeBranch(out->addr, "b,");
+		out->reloc24(loop_stack[--lpsp], out->addr);
 		loop_stack[lpsp++] = out->addr - 4;
 	} else if (W("then")) {
 		r5_const = false;
-		out->patch32(loop_stack[--lpsp], out->addr);
+		out->reloc24(loop_stack[--lpsp], out->addr);
 	} else if (W("begin")) {
 		r5_const = false;
 		loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
 		assert(!currently_naked);
 		r5_const = false;
-		codeBranch(RT__tin_t_eq_0, "bl,");
+		codeAsm("r0", "r0", "tst,");
+		codeAsm("r0", "pop");
 		loop_stack[lpsp++] = out->addr;
-		code(0);
+		codeBranch(out->addr, "eq?", "b,");
 	} else if (W("repeat")) {
 		assert(!currently_naked);
 		r5_const = false;
-		codeBranch(RT__tin_goto, "bl,");
-		out->patch32(loop_stack[--lpsp], out->addr + 4);
-		code(loop_stack[--lpsp]);
+		out->reloc24(loop_stack[--lpsp], out->addr + 4);
+		codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("again")) {
 		assert(!currently_naked);
 		r5_const = false;
-		codeBranch(RT__tin_goto, "bl,");
-		code(loop_stack[--lpsp]);
+		codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("interrupt")) {
 		symbols.appendNew(out->addr, getNextWord());
 		codeAsm("r0", "push");
