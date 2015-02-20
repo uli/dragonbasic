@@ -1253,6 +1253,11 @@ unsigned int Parser::armCodeCond()
 		ASSERT_REG; \
 } while (0)
 
+static bool can_branch(unsigned int from, unsigned int to)
+{
+	return abs(to - from) < (32 << 20);
+}
+
 void Parser::parseAsm(const char *word)
 {
 	Symbol *sym;
@@ -1393,6 +1398,7 @@ void Parser::parseAsm(const char *word)
 		unsigned int dest = asm_stack[--asp][1];
 		assert(asm_stack[asp][0] == ASM_OFF);
 		DEBUG("asm branch from 0x%x to 0x%x\n", out->addr, dest);
+		assert(can_branch(out->addr, dest));
 		code(insn | (((dest - out->addr - 8) >> 2) & 0x00ffffff));
 	} else if (W("bx,")) {
 		unsigned insn = 0x012fff10;
