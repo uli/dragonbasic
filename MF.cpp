@@ -1876,8 +1876,8 @@ parse_next:
 		sym = symbols.appendNew(out->addr, getNextWord());
 		if (!currently_naked) {
 			sym->has_prolog = true;
-			codeToArm(); codeAsm("r7", "db!", "r6", "stm,");
-			codeToArm(); codeAsm("lr", "r6", "mov,");
+			codeAsm("r7", "db!", "r6", "stm,");
+			codeAsm("lr", "r6", "mov,");
 		}
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 	} else if (W("label")) {
