@@ -97,6 +97,8 @@ public:
 	unsigned int addr;
 	Symbol *next;
 	bool has_prolog;
+	bool is_addr;
+	unsigned int lit_addr;
 };
 
 Symbol::Symbol(unsigned int addr, const char *word)
@@ -105,12 +107,18 @@ Symbol::Symbol(unsigned int addr, const char *word)
 	this->word = strdup(word);
 	next = NULL;
 	has_prolog = false;
+	is_addr = false;
+	lit_addr = 0;
 }
 
 Symbol::Symbol()
 {
+	addr = 0;
 	next = NULL;
 	word = NULL;
+	has_prolog = false;
+	is_addr = false;
+	lit_addr = 0;
 }
 
 Symbol::~Symbol()
@@ -1907,7 +1915,9 @@ emit_num:
 		codeAsm("3", "##", "r0", "r0", "bic,");
 		codeAsm("4", "##", "r0", "r0", "ne?", "add,");
 	} else if (W("variable")) {
-		symbols.appendNew(out->addr, getNextWord());
+		sym = symbols.appendNew(out->addr, getNextWord());
+		sym->is_addr = true;
+		sym->lit_addr = out->vaddr;
 		codeAsm("r0", "push");
 		codeAsm("4", "##", "pc", "r5", "add,");
 		code(0xe4150000);
