@@ -1856,9 +1856,11 @@ parse_next:
 		if (currently_naked) {
 			codeToArm(); codeAsm("lr", "bx,");
 		} else {
-			codeToArm(); codeAsm("r6", "bx,");
+			codeToThumb(); codeAsm("r6", "bx,");
 		}
 		currently_naked = false;
+		thumb = false;
+		out->alignDword();
 		literals.code(out);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
