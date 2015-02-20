@@ -10,13 +10,13 @@
 	512 # copy ;
 
 \ prototype color = rgb(r,g,b)
-: rgb ( r g b -- color )
+:n rgb ( r g b -- color )
 	10 # n* swap 5 # n* + + ;
 
 \ components of a color
-: rgbr ( color -- r ) $1f # and ;
-: rgbg ( color -- g ) 5 # n/ $1f # and ;
-: rgbb ( color -- g ) 10 # n/ $1f # and ;
+:n rgbr ( color -- r ) $1f # and ;
+:n rgbg ( color -- g ) 5 # n/ $1f # and ;
+:n rgbb ( color -- g ) 10 # n/ $1f # and ;
 
 \ palette constant data
 label __colors
