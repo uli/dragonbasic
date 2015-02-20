@@ -1764,6 +1764,7 @@ parse_next:
 	} else if (W("icode")) {
 		cur_icode = icodes.appendNew(getNextWord());
 		asm_mode = true;
+		thumb = false;
 		r5_const = false;
 	} else if (W("code")) {
 		thumb = false;
@@ -2085,6 +2086,7 @@ emit_num:
 	} else if ((icode = getIcode(word))) {
 		DEBUG("emit icode %s len %d\n", icode->word,
 		      icode->len);
+		codeToArm();
 		out->emitString(icode->code, icode->len);
 		r5_const = false;
 	} else if (W("drop")) {
