@@ -1420,10 +1420,16 @@ void Parser::parseAsm(const char *word)
 		assert(can_branch(out->addr, dest));
 		code(insn | (((dest - out->addr - 8) >> 2) & 0x00ffffff));
 	} else if (W("bx,")) {
-		unsigned insn = 0x012fff10;
-		CODE_COND;
-		code(insn | asm_stack[--asp][1]);
-		ASSERT_REG;
+		if (thumb) {
+			unsigned short insn = 0x4700;
+			code16(insn | (asm_stack[--asp][1] << 3));
+			ASSERT_REG;
+		} else {
+			unsigned insn = 0x012fff10;
+			CODE_COND;
+			code(insn | asm_stack[--asp][1]);
+			ASSERT_REG;
+		}
 	} else if (W("ldm,") || W("stm,")) {
 		/* format ARM.11 */
 		unsigned int insn = 0;
