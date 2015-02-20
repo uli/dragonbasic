@@ -44,7 +44,7 @@ bool option_debug = false;
 #define DEBUG(x ...) do { if (option_debug) fprintf(stderr, "DEBUG " x); \
 } while (0)
 #else
-#define DEBUG(x ...)
+#define DEBUG(x ...) do {} while(0)
 #endif
 
 class Icode {
