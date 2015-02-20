@@ -1636,9 +1636,6 @@ void Parser::parseAll()
 	Symbol *sym;
 	Icode *icode;
 	bool currently_naked = false;
-#ifdef BUG_FOR_BUG
-	bool dont_imm_com = false;
-#endif
 	// R5 is often repeatedly loaded with the same constant.  We keep
 	// track of its current value to avoid unnecessary reloading.
 	bool r5_const = false;
@@ -1862,11 +1859,7 @@ parse_next:
 				}
 			} else if (num == 0 && getNextWordIf("or")) {
 				/* nop */
-			} else if (
-#ifdef BUG_FOR_BUG
-				   !dont_imm_com &&
-#endif
-				   getNextWordIf("com")) {
+			} else if (getNextWordIf("com")) {
 				if (getNextWordIf("and")) {
 					codeAsm("r0", "push");
 					if (can_immrot(num))
@@ -1925,12 +1918,6 @@ emit_num:
 						codeAsm("r0", "push");
 						literals.prependNew(num, out->addr);
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
-#ifdef BUG_FOR_BUG
-						// Deoptimization to maintain
-						// byte-for-byte compatibility.
-						dont_imm_com = true;
-						goto parse_next;
-#endif
 					} else {
 						codeAsm("r0", "push");
 						codeAsm(num, "##", "r0",
@@ -1947,9 +1934,6 @@ emit_num:
 		} else {
 			GLB_error("unimp num\n");
 		}
-#ifdef BUG_FOR_BUG
-		dont_imm_com = false;
-#endif
 	} else if (W("c\"")) {
 		unsigned int end_str;
 		const char *str = getNextWord();
