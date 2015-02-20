@@ -1517,10 +1517,16 @@ void Parser::parseAsm(const char *word)
 		CODE_RD;
 		code(insn);
 	} else if (W("push")) {
-		unsigned int insn = 0x092d0000;
-		CODE_COND;
-		insn |= 1 << asm_stack[--asp][1];
-		code(insn);
+		if (thumb) {
+			unsigned short insn = 0xb400;
+			insn |= 1 << asm_stack[--asp][1];
+			code16(insn);
+		} else {
+			unsigned int insn = 0x092d0000;
+			CODE_COND;
+			insn |= 1 << asm_stack[--asp][1];
+			code(insn);
+		}
 	} else if (W("swi,")) {
 		unsigned int insn = 0x0f000000;
 		CODE_COND;
