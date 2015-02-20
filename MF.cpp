@@ -1523,6 +1523,25 @@ void Parser::parseAsm(const char *word)
 				GLB_error("internal error thumb ldst\n");
 		}
 		code16(insn);
+	} else if (thumb && (W("ldm,") || W("stm,"))) {
+		// XXX: unused and thus entirely untested
+		unsigned short insn = 0xc000;
+		while (asm_stack[--asp][0] == ASM_REG) {
+			//printf("reg %d\n", asm_stack[asp][1]);
+			insn |= 1 << asm_stack[asp][1];
+			ASSERT_TREG;
+		}
+
+		if (word[0] == 'l')
+			insn |= 1 << 11;
+
+		insn |= asm_stack[asp][1];
+		assert(asm_stack[asp][0] == ASM_DIR &&
+		       asm_stack[asp][1] == DIR_IAW);
+
+		insn |= asm_stack[--asp][1] << 8;
+		ASSERT_TREG;
+		code16(insn);
 	}
 
 #define ARM5VOID(str, op) \
