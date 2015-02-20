@@ -2121,14 +2121,12 @@ emit_num:
 		r5_const = false;
 		codeAsm("lr", "bx,");
 	} else if (W("if")) {
-		assert(!currently_naked);
 		r5_const = false;
 		codeAsm("r0", "r0", "tst,");
 		codeAsm("r0", "pop");
 		loop_stack[lpsp++] = out->addr;
 		codeBranch(out->addr, "eq?", "b,");
 	} else if (W("else")) {
-		assert(!currently_naked);
 		r5_const = false;
 		codeBranch(out->addr, "b,");
 		out->reloc24(loop_stack[--lpsp], out->addr);
@@ -2140,19 +2138,16 @@ emit_num:
 		r5_const = false;
 		loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
-		assert(!currently_naked);
 		r5_const = false;
 		codeAsm("r0", "r0", "tst,");
 		codeAsm("r0", "pop");
 		loop_stack[lpsp++] = out->addr;
 		codeBranch(out->addr, "eq?", "b,");
 	} else if (W("repeat")) {
-		assert(!currently_naked);
 		r5_const = false;
 		out->reloc24(loop_stack[--lpsp], out->addr + 4);
 		codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("again")) {
-		assert(!currently_naked);
 		r5_const = false;
 		codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("interrupt")) {
