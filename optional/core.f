@@ -6,30 +6,31 @@ icode peek ( a -- h ) tos 0@ tos ldrh, end-code
 icode poke ( a h -- ) w pop w 0@ tos strh, tos pop end-code
 
 \ divide and modula
-: / ( n1 n2 -- n3 ) swap a! 7 swi ;
+:n / ( n1 n2 -- n3 ) swap a! 7 swi ;
 : mod ( n1 n2 -- n3 ) / drop a ;
 
 \ conditionals
-: = ( n1 n2 -- flag ) - 0= ;
-: <> ( n1 n2 -- flag ) - 0= com ;
-: < ( n1 n2 -- flag ) - 0< ;
-: > ( n1 n2 -- flag ) swap - 0< ;
-: <= ( n1 n2 -- flag ) swap - 0< com ;
-: >= ( n1 n2 -- flag ) - 0< com ;
+:n = ( n1 n2 -- flag ) - 0= ;
+:n <> ( n1 n2 -- flag ) - 0= com ;
+:n < ( n1 n2 -- flag ) - 0< ;
+:n > ( n1 n2 -- flag ) swap - 0< ;
+:n <= ( n1 n2 -- flag ) swap - 0< com ;
+:n >= ( n1 n2 -- flag ) - 0< com ;
 
 \ fixed point math operations
-: f* ( n1 n2 -- n3 ) * 8 # a/ ;
-: f/ ( n1 n2 -- n3 ) a! 8 # n* 6 swi ;
+:n f* ( n1 n2 -- n3 ) * 8 # a/ ;
+:n f/ ( n1 n2 -- n3 ) a! 8 # n* 6 swi ;
 
 \ send a string to the VBA console
-: log ( a -- ) 1+ $ff swi drop ;
+:n log ( a -- ) 1+ $ff swi drop ;
 
 \ the restore data pointer
 variable .idata
 
 \ transfer from data pointer to local address register
-: >a ( -- ) .idata @ a! ;
-: a> ( -- ) a .idata ! ;
+:n >a ( -- ) .idata @ a! ;
+
+:n a> ( -- ) a .idata ! ;
 
 \ allocate bytes of data on the return stack
 code r-alloc ( u -- a )
