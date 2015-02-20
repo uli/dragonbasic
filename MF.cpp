@@ -1270,10 +1270,12 @@ unsigned int Parser::armCodeCond()
 		ASSERT_REG; \
 } while (0)
 
+#ifndef NDEBUG
 static bool can_branch(unsigned int from, unsigned int to)
 {
 	return abs(to - from) < (32 << 20);
 }
+#endif
 
 void Parser::parseAsm(const char *word)
 {
@@ -1668,7 +1670,7 @@ void Parser::parseAll()
 	// R5 is often repeatedly loaded with the same constant.  We keep
 	// track of its current value to avoid unnecessary reloading.
 	bool r5_const = false;
-	unsigned int r5;
+	unsigned int r5 = 0;
 
 parse_next:
 	if (r5_const)
@@ -2103,6 +2105,7 @@ emit_num:
 		symbols.appendNew(out->addr, getNextWord());
 		unsigned int size = TIN_parseNum(getNextWord());
 		const char *type = getNextWord();
+		(void)type;
 		// XXX: What about CELLS/STRINGS?
 		DEBUG("reserve type %s at 0x%x\n", type, out->vaddr);
 		if (strcmp(getNextWord(), "reserve"))
