@@ -430,13 +430,8 @@ void Output::setTitle(const char *title)
 	long cur = ftell(fp);
 
 	fseek(fp, 0xa0, SEEK_SET);
-#ifdef BUG_FOR_BUG
-#define MAX_TITLE 11
-#else
-#define MAX_TITLE 12
-#endif
 	fwrite(title, 1,
-	       strlen(title) > MAX_TITLE ? MAX_TITLE : strlen(title),
+	       strlen(title) > 12 ? 12 : strlen(title),
 	       fp);
 	fseek(fp, cur, SEEK_SET);
 }
@@ -455,15 +450,6 @@ void Output::fixCartHeader()
 	unsigned char bytes[0x1c];
 	unsigned char check_byte = 0;
 	long saved_pos = ftell(fp);
-
-#ifdef BUG_FOR_BUG
-	/* MF.EXE puts the Maker Code and Game Code one byte too early. */
-	const unsigned char broken_hdr[8] = {
-		'A', 'D', 'B', 'E', '0', '0', 0x96, 0
-	};
-	fseek(fp, 0xab, SEEK_SET);
-	fwrite(broken_hdr, 1, 8, fp);
-#endif
 
 	fseek(fp, 0xa0, SEEK_SET);
 	fread(bytes, 1, 0x1c, fp);
@@ -968,11 +954,7 @@ enum asm_arm_ops {
 	OP_LDM = 0x08100000,
 	OP_STM = 0x08000000,
 
-#ifdef BUG_FOR_BUG
-	OP_LDRH = 0x00100030,
-#else
 	OP_LDRH = 0x001000b0,
-#endif
 	OP_STRH = 0x000000b0,
 };
 
@@ -1182,10 +1164,6 @@ unsigned int Parser::arm10CodeAddr()
 {
 	unsigned int imm;
 	unsigned int insn = 0;
-
-#ifdef BUG_FOR_BUG
-	insn |= 0xb0;
-#endif
 
 	assert(asm_stack[asp - 1][0] == ASM_AMODE);
 	switch (asm_stack[--asp][1]) {
