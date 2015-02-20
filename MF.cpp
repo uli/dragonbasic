@@ -1403,8 +1403,10 @@ void Parser::parseAsm(const char *word)
 	ARM53OP(rsc, RSC)
 	ARM53OP(bic, BIC)
 
-	else if (thumb && W("sub,")) {
-		unsigned short insn = 0x1a00;
+	else if (thumb && (W("sub,") || W("add,"))) {
+		unsigned short insn = 0x1800;
+		if (word[0] == 's')
+			insn |= 1 << 9;
 		insn |= asm_stack[--asp][1];
 		ASSERT_TREG;
 		insn |= asm_stack[--asp][1] << 3;
