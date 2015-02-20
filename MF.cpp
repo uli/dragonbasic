@@ -270,6 +270,7 @@ public:
 		     const char *w2 = NULL, const char *w3 = NULL,
 		     const char *w4 = NULL);
 	void codeBranch(unsigned int dest, const char *mnem);
+	void codeBranch(unsigned int dest, const char *cond, const char *mnem);
 	void codeCallThumb(unsigned int dest);
 
 private:
@@ -1626,6 +1627,12 @@ void Parser::codeBranch(unsigned int dest, const char *mnem)
 {
 	PUSH_ASM(ASM_OFF, dest);
 	codeAsm(mnem);
+}
+
+void Parser::codeBranch(unsigned int dest, const char *cond, const char *mnem)
+{
+	PUSH_ASM(ASM_OFF, dest);
+	codeAsm(cond, mnem);
 }
 
 void Parser::codeCallThumb(unsigned int dest)
