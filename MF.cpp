@@ -173,12 +173,13 @@ public:
 
 	unsigned int val;
 	unsigned int reloc;
+	unsigned int coded_at;
 	Literal *next;
 };
 
 Literal::Literal()
 {
-	val = reloc = 0;
+	val = reloc = coded_at = 0;
 	next = NULL;
 }
 
@@ -186,6 +187,7 @@ Literal::Literal(unsigned int val, unsigned int reloc)
 {
 	this->val = val;
 	this->reloc = reloc;
+	coded_at = 0;
 	next = NULL;
 }
 
@@ -205,9 +207,31 @@ void Literal::code(Output *out)
 {
 	Literal *lit = next;
 	while (lit) {
+		// Check if this value has already been encoded earlier.
+		bool already_coded = false;
+		Literal* lit2 = next;
+		// XXX: So this is quadratic. Sue me.
+		while (lit2 && lit2 != lit) {
+			if (lit2->coded_at && lit2->val == lit->val) {
+				already_coded = true;
+				break;
+			}
+			lit2 = lit2->next;
+		}
 
+		if (already_coded) {
+			DEBUG("literal for 0x%x already coded at 0x%x\n",
+			      lit->reloc, lit2->coded_at);
+			// Overwrite earlier literal's relocatee with
+			// current one's.  This doesn't cause problems
+			// because we have already processed lit2.
+			lit2->reloc = lit->reloc;
+			out->reloc12(lit2);
+		} else {
 			out->reloc12(lit);
+			lit->coded_at = out->addr;
 			out->emitDword(lit->val);
+		}
 
 		lit = lit->next;
 	}
@@ -769,16 +793,28 @@ void Output::emitMusic(const char *mod)
 void Output::reloc12(Literal *lit)
 {
 	unsigned int insn;
+	unsigned int target_addr;
 
-	DEBUG("reloc12 reloc 0x%x addr 0x%x val 0x%x\n", lit->reloc, addr,
+	// If the literal has already been coded elsewhere, we use that
+	// address. Otherwise we use the current output pointer.
+	if (lit->coded_at)
+		target_addr = lit->coded_at;
+	else
+		target_addr = addr;
+
+	DEBUG("reloc12 reloc 0x%x target_addr 0x%x val 0x%x\n", lit->reloc, target_addr,
 	      lit->val);
 	long cur = ftell(fp);
 	fseek(fp, lit->reloc - 0x8000000, SEEK_SET);
 	fread(&insn, 1, 4, fp);
 	//printf("oinsn 0x%x\n", insn);
-	insn |= addr - lit->reloc - 8;
-	if (addr - 8 > lit->reloc)
+
+	// XXX: add sanity check!
+	// XXX: Shouldn't this be abs() or something?
+	insn |= target_addr - lit->reloc - 8;
+	if (target_addr - 8 > lit->reloc)
 		insn |= 1 << 23;
+
 	//printf("ninsn 0x%x\n", insn);
 	fseek(fp, lit->reloc - 0x8000000, SEEK_SET);
 	fwrite(&insn, 1, 4, fp);
