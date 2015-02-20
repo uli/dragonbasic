@@ -2,8 +2,8 @@
   -- Original code by Jeff Massung, 2003 }
 
 \ shift masking
-: /8 ( n1 -- n1 n2 ) dup 8 # n/ ;
-: *8 ( n1 n2 -- n3 ) swap 8 # n* + ;
+:n /8 ( n1 -- n1 n2 ) dup 8 # n/ ;
+:n *8 ( n1 n2 -- n3 ) swap 8 # n* + ;
 
 \ save data to static ram
 : savebyte ( b -- ) >a c!a a> ;
