@@ -999,8 +999,10 @@ static unsigned int immrot(unsigned int val, int *err)
 			val >>= 2;
 	}
 	if (err) {
-		if (val > 0xff)
+		if (val > 0xff) {
+			DEBUG("bad immediate 0x%x\n", val);
 			*err = 1;
+		}
 		else
 			*err = 0;
 	}
@@ -1018,13 +1020,14 @@ static int can_immrot(unsigned int val)
 unsigned int Parser::arm5CodeOp2()
 {
 	unsigned int insn = 0;
+	int err;
 
 	if (asm_stack[asp - 1][0] == ASM_AMODE) {
 		switch (asm_stack[--asp][1]) {
 		case AMODE_IMM:
-			/* XXX: check immediate size */
 			insn |= AMODE_IMM; /* immediate */
-			insn |= immrot(asm_stack[--asp][1], NULL);
+			insn |= immrot(asm_stack[--asp][1], &err);
+			assert(!err);
 			ASSERT_IMM;
 			break;
 		case AMODE_LSL:
