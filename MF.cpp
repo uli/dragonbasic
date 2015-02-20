@@ -258,6 +258,7 @@ public:
 	void pushText(const char *filename);
 	void popText(void);
 	void code(unsigned int insn);
+	void code16(unsigned short insn);
 	Symbol *getSymbol(const char *word);
 	Icode *getIcode(const char *word);
 	void parseAsm(const char *word);
@@ -843,6 +844,21 @@ void Parser::code(unsigned int insn)
 		i->len += 4;
 	} else {
 		out->emitDword(insn);
+	}
+}
+
+void Parser::code16(unsigned short insn)
+{
+	assert(thumb);
+	if (cur_icode) {
+		Icode *i = cur_icode;
+		char *p = i->cp;
+		*p++ = insn & 0xff;
+		*p++ = (insn >> 8) & 0xff;
+		i->cp = p;
+		i->len += 2;
+	} else {
+		out->emitWord(insn);
 	}
 }
 
