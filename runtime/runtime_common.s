@@ -73,12 +73,6 @@ irq_handler:
 	pop	{r4-r11, lr}
 	bx	lr
 
-.global _tin_lit
-_tin_lit:
-	stmfd	sp!, {r0}
-	ldrt	r0, [lr], #4
-	bx	lr
-
 .global _tin_slit
 _tin_slit:
 	stmfd	sp!, {r0}
@@ -91,17 +85,3 @@ _tin_wlit:
 	ldrt	r5, [lr], #4
 	bx	lr
 
-.global _tin_goto
-_tin_goto:
-	ldr	r5, [lr], #-0
-	bx	r5
-
-.global _tin_t_eq_0
-_tin_t_eq_0:
-	tst	r0, r0
-	ldrt	r0, [sp], #4
-	ldrt	r5, [lr], #4
-	bxeq	r5
-	bx	lr
-
-.org	0x1f8
