@@ -984,6 +984,25 @@ enum asm_arm_ops {
 	OP_STRH = 0x000000b0,
 };
 
+enum asm_thumb_ops {
+	TOP_AND = 0x0 << 6,
+	TOP_EOR = 0x1 << 6,
+	TOP_LSL = 0x2 << 6,
+	TOP_LSR = 0x3 << 6,
+	TOP_ASR = 0x4 << 6,
+	TOP_ADC = 0x5 << 6,
+	TOP_SBC = 0x6 << 6,
+	TOP_ROR = 0x7 << 6,
+	TOP_TST = 0x8 << 6,
+	TOP_NEG = 0x9 << 6,
+	TOP_CMP = 0xa << 6,
+	TOP_CMN = 0xb << 6,
+	TOP_ORR = 0xc << 6,
+	TOP_MUL = 0xd << 6,
+	TOP_BIC = 0xe << 6,
+	TOP_MVN = 0xf << 6,
+};
+
 Symbol *Parser::getSymbol(const char *word)
 {
 	Symbol *sym = symbols.next;
@@ -1402,6 +1421,33 @@ void Parser::parseAsm(const char *word)
 	ARM53OP(rsb, RSB)
 	ARM53OP(rsc, RSC)
 	ARM53OP(bic, BIC)
+
+#define THUMB4(str, op) \
+	else if (thumb && W(#str ",")) { \
+		unsigned short insn = 0x4000 | TOP_ ## op; \
+		insn |= asm_stack[--asp][1] << 0; \
+		ASSERT_TREG; \
+		insn |= asm_stack[--asp][1] << 3; \
+		ASSERT_TREG; \
+		code16(insn); \
+	}
+
+	THUMB4(and, AND)
+	THUMB4(eor, EOR)
+	THUMB4(lsl, LSL)
+	THUMB4(lsr, LSR)
+	THUMB4(asr, ASR)
+	THUMB4(adc, ADC)
+	THUMB4(sbc, SBC)
+	THUMB4(ror, ROR)
+	THUMB4(tst, TST)
+	THUMB4(neg, NEG)
+	THUMB4(cmp, CMP)
+	THUMB4(cmn, CMN)
+	THUMB4(orr, ORR)
+	THUMB4(mul, MUL)
+	THUMB4(bic, BIC)
+	THUMB4(mvn, MVN)
 
 	else if (thumb && (W("sub,") || W("add,"))) {
 		unsigned short insn = 0x1800;
