@@ -4,7 +4,7 @@
 variable (seed)
 
 \ set the seed
-: seed ( x -- ) (seed) ! ;
+:n seed ( x -- ) (seed) ! ;
 
 \ return a random number from 0-7FFF
 : rnd ( -- n ) 
