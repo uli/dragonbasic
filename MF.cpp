@@ -311,6 +311,7 @@ public:
 	int asp;
 	unsigned int loop_stack[32];
 	int lpsp;
+	bool thumb;
 };
 
 #define GLB_error(x ...) do { fprintf(stderr, x); exit(1); } while (0)
@@ -828,6 +829,7 @@ void Output::reloc24(unsigned int addr, unsigned int target)
 
 void Parser::code(unsigned int insn)
 {
+	assert(!thumb);
 	if (cur_icode) {
 		Icode *i = cur_icode;
 		char *p = i->cp;
@@ -1713,6 +1715,9 @@ parse_next:
 		asm_mode = true;
 		r5_const = false;
 	} else if (W("code")) {
+		thumb = false;
+		while (out->addr & 3)
+			out->emitByte(0);
 		symbols.appendNew(out->addr, getNextWord());
 		asm_mode = true;
 		r5_const = false;
@@ -1726,6 +1731,9 @@ parse_next:
 	} else if (asm_mode) {
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
+		thumb = false;
+		while (out->addr & 3)
+			out->emitByte(0);
 		r5_const = false;
 		currently_naked = word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
@@ -2181,6 +2189,7 @@ Parser::Parser()
 	lsp = 0;
 	asp = 0;
 	lpsp = 0;
+	thumb = false;
 }
 
 void Output::openOutFile(const char *name)
