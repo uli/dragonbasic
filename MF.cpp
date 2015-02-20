@@ -1894,10 +1894,7 @@ parse_next:
 				//printf("misc num\n");
 emit_num:
 				if (num > 0xff) {
-					int err;
-					unsigned int imm;
-					imm = immrot(num, &err);
-					if (err) {
+					if (!can_immrot(num)) {
 						assert(!currently_naked);
 						codeBranch(RT__tin_lit,
 							   "bl,");
@@ -1910,7 +1907,7 @@ emit_num:
 #endif
 					} else {
 						codeAsm("r0", "push");
-						codeAsm(imm, "##", "r0",
+						codeAsm(num, "##", "r0",
 							"mov,");
 					}
 				} else {
