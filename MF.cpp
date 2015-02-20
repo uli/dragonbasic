@@ -1563,8 +1563,20 @@ void Parser::parseAsm(const char *word)
 		ASSERT_REG;
 		code(insn);
 	} else if (W("mov,")) {
-		unsigned int insn = 0x01a00000;
-		CODE_ARM5_MOV;
+		if (thumb) {
+			unsigned short insn = 0x4600;
+			unsigned int rd = asm_stack[--asp][1];
+			ASSERT_REG;
+			unsigned int rs = asm_stack[--asp][1];
+			ASSERT_REG;
+			insn |= rs << 3;
+			insn |= rd & 7;
+			insn |= (!!(rd & 8)) << 7;
+			code16(insn);
+		} else {
+			unsigned int insn = 0x01a00000;
+			CODE_ARM5_MOV;
+		}
 	} else if (W("mvn,")) {
 		unsigned int insn = 0x01e00000;
 		CODE_ARM5_MOV;
