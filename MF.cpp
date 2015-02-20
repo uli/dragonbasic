@@ -160,6 +160,7 @@ public:
 	void fixCartHeader();
 	void openOutFile(const char *name);
 	void closeOutFile(void);
+	void alignDword();
 
 	FILE *fp;
 	unsigned int addr;
@@ -506,6 +507,12 @@ void Output::emitDword(const unsigned int dword)
 	addr += 4;
 }
 
+void Output::alignDword()
+{
+	while(addr & 3)
+		emitByte(0);
+}
+
 void Output::emitWord(const unsigned short word)
 {
 	fputc(word & 0xff, fp);
@@ -733,8 +740,7 @@ void Output::emitSound(const char *wav)
 	// XXX: looks like BUG_FOR_BUG...
 	emitByte(0x80);
 
-	while (addr & 3)
-		emitByte(0);
+	alignDword();
 }
 
 void Output::emitMusic(const char *mod)
@@ -765,8 +771,7 @@ void Output::emitMusic(const char *mod)
 	}
 	fclose(fp);
 
-	while (addr & 3)
-		emitByte(0);
+	alignDword();
 
 	/* copy samples */
 	patch32(sample_addr, addr);
@@ -780,8 +785,7 @@ void Output::emitMusic(const char *mod)
 	}
 	fclose(fp);
 
-	while (addr & 3)
-		emitByte(0);
+	alignDword();
 }
 
 void Output::reloc12(Literal *lit)
@@ -1763,8 +1767,7 @@ parse_next:
 		r5_const = false;
 	} else if (W("code")) {
 		thumb = false;
-		while (out->addr & 3)
-			out->emitByte(0);
+		out->alignDword();
 		symbols.appendNew(out->addr, getNextWord());
 		asm_mode = true;
 		r5_const = false;
@@ -1779,8 +1782,7 @@ parse_next:
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
 		thumb = false;
-		while (out->addr & 3)
-			out->emitByte(0);
+		out->alignDword();
 		r5_const = false;
 		currently_naked = false;//word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
