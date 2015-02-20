@@ -238,7 +238,7 @@ void GLB_runProgram(const char *lpApplicationName, const char *args,
 	sprintf(CommandLine, "\"%s" PATHSEP "%s\" %s", Dirname,
 		lpApplicationName, args);
 #ifdef __WIN32__
-	/* I do not know why Win32 needs _this pushDir(); the binary and all file
+	/* I do not know why Win32 needs this pushDir(); the binary and all file
 	 * arguments are given as absolute paths, but CreateProcessA() still fails
 	 * unless we change into the directory containing mf.exe first... */
 	GLB_pushDir(Dirname);
