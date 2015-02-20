@@ -1422,6 +1422,29 @@ void Parser::parseAsm(const char *word)
 			ASSERT_TREG;
 		}
 		code16(insn);
+	} else if (thumb && (W("ldr,") || W("str,"))) {
+		unsigned short insn;
+		unsigned int rd = asm_stack[--asp][1];
+		ASSERT_TREG;
+		--asp;
+		assert(asm_stack[asp][0] == ASM_AMODE && asm_stack[asp][1] == AMODE_IND);
+		--asp;
+		ASSERT_REG;
+		if (asm_stack[asp][1] == REG_SP) {
+			// XXX: This is rarely used and pretty much untested.
+			insn = 0x9000;
+			if (word[0] == 'l')
+				insn |= 1 << 11;
+			insn |= rd << 8;
+		} else {
+			ASSERT_TREG;
+			insn = 0x6000;
+			if (word[0] == 'l')
+				insn |= 1 << 11;
+			insn |= rd << 0;
+			insn |= asm_stack[asp][1] << 3;
+		}
+		code16(insn);
 	}
 
 #define ARM5VOID(str, op) \
@@ -1474,7 +1497,7 @@ void Parser::parseAsm(const char *word)
 		insn |= asm_stack[--asp][1] << 16;
 		ASSERT_REG;
 		code(insn);
-	} else if (W("ldr,") || W("str,") || W("ldrb,") || W("strb,")) {
+	} else if (!thumb && (W("ldr,") || W("str,") || W("ldrb,") || W("strb,"))) {
 		unsigned insn;
 
 		if (word[0] == 'l')
