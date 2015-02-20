@@ -1387,7 +1387,7 @@ void Parser::parseAsm(const char *word)
 		PUSH_ASM(ASM_COND, COND_NV);
 
 #define ARM53OP(str, op) \
-	else if (W(#str ",")) { \
+	else if (!thumb && W(#str ",")) { \
 		unsigned int insn = OP_ ## op; \
 		CODE_ARM5_3OPS; \
 	}
@@ -1402,6 +1402,25 @@ void Parser::parseAsm(const char *word)
 	ARM53OP(rsb, RSB)
 	ARM53OP(rsc, RSC)
 	ARM53OP(bic, BIC)
+
+	else if (thumb && W("sub,")) {
+		unsigned short insn = 0x1a00;
+		insn |= asm_stack[--asp][1];
+		ASSERT_TREG;
+		insn |= asm_stack[--asp][1] << 3;
+		ASSERT_TREG;
+		if (asm_stack[--asp][0] == ASM_AMODE) {
+			assert(asm_stack[asp][1] == AMODE_IMM);
+			insn |= 1 << 10;
+			insn |= asm_stack[--asp][1] << 6;
+			assert(asm_stack[asp][1] < 8);
+			DEBUG("tsub at 0x%x\n", out->addr);
+		} else {
+			insn |= asm_stack[asp][1] << 6;
+			ASSERT_TREG;
+		}
+		code16(insn);
+	}
 
 #define ARM5VOID(str, op) \
 	else if (W(#str ",")) { \
