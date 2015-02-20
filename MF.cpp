@@ -1864,7 +1864,7 @@ parse_next:
 		literals.code(out);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
-			codeToArm(); codeAsm("sp", "4", "(#", "r1", "ldr,");
+			codeToThumb(); codeAsm("r1", "pop");
 		} else if (getNextWordIf("-")) {
 			r5_const = false;
 			codeToThumb(); codeAsm("r5", "pop");
@@ -1894,7 +1894,7 @@ parse_next:
 			codeToThumb(); codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("!")) {
 			r5_const = false;
-			codeToArm(); codeAsm("sp", "4", "(#", "r5", "ldr,");
+			codeToThumb(); codeAsm("r5", "pop");
 			codeToThumb(); codeAsm("r5", "0@", "r0", "str,");
 			codeToArm(); codeAsm("r5", "r0", "mov,");
 		} else {
@@ -1908,7 +1908,7 @@ parse_next:
 	} else if (W("push")) {
 		codeToArm(); codeAsm("r7", "db!", "r6", "stm,");
 		codeToArm(); codeAsm("r0", "r6", "mov,");
-		codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
+		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("0=")) {
 		codeToArm(); codeAsm("0", "##", "r0", "cmp,");
 		codeToArm(); codeAsm("0", "##", "r0", "ne?", "mov,");
@@ -1927,11 +1927,11 @@ parse_next:
 		}
 	} else if (W("and")) {
 		r5_const = false;
-		codeToArm(); codeAsm("sp", "4", "(#", "r5", "ldr,");
+		codeToThumb(); codeAsm("r5", "pop");
 		codeToArm(); codeAsm("r0", "r5", "r0", "and,");
 	} else if (W("or")) {
 		r5_const = false;
-		codeToArm(); codeAsm("sp", "4", "(#", "r5", "ldr,");
+		codeToThumb(); codeAsm("r5", "pop");
 		codeToArm(); codeAsm("r0", "r5", "r0", "orr,");
 	} else if (isNum(word)) {
 		unsigned int num = TIN_parseNum(word);
@@ -2001,8 +2001,7 @@ parse_next:
 						GLB_error("unimp com/and\n");
 
 					r5_const = false;
-					codeToArm(); codeAsm("sp", "4", "(#", "r5",
-						"ldr,");
+					codeToThumb(); codeAsm("r5", "pop");
 					codeToArm(); codeAsm("r0", "r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
 					codeToThumb(); codeAsm("r0", "push");
@@ -2159,9 +2158,9 @@ emit_num:
 		r5_const = false;
 	} else if (W("drop")) {
 		if (getNextWordIf("a")) {
-			codeToArm(); codeAsm("r1", "r0", "mov,"); //code(0xe1a00001);
+			codeToArm(); codeAsm("r1", "r0", "mov,");
 		} else {
-			codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
+			codeToThumb(); codeAsm("r0", "pop");
 		}
 	} else if (W("+")) {
 		r5_const = false;
@@ -2177,13 +2176,13 @@ emit_num:
 		codeToArm(); codeAsm("r0", "r5", "r0", "mul,");
 	} else if (W("a!")) {
 		codeToArm(); codeAsm("r0", "r1", "mov,");
-		codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
+		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("a")) {
 		codeToThumb(); codeAsm("r0", "push");
 		codeToArm(); codeAsm("r1", "r0", "s!", "mov,");
 	} else if (W("c!a")) {
 		codeToArm(); codeAsm("r1", "1", "(#", "r0", "strb,");
-		codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
+		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("@")) {
 		codeToThumb(); codeAsm("r0", "0@", "r0", "ldr,");
 	} else if (W("@a")) {
@@ -2199,7 +2198,7 @@ emit_num:
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
 		codeToThumb(); codeAsm("r0", "0@", "r5", "str,");
-		codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
+		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("aligned")) {
 		codeToArm(); codeAsm("3", "##", "r0", "tst,");
 		codeToArm(); codeAsm("3", "##", "r0", "r0", "bic,");
