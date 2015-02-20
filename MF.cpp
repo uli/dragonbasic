@@ -1571,6 +1571,7 @@ void Parser::parseAll()
 	const char *word;
 	Symbol *sym;
 	Icode *icode;
+	bool currently_naked = false;
 #ifdef BUG_FOR_BUG
 	bool dont_imm_com = false;
 #endif
@@ -1647,17 +1648,24 @@ parse_next:
 		lsp = 0;
 	} else if (asm_mode) {
 		parseAsm(word);
-	} else if (W(":")) {
+	} else if (W(":") || W(":n")) {
+		currently_naked = word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
-		sym->has_prolog = true;
-		codeAsm("r7", "db!", "r6", "stm,");
-		codeAsm("lr", "r6", "mov,");
+		if (!currently_naked) {
+			sym->has_prolog = true;
+			codeAsm("r7", "db!", "r6", "stm,");
+			codeAsm("lr", "r6", "mov,");
+		}
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 	} else if (W("label")) {
 		sym = symbols.appendNew(out->addr, getNextWord());
 		DEBUG("===start label %s at 0x%x\n", sym->word, sym->addr);
 	} else if (W(";")) {
-		codeAsm("r6", "bx,");
+		if (currently_naked)
+			codeAsm("lr", "bx,");
+		else
+			codeAsm("r6", "bx,");
+		currently_naked = false;
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
 			codeAsm("sp", "4", "(#", "r1", "ldr,");
@@ -1815,6 +1823,7 @@ parse_next:
 				if (can_immrot(num)) {
 					codeAsm(num, "##", "r5", "mov,");
 				} else {
+					assert(!currently_naked);
 					codeBranch(RT__tin_wlit, "bl,");
 					code(num);
 				}
@@ -1832,6 +1841,7 @@ emit_num:
 					unsigned int imm;
 					imm = immrot(num, &err);
 					if (err) {
+						assert(!currently_naked);
 						codeBranch(RT__tin_lit,
 							   "bl,");
 						code(num);
@@ -1863,6 +1873,7 @@ emit_num:
 	} else if (W("c\"")) {
 		unsigned int end_str;
 		const char *str = getNextWord();
+		assert(!currently_naked);
 		codeBranch(RT__tin_slit, "bl,");
 		end_str = out->addr + 4 + 1 + strlen(str);
 #ifdef BUG_FOR_BUG
@@ -1891,6 +1902,7 @@ emit_num:
 			codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
 			codeAsm("r0", "pop");
 		} else {
+			assert(!currently_naked);
 			codeAsm(sym->word, "bl,");
 			if (sym->has_prolog)
 				codeAsm("r7", "4", "(#", "r6", "ldr,");
@@ -1971,10 +1983,12 @@ emit_num:
 		codeAsm("pc", "r0", "mov,");
 		codeAsm("lr", "bx,");
 	} else if (W("if")) {
+		assert(!currently_naked);
 		codeBranch(RT__tin_t_eq_0, "bl,");
 		loop_stack[lpsp++] = out->addr;
 		code(0);
 	} else if (W("else")) {
+		assert(!currently_naked);
 		codeBranch(RT__tin_goto, "bl,");
 		code(0);
 		out->patch32(loop_stack[--lpsp], out->addr);
@@ -1984,14 +1998,17 @@ emit_num:
 	} else if (W("begin")) {
 		loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
+		assert(!currently_naked);
 		codeBranch(RT__tin_t_eq_0, "bl,");
 		loop_stack[lpsp++] = out->addr;
 		code(0);
 	} else if (W("repeat")) {
+		assert(!currently_naked);
 		codeBranch(RT__tin_goto, "bl,");
 		out->patch32(loop_stack[--lpsp], out->addr + 4);
 		code(loop_stack[--lpsp]);
 	} else if (W("again")) {
+		assert(!currently_naked);
 		codeBranch(RT__tin_goto, "bl,");
 		code(loop_stack[--lpsp]);
 	} else if (W("interrupt")) {
