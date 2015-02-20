@@ -2141,7 +2141,9 @@ emit_num:
 		sym->lit_addr = out->vaddr;
 		out->vaddr += 4;
 	} else if (W("create")) {
+		out->alignDword();
 		symbols.appendNew(out->addr, getNextWord());
+		thumb = false;
 		unsigned int size = TIN_parseNum(getNextWord());
 		const char *type = getNextWord();
 		(void)type;
@@ -2157,7 +2159,9 @@ emit_num:
 		code(out->vaddr);
 		out->vaddr += 4 * size;
 	} else if (W("data:")) {
+		out->alignDword();
 		symbols.appendNew(out->addr, getNextWord());
+		thumb = false;
 		codeAsm("r0", "push");
 		codeAsm("pc", "r0", "mov,");
 		r5_const = false;
@@ -2193,7 +2197,9 @@ emit_num:
 		r5_const = false;
 		codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("interrupt")) {
+		out->alignDword();
 		symbols.appendNew(out->addr, getNextWord());
+		thumb = false;
 		codeAsm("r0", "push");
 		codeAsm("pc", "r0", "mov,");
 		r5_const = false;
