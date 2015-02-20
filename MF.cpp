@@ -1511,7 +1511,7 @@ void Parser::parseAsm(const char *word)
 			code(insn | asm_stack[--asp][1]);
 			ASSERT_REG;
 		}
-	} else if (W("ldm,") || W("stm,")) {
+	} else if (!thumb && (W("ldm,") || W("stm,"))) {
 		/* format ARM.11 */
 		unsigned int insn = 0;
 		CODE_COND;
