@@ -2038,9 +2038,6 @@ int main(int argc, char **argv)
 			argv++;
 		} else if (!strcmp(argv[1], "-mod")) {
 			out.use_pimp = true;
-			// XXX: This assumes that the C runtime does not use the heap
-			// allocator.
-			out.vaddr = RT___ewram_end;
 			argc--;
 			argv++;
 		} else {

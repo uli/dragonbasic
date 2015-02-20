@@ -56,7 +56,7 @@ MEMORY {
 
 	rom	: ORIGIN = 0x08000000, LENGTH = 32M
 	iwram	: ORIGIN = 0x03001000, LENGTH = 28K
-	ewram	: ORIGIN = 0x02000000, LENGTH = 256K
+	ewram	: ORIGIN = 0x0203d000, LENGTH = 12K
 }
 
 __text_start	=	ORIGIN(rom);
