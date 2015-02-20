@@ -2049,7 +2049,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #else
 int main(int argc, char **argv)
 {
-	GLB_main(argc + 1, argv + 1);
+	GLB_main(argc - 1, argv + 1);
 	return 0;
 }
 #endif
