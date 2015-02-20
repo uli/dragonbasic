@@ -1886,7 +1886,8 @@ parse_next:
 	} else if (W(";")) {
 		r5_const = false;
 		if (currently_naked) {
-			codeToArm(); codeAsm("lr", "bx,");
+			assert(!thumb);
+			codeAsm("lr", "bx,");
 		} else {
 			codeToThumb(); codeAsm("r6", "bx,");
 		}
