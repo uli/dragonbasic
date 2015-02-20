@@ -137,38 +137,8 @@ Symbol *Symbol::appendNew(unsigned int addr, const char *word)
 	return sym->next;
 }
 
-class Literal {
-public:
-	Literal();
-	Literal(unsigned int val, unsigned int reloc);
-	Literal *prependNew(unsigned int val, unsigned int reloc);
-
-	unsigned int val;
-	unsigned int reloc;
-	Literal *next;
-};
-
-Literal::Literal()
-{
-	val = reloc = 0;
-	next = NULL;
-}
-
-Literal::Literal(unsigned int val, unsigned int reloc)
-{
-	this->val = val;
-	this->reloc = reloc;
-	next = NULL;
-}
-
-Literal *Literal::prependNew(unsigned int val, unsigned int reloc)
-{
-	Literal *lit = new Literal(val, reloc);
-
-	lit->next = next;
-	next = lit;
-	return lit;
-}
+class Literal;
+class Output;
 
 class Output {
 public:
@@ -193,6 +163,61 @@ public:
 	unsigned int vaddr;
 	bool use_pimp;
 };
+
+class Literal {
+public:
+	Literal();
+	Literal(unsigned int val, unsigned int reloc);
+	Literal *prependNew(unsigned int val, unsigned int reloc);
+	void code(Output *out);
+
+	unsigned int val;
+	unsigned int reloc;
+	Literal *next;
+};
+
+Literal::Literal()
+{
+	val = reloc = 0;
+	next = NULL;
+}
+
+Literal::Literal(unsigned int val, unsigned int reloc)
+{
+	this->val = val;
+	this->reloc = reloc;
+	next = NULL;
+}
+
+// XXX: prepending literals is crap because it increases the chance of
+// exceeding the maximum displacement by putting the literals used by
+// the first instruction last.
+Literal *Literal::prependNew(unsigned int val, unsigned int reloc)
+{
+	Literal *lit = new Literal(val, reloc);
+
+	lit->next = next;
+	next = lit;
+	return lit;
+}
+
+void Literal::code(Output *out)
+{
+	Literal *lit = next;
+	while (lit) {
+
+			out->reloc12(lit);
+			out->emitDword(lit->val);
+
+		lit = lit->next;
+	}
+
+	while (next) {
+		lit = next->next;
+		delete next;
+		next = lit;
+	}
+}
 
 class Parser {
 public:
@@ -1636,15 +1661,7 @@ parse_next:
 		if (cur_icode)
 			cur_icode = 0;
 		asm_mode = false;
-		Literal *lit = literals.next;
-		while (lit) {
-			out->reloc12(lit);
-			code(lit->val);
-			Literal *flit = lit;
-			lit = lit->next;
-			delete flit;
-		}
-		literals.next = 0;
+		literals.code(out);
 		lsp = 0;
 	} else if (asm_mode) {
 		parseAsm(word);
