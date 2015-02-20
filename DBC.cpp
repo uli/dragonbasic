@@ -1310,11 +1310,17 @@ void Compiler::doLvalNotSub(BasicObject *bobj)
 		checkNotSegment(SEG_TOP, bobj->val.symbolic);
 		if (is_top_level == true)
 			GLB_error(ERR_UNREACHABLE);
-		doAssign(bobj);
-		if (bobj->vtype == VAR_ARRAY)
+		if (bobj->vtype == VAR_ARRAY) {
+			doAssign(bobj);
 			emitTin("MOVE ");
-		else
-			emitTin("SWAP ! ");
+		} else {
+			if (parser->getObjectWithType(OBJ_OP, "=")->val.numeric != OP_EQ)
+				GLB_error(ERR_NOTOKEN, "=");
+			if (compileExpression() != bobj->vtype)
+				GLB_error(ERR_TYPE_MISMATCH);
+			doRval(bobj);
+			emitTin("! ");
+		}
 	}
 }
 
