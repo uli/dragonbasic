@@ -1013,6 +1013,7 @@ Icode *Parser::getIcode(const char *word)
 } while (0)
 
 #define ASSERT_REG do { assert(asm_stack[asp][0] == ASM_REG); } while (0)
+#define ASSERT_TREG do { assert(asm_stack[asp][0] == ASM_REG && asm_stack[asp][1] < 8); } while (0)
 #define ASSERT_IMM do { assert(asm_stack[asp][0] == ASM_IMM); } while (0)
 
 static unsigned int immrot(unsigned int val, int *err)
@@ -1516,14 +1517,22 @@ void Parser::parseAsm(const char *word)
 		ASSERT_REG;
 		code(insn);
 	} else if (W("pop")) {
-		unsigned int insn = 0x04bd0004;
-		CODE_COND;
-		CODE_RD;
-		code(insn);
+		if (thumb) {
+			unsigned short insn = 0xbc00;
+			insn |= 1 << asm_stack[--asp][1];
+			ASSERT_TREG;
+			code16(insn);
+		} else {
+			unsigned int insn = 0x04bd0004;
+			CODE_COND;
+			CODE_RD;
+			code(insn);
+		}
 	} else if (W("push")) {
 		if (thumb) {
 			unsigned short insn = 0xb400;
 			insn |= 1 << asm_stack[--asp][1];
+			ASSERT_TREG;
 			code16(insn);
 		} else {
 			unsigned int insn = 0x092d0000;
