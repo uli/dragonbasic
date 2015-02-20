@@ -33,6 +33,7 @@
 #include <windows.h>
 #endif
 #include <FreeImage.h>
+#include <sndfile.hh>
 
 #include "os.h"
 
@@ -695,34 +696,27 @@ void Output::patch32(unsigned int addr, unsigned int val)
 void Output::emitSound(const char *wav)
 {
 	unsigned size_addr;
-	unsigned char c;
-	signed char s;
 
-	emitDword(0xfa0e);
+	SndfileHandle infile(wav);
+	if (infile.error())
+		GLB_error("%s: %s\n", wav, infile.strError());
+	DEBUG("sndfile %s fmt %d chans %d rate %d\n", wav, infile.format(),
+	      infile.channels(), infile.samplerate());
+
+	int timer_reload = -16780000 / infile.samplerate();
+	emitDword(timer_reload & 0xffff);
+
 	size_addr = addr;
 	emitDword(0xcafebabe);
-	FILE *fp = fopen(wav, "rb");
-	if (!fp)
-		GLB_error("cannot open wav file %s\n", wav);
 
-	/* search for data chunk */
-	const char *data = "data";
-	while (fread(&c, 1, 1, fp)) {
-		if (c == *data) {
-			data++;
-			if (!*data)
-				break;
-		}
-	}
-	fseek(fp, 4, SEEK_CUR); /* skip size */
-
-	while (fread(&c, 1, 1, fp)) {
-		s = ((int)c) - 0x80;
-		emitByte((unsigned char)s);
+	int count = 0;
+	short sample;
+	while (infile.read(&sample, 1)) {
+		emitByte(sample / 256);
+		count++;
 	}
 
-	patch32(size_addr, ftell(fp) - 0x2c);
-	fclose(fp);
+	patch32(size_addr, count);
 
 	// XXX: looks like BUG_FOR_BUG...
 	emitByte(0x80);

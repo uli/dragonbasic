@@ -15,13 +15,14 @@ CXX = $(CROSS)g++
 ARMCC = arm-none-eabi-gcc
 CRTDIR=$(DEVKITPRO)/devkitARM/lib/gcc/arm-none-eabi/$(shell $(ARMCC) -dumpversion)
 
+LIBS = -lsndfile
 ifeq ($(PLATFORM), win32)
 SUFF = .exe
 LDFLAGS = -static
-LIBS = -lFreeImage
+LIBS += -lFreeImage
 else
 SUFF =
-LIBS = -lfreeimage
+LIBS += -lfreeimage
 endif
 
 BOBJS = DBC.o.$(PLATFORM)
