@@ -1947,22 +1947,37 @@ emit_num:
 	} else if ((sym = getSymbol(word))) {
 		DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x\n", sym->word, sym->addr,
 		      out->addr, sym->is_addr, sym->lit_addr);
-		if (sym->is_addr && (sym->lit_addr & 0x00ffffff) < 0x800 && getNextWordIf("@")) {
-			DEBUG("litload\n");
-			codeAsm("r0", "push");
-			codeAsm(sym->lit_addr & 0xff000000, "##", "r5", "mov,");
-			codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
-		} else if (sym->is_addr && (sym->lit_addr & 0x00ffffff) < 0x800 && getNextWordIf("!")) {
-			DEBUG("litstore\n");
-			codeAsm(sym->lit_addr & 0xff000000, "##", "r5", "mov,");
-			codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
-			codeAsm("r0", "pop");
-		} else if (sym->is_addr) {
-			// load from literal pool
-			// XXX: what about words larger than 8k?
-			codeAsm("r0", "push");
-			literals.prependNew(sym->lit_addr, out->addr);
-			codeAsm("pc", "0", "#(", "r0", "ldr,");
+		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
+		if (sym->is_addr) {
+			if (getNextWordIf("@")) {
+				DEBUG("litload\n");
+				codeAsm("r0", "push");
+				if (small_offset) {
+					codeAsm(sym->lit_addr & 0xff000000, "##", "r5", "mov,");
+					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
+				} else {
+					literals.prependNew(sym->lit_addr, out->addr);
+					codeAsm("pc", "0", "#(", "r5", "ldr,");
+					codeAsm("r5", "0@", "r0", "ldr,");
+				}
+			} else if (getNextWordIf("!")) {
+				DEBUG("litstore\n");
+				if (small_offset) {
+					codeAsm(sym->lit_addr & 0xff000000, "##", "r5", "mov,");
+					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
+				} else {
+					literals.prependNew(sym->lit_addr, out->addr);
+					codeAsm("pc", "0", "#(", "r5", "ldr,");
+					codeAsm("r5", "0@", "r0", "str,");
+				}
+				codeAsm("r0", "pop");
+			} else {
+				// load from literal pool
+				// XXX: what about words larger than 2k?
+				codeAsm("r0", "push");
+				literals.prependNew(sym->lit_addr, out->addr);
+				codeAsm("pc", "0", "#(", "r0", "ldr,");
+			}
 		} else {
 			assert(!currently_naked);
 			codeAsm(sym->word, "bl,");
