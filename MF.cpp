@@ -2190,8 +2190,9 @@ emit_num:
 		r5_const = false;
 		codeToArm(); codeAsm("r0", "r0", "tst,");
 		codeToArm(); codeAsm("r0", "pop");
+		codeToArm();
 		loop_stack[lpsp++] = out->addr;
-		codeToArm(); codeBranch(out->addr, "eq?", "b,");
+		codeBranch(out->addr, "eq?", "b,");
 	} else if (W("else")) {
 		r5_const = false;
 		codeToArm(); codeBranch(out->addr, "b,");
@@ -2199,20 +2200,24 @@ emit_num:
 		loop_stack[lpsp++] = out->addr - 4;
 	} else if (W("then")) {
 		r5_const = false;
+		codeToArm();
 		out->reloc24(loop_stack[--lpsp], out->addr);
 	} else if (W("begin")) {
 		r5_const = false;
+		codeToArm();
 		loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
 		r5_const = false;
 		codeToArm(); codeAsm("r0", "r0", "tst,");
 		codeToArm(); codeAsm("r0", "pop");
+		codeToArm();
 		loop_stack[lpsp++] = out->addr;
-		codeToArm(); codeBranch(out->addr, "eq?", "b,");
+		codeBranch(out->addr, "eq?", "b,");
 	} else if (W("repeat")) {
 		r5_const = false;
+		codeToArm();
 		out->reloc24(loop_stack[--lpsp], out->addr + 4);
-		codeToArm(); codeBranch(loop_stack[--lpsp], "b,");
+		codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("again")) {
 		r5_const = false;
 		codeToArm(); codeBranch(loop_stack[--lpsp], "b,");
