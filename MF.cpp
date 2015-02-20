@@ -148,6 +148,7 @@ public:
 	void setEntry(unsigned int addr);
 	void emitByte(const unsigned char byte);
 	void emitDword(const unsigned int dword);
+	void emitWord(const unsigned short word);
 	void emitString(const char *str, int len);
 	void emitBitmap(const char *bmp);
 	void emitPalette(const char *bmp);
@@ -499,6 +500,13 @@ void Output::emitDword(const unsigned int dword)
 	fputc((dword >> 16) & 0xff, fp);
 	fputc((dword >> 24), fp);
 	addr += 4;
+}
+
+void Output::emitWord(const unsigned short word)
+{
+	fputc(word & 0xff, fp);
+	fputc((word >> 8) & 0xff, fp);
+	addr += 2;
 }
 
 void Output::emitString(const char *str, int len)
