@@ -217,6 +217,9 @@ public:
 	void codeAsm(unsigned int w0, const char *w1 = NULL,
 		     const char *w2 = NULL, const char *w3 = NULL,
 		     const char *w4 = NULL);
+	void codeAsm(const char *w0, unsigned int w1,
+		     const char *w2 = NULL, const char *w3 = NULL,
+		     const char *w4 = NULL);
 	void codeBranch(unsigned int dest, const char *mnem);
 	void codeCallThumb(unsigned int dest);
 
@@ -1537,6 +1540,18 @@ void Parser::codeAsm(
 	codeAsm(w1, w2, w3, w4);
 }
 
+void Parser::codeAsm(
+	const char *w0,
+	unsigned int w1,
+	const char *w2,
+	const char *w3,
+	const char *w4)
+{
+	codeAsm(w0);
+	PUSH_ASM(ASM_IMM, w1);
+	codeAsm(w2, w3, w4);
+}
+
 void Parser::codeBranch(unsigned int dest, const char *mnem)
 {
 	PUSH_ASM(ASM_OFF, dest);
@@ -1863,11 +1878,23 @@ emit_num:
 		while (out->addr < end_str)
 			out->emitByte(0);
 	} else if ((sym = getSymbol(word))) {
-		DEBUG("syma %s 0x%x oa 0x%x\n", sym->word, sym->addr,
-		      out->addr);
-		codeAsm(sym->word, "bl,");
-		if (sym->has_prolog)
-			codeAsm("r7", "4", "(#", "r6", "ldr,");
+		DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x\n", sym->word, sym->addr,
+		      out->addr, sym->is_addr, sym->lit_addr);
+		if (sym->is_addr && (sym->lit_addr & 0x00ffffff) < 0x800 && getNextWordIf("@")) {
+			DEBUG("litload\n");
+			codeAsm("r0", "push");
+			codeAsm(sym->lit_addr & 0xff000000, "##", "r5", "mov,");
+			codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
+		} else if (sym->is_addr && (sym->lit_addr & 0x00ffffff) < 0x800 && getNextWordIf("!")) {
+			DEBUG("litstore\n");
+			codeAsm(sym->lit_addr & 0xff000000, "##", "r5", "mov,");
+			codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
+			codeAsm("r0", "pop");
+		} else {
+			codeAsm(sym->word, "bl,");
+			if (sym->has_prolog)
+				codeAsm("r7", "4", "(#", "r6", "ldr,");
+		}
 	} else if ((icode = getIcode(word))) {
 		DEBUG("emit icode %s len %d\n", icode->word,
 		      icode->len);
