@@ -1,0 +1,21 @@
+;;; INPUT.DBC
+;;;
+;;; Contains prototypes for all functions that
+;;; work with the GBA buttons and D-pad.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "INPUT.F"
+
+; Status of all buttons (1=pressed)
+PROTOTYPE FUNCTION	KEYS
+
+; Wait for the state of any button in mask to change
+PROTOTYPE SUB		INPUT(mask)
+
+; Return the state of the buttons in mask (1=pressed)
+PROTOTYPE FUNCTION	KEY(mask)
+
+; Wait for any button in mask to be pressed and released
+PROTOTYPE FUNCTION	WAITKEY(mask)

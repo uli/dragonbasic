@@ -1,0 +1,97 @@
+;;; GBA.DBC
+;;;
+;;; Includes the entire Dragon BASIC/TIN API.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#INCLUDE "CORE.DBC"
+#INCLUDE "EXT.DBC"
+#INCLUDE "TILES.DBC"
+#INCLUDE "GRAPHICS.DBC"
+#INCLUDE "RND.DBC"
+#INCLUDE "PALETTE.DBC"
+#INCLUDE "STRINGS.DBC"
+#INCLUDE "SPRITES.DBC"
+#INCLUDE "TIMERS.DBC"
+#INCLUDE "INPUT.DBC"
+#INCLUDE "SOUND.DBC"
+#INCLUDE "EFFECTS.DBC"
+#INCLUDE "ROTATIONS.DBC"
+#INCLUDE "SRAM.DBC"
+#INCLUDE "INTERRUPTS.DBC"
+
+; Background control flags
+#CONSTANT BG_COLOR_256		&0080 		; Background uses 1 256-color palette
+#CONSTANT BG_COLOR_16		&0000 		; Background uses 16 16-color palettes
+#CONSTANT BG_MOSAIC			&0040 		; Enables mosaic bit of background
+#CONSTANT TEXT_256x256		&0000 		; Tile map size is 256x256
+#CONSTANT TEXT_256x512		&8000 		; Tile map size is 256x512
+#CONSTANT TEXT_512x256		&4000 		; Tile map size is 512x256
+#CONSTANT TEXT_512x512		&C000 		; Tile map size is 512x512
+#CONSTANT ROT_128x128		&0000 		; Rotated tile map is 128x128
+#CONSTANT ROT_256x256		&4000 		; Rotated tile map is 256x256
+#CONSTANT ROT_512x512		&8000 		; Rotated tile map is 512x512
+#CONSTANT ROT_1024x1024		&C000 		; Rotated tile map is 1024x1024
+
+; Player 1 keypad constants
+#CONSTANT KEY_A				&001 		; A button mask
+#CONSTANT KEY_B				&002 		; B button mask
+#CONSTANT KEY_SELECT		&004 		; SELECT button mask
+#CONSTANT KEY_START			&008 		; START button mask
+#CONSTANT KEY_RIGHT			&010 		; Right arrow mask
+#CONSTANT KEY_LEFT			&020 		; Left arrow mask
+#CONSTANT KEY_UP			&040 		; UP arrow mask
+#CONSTANT KEY_DOWN			&080 		; Down arrow mask
+#CONSTANT KEY_R				&100 		; Right trigger mask
+#CONSTANT KEY_L				&200 		; Left trigger mask
+#CONSTANT KEY_ANY			&3FF 		; Any key
+
+; Sprite flags
+#CONSTANT DOUBLE			&0200 		; Sprite uses 2x size
+#CONSTANT NORMAL			&0000 		; Normal sprite rendering
+#CONSTANT TRANSPERANT		&0400 		; Transparent sprite
+#CONSTANT WINDOWED			&0800 		; Windowed sprite
+#CONSTANT COLOR_16			&0000 		; Uses one of 16 16-color palettes
+#CONSTANT COLOR_256			&2000 		; Uses one 256-color palette
+#CONSTANT FLIP_X			&1000 		; Flip horizontally
+#CONSTANT FLIP_Y			&2000 		; Flip vertically
+#CONSTANT SIZE_8			&0000 		; 8x8 (square)
+#CONSTANT SIZE_16			&4000 		; 16x16 (square)
+#CONSTANT SIZE_32			&8000 		; 32x32 (square)
+#CONSTANT SIZE_64			&C000 		; 64x64 (square)
+#CONSTANT SQUARE			&0000 		; Square in size
+#CONSTANT WIDE				&4000 		; Wide
+#CONSTANT TALL				&8000 		; Tall
+
+; Palette memory base addresses
+#CONSTANT BG_PALETTE		&5000000 	; Base address of background palette
+#CONSTANT SPRITE_PALETTE	&5000200 	; Base address of sprite palette
+
+; Some constant 15-bit colors
+#CONSTANT RED 				&001F
+#CONSTANT GREEN 			&03E0
+#CONSTANT BLUE 				&7C00
+#CONSTANT BLACK 			&0000
+#CONSTANT WHITE				&7FFF
+#CONSTANT CYAN				&7FE0
+#CONSTANT YELLOW			&03FF
+#CONSTANT MAGENTA			&7C1F
+#CONSTANT DARKRED			&000F
+#CONSTANT DARKGREEN			&01E0
+#CONSTANT DARKBLUE			&3C00
+#CONSTANT OLIVE				&01EF
+#CONSTANT ORANGE			&01FF
+#CONSTANT TEAL				&3DE0
+#CONSTANT GRAY				&3DEF
+#CONSTANT BROWN				&01B4
+
+; Sound constants
+#CONSTANT WAVE_DUTY_12		&0000		; 12.5%
+#CONSTANT WAVE_DUTY_25		&0040		; 25%
+#CONSTANT WAVE_DUTY_50		&0080		; 50%
+#CONSTANT WAVE_DUTY_75		&00C0		; 75%
+
+; Other constants
+#CONSTANT RAND_MAX			&0007FFF 	; The highest randon number possible
+#CONSTANT SRAM				&E000000 	; Start of static ram

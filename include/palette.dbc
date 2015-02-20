@@ -1,0 +1,27 @@
+;;; PALETTE.DBC
+;;;
+;;; Functions and subroutines used for loading
+;;; and manipulating palettes and 16-bit colors.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "PALETTE.F"
+
+; Color functions
+PROTOTYPE FUNCTION	RGB(red,green,blue)
+PROTOTYPE FUNCTION	RGBR(color)
+PROTOTYPE FUNCTION	RGBG(color)
+PROTOTYPE FUNCTION	RGBB(color)
+
+; Palette subroutines
+PROTOTYPE SUB		LOADPAL16(palette,index,label)
+PROTOTYPE SUB		LOADPAL256(palette,label)
+PROTOTYPE SUB		MAKEPALETTE(palette)
+PROTOTYPE SUB		ROTATEPAL16(palette,index)
+PROTOTYPE SUB		ROTATEPAL256(palette)
+
+; Entry manipulation
+PROTOTYPE SUB		SETPALENTRY(palette,index,entry,color)
+PROTOTYPE FUNCTION	GETPALENTRY(palette,index,entry)
+

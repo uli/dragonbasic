@@ -1,0 +1,35 @@
+;;; SPRITES.DBC
+;;;
+;;; Contains prototypes for all functions that
+;;; work with sprites.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "SPRITES.F"
+
+; Memory
+PROTOTYPE FUNCTION	SPRITE(n)
+PROTOTYPE SUB		LOADSPRITE(n,label,blocks)
+PROTOTYPE SUB		UPDATESPRITES
+
+; Sprite creation
+PROTOTYPE SUB		MAKESPRITE(n,char)
+PROTOTYPE SUB		SIZESPRITE(n,shape,size)
+PROTOTYPE SUB		COLORSPRITE(n,index)
+
+; Manipulation
+PROTOTYPE SUB		FLIPSPRITE(n,x,y)
+PROTOTYPE SUB		ORDERSPRITE(n,priority)
+
+; Position
+PROTOTYPE FUNCTION	SPRITEX(n)
+PROTOTYPE FUNCTION	SPRITEY(n)
+PROTOTYPE SUB		HIDESPRITE(n)
+PROTOTYPE FUNCTION	SPRITEHIDDEN(n)
+PROTOTYPE SUB		POSITIONSPRITE(n,x,y)
+PROTOTYPE SUB		MOVESPRITE(n,dx,dy)
+
+; Animating and collision detection
+PROTOTYPE SUB		ANIMSPRITE(n,first,last,blocks)
+PROTOTYPE FUNCTION	BUMPSPRITES(n1,n2)

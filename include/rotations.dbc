@@ -1,0 +1,21 @@
+;;; ROTATIONS.DBC
+;;;
+;;; Contains all trig functions and routines
+;;; for rotating sprites and backgrounds
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "ROTATIONS.F"
+
+; Angle functions
+PROTOTYPE FUNCTION	WRAPANGLE(angle)
+
+; Trig functions
+PROTOTYPE FUNCTION	SIN#(angle)
+PROTOTYPE FUNCTION	COS#(angle)
+PROTOTYPE FUNCTION	TAN#(angle)
+
+; Matrix creation and sprite rotating
+PROTOTYPE SUB		MAKEROTATION(matrix,sx#,sy#,angle)
+PROTOTYPE SUB		ROTATESPRITE(n,matrix)

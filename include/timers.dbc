@@ -1,0 +1,21 @@
+;;; TIMERS.DBC
+;;;
+;;; Contains prototypes for all functions that
+;;; work with the user timer.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "TIMERS.F"
+
+; Make and reset
+PROTOTYPE SUB		MAKETIMER(frequency)
+PROTOTYPE SUB		RESETTIMER
+
+; Start and stop
+PROTOTYPE SUB		STARTTIMER
+PROTOTYPE SUB		STOPTIMER
+
+; Waiting
+PROTOTYPE FUNCTION	CLOCKTIMER
+PROTOTYPE SUB		WAITTIMER(n)

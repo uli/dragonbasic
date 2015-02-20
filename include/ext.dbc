@@ -1,0 +1,30 @@
+;;; EXT.DBC
+;;;
+;;; Extended CORE functionality for Dragon BASIC.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "EXT.F"
+
+; Address and dynamic memory
+PROTOTYPE FUNCTION	ALIGNED(address)
+PROTOTYPE FUNCTION	ALLOCATE(bytes)
+
+; Using DMA 3 for transfering data
+PROTOTYPE SUB		DMACOPY(dest,source,words)
+PROTOTYPE SUB		DMAWAIT
+
+; Image blocks
+PROTOTYPE FUNCTION	BLOCKS(width,height,depth)
+PROTOTYPE FUNCTION	TILEOFFSET(blocks)
+
+; More math routines
+PROTOTYPE FUNCTION	ABS(n)
+PROTOTYPE FUNCTION	SQRT(n)
+PROTOTYPE FUNCTION	FSQRT#(f#)
+
+; Conversion from integer to fixed-point and back
+PROTOTYPE FUNCTION	FIX#(n)
+PROTOTYPE FUNCTION	INT(f#)
+PROTOTYPE FUNCTION	ROUND(f#)

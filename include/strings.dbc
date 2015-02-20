@@ -1,0 +1,29 @@
+;;; STRING.DBC
+;;;
+;;; Subroutines and functions for manipulating
+;;; strings and conversion of numbers to strings.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "STRINGS.F"
+
+; Length functions
+PROTOTYPE FUNCTION	LEN(string$)
+PROTOTYPE SUB		RESIZE(string$,length)
+
+; Converting from number to string
+PROTOTYPE FUNCTION	STR$(n)
+PROTOTYPE FUNCTION	HEX$(n)
+
+; Copying, comparing and printing
+PROTOTYPE SUB		MOVE(dest$,source$)
+PROTOTYPE FUNCTION	COMPARE(string1$,string2$)
+PROTOTYPE SUB		PRINT(tile,string$)
+
+; Substring functions and concatenating
+PROTOTYPE FUNCTION	APPEND$(dest$,source$)
+PROTOTYPE FUNCTION	LEFT$(string$,length)
+PROTOTYPE FUNCTION	RIGHT$(string$,length)
+PROTOTYPE FUNCTION	MID$(string$,start,length)
+

@@ -1,0 +1,19 @@
+;;; EFFECTS.DBC
+;;;
+;;; Subroutines and functions for controlling
+;;; special effects produced by GBA hardware like
+;;; mosaics and fading.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "EFFECTS.F"
+
+; Mosaic effect
+PROTOTYPE SUB		MOSAICTILES(bg,flag)
+PROTOTYPE SUB		SPRITEMOSAIC(n,flag)
+PROTOTYPE SUB		MOSAIC(bgx,bgy,objx,objy)
+
+; Screen fading
+PROTOTYPE SUB		FADEOUT
+PROTOTYPE SUB		FADEIN

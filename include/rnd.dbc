@@ -1,0 +1,16 @@
+;;; RND.DBC
+;;;
+;;; Functions for setting the random seed
+;;; generator, getting the next number from
+;;; the seed and getting a random number
+;;; within a range.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "RND.F"
+
+PROTOTYPE SUB		SEED(n)
+PROTOTYPE FUNCTION	RND
+PROTOTYPE FUNCTION	RANDOM(min,max)
+

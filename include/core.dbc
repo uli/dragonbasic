@@ -1,0 +1,26 @@
+;;; CORE.DBC
+;;;
+;;; Compiles required TIN source for all CORE routines
+;;; that are needed for Dragon BASIC to run. This file
+;;; should be included with every program.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "CORE.F"
+
+; Debugging function - works on VGBA only!
+PROTOTYPE SUB       LOG(string$)
+
+; CORE memory functions
+PROTOTYPE FUNCTION	PEEK(address)
+PROTOTYPE SUB		POKE(address,n)
+
+; Memory routines
+PROTOTYPE SUB       COPY(address,source,bytes)
+PROTOTYPE SUB       ERASE(address,bytes)
+
+; Graphics mode routines
+PROTOTYPE SUB       GRAPHICS(mode,sprites)
+PROTOTYPE SUB       VBLANK
+PROTOTYPE FUNCTION  SCANLINE

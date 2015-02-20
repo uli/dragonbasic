@@ -1,0 +1,44 @@
+;;; TILES.DBC
+;;;
+;;; Contains prototypes for all functions that
+;;; work with tiled backgrounds.
+;;;
+;;; Copyright (c) 2003 by Jeff Massung
+;;; All rights reserved.
+
+#REQUIRES "TILES.F"
+
+; Memory map functions
+PROTOTYPE FUNCTION	CHARBLOCK(n)
+PROTOTYPE FUNCTION	SCREENBLOCK(n)
+
+; Loading tile functions
+PROTOTYPE SUB		LOADTILES(char,offset,from,nblocks)
+PROTOTYPE SUB		LOADFONT16(char,label)
+PROTOTYPE SUB		LOADFONT256(char,label)
+
+; Locating, getting and setting
+PROTOTYPE FUNCTION	TILE(screenb,x,y)
+PROTOTYPE FUNCTION	GETTILE(address)
+prototype sub		SETTILE(address,index)
+
+; Backgrounds
+PROTOTYPE SUB		ENABLETILES(bg,screenb,charb,flags)
+PROTOTYPE SUB		DISABLETILES(bg)
+PROTOTYPE SUB		ORDERTILES(bg,priority)
+PROTOTYPE SUB		UPDATETILES(bg)
+
+; Scrolling
+PROTOTYPE SUB		SCROLL(bg,dx,dy)
+PROTOTYPE SUB		SCROLLPOS(bg,x,y)
+PROTOTYPE FUNCTION	SCROLLX(bg)
+PROTOTYPE FUNCTION	SCROLLY(bg)
+
+; Tile manipulation
+PROTOTYPE SUB		COLORTILE(tile,index)
+PROTOTYPE SUB		FLIPTILE(tile,x,y)
+
+; Mapping
+PROTOTYPE SUB		CLEARTILES(tile,width,height)
+PROTOTYPE SUB		MAPTILES(tile,label,width,height)
+PROTOTYPE SUB		MAPIMAGE(tile,base,width,height)
