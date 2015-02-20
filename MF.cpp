@@ -1841,7 +1841,7 @@ parse_next:
 		} else if (getNextWordIf("-")) {
 			r5_const = false;
 			codeToThumb(); codeAsm("r5", "pop");
-			codeToArm(); codeAsm("r0", "r5", "r0", "rsb,");
+			codeToThumb(); codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("over")) {
 			r5_const = false;
 			codeToArm(); codeAsm("sp", "0@", "r5", "ldr,");
@@ -1864,7 +1864,7 @@ parse_next:
 		if (getNextWordIf("-")) {
 			r5_const = false;
 			codeToArm(); codeAsm("sp", "0@", "r5", "ldr,");
-			codeToArm(); codeAsm("r5", "r0", "r0", "sub,");
+			codeToThumb(); codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("!")) {
 			r5_const = false;
 			codeToArm(); codeAsm("sp", "4", "(#", "r5", "ldr,");
@@ -1992,8 +1992,8 @@ parse_next:
 						GLB_error("unimp com1\n");
 
 				}
-			} else if (getNextWordIf("-")) {
-				codeToArm(); codeAsm(num, "##", "r0", "r0", "sub,");
+			} else if (num < 8 && getNextWordIf("-")) {
+				codeToThumb(); codeAsm(num, "##", "r0", "r0", "sub,");
 			} else if (getNextWordIf("*")) {
 				if (can_immrot(num)) {
 					r5 = num;
@@ -2140,7 +2140,7 @@ emit_num:
 	} else if (W("-")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
-		codeToArm(); codeAsm("r0", "r5", "r0", "sub,");
+		codeToThumb(); codeAsm("r0", "r5", "r0", "sub,");
 	} else if (W("*")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
