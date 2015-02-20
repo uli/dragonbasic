@@ -2224,7 +2224,8 @@ emit_num:
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("a")) {
 		codeToThumb(); codeAsm("r0", "push");
-		codeToArm(); codeAsm("r1", "r0", "s!", "mov,");
+		// Thumb substitute for "movs"
+		codeToThumb(); codeAsm("0", "##", "r1", "r0", "add,");
 	} else if (W("c!a")) {
 		codeToArm(); codeAsm("r1", "1", "(#", "r0", "strb,");
 		codeToThumb(); codeAsm("r0", "pop");
