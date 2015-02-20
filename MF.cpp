@@ -1646,8 +1646,11 @@ parse_next:
 			if (word)
 				break;
 		}
-		if (!word)
+		if (!word) {
+			// DBC does not end "start" with a semicolon :/
+			literals.code(out);
 			return;
+		}
 	}
 
 	DEBUG("word -%s- at 0x%x\n", word, out->addr);
@@ -1719,6 +1722,7 @@ parse_next:
 		else
 			codeAsm("r6", "bx,");
 		currently_naked = false;
+		literals.code(out);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
 			codeAsm("sp", "4", "(#", "r1", "ldr,");
@@ -1954,6 +1958,12 @@ emit_num:
 			codeAsm(sym->lit_addr & 0xff000000, "##", "r5", "mov,");
 			codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
 			codeAsm("r0", "pop");
+		} else if (sym->is_addr) {
+			// load from literal pool
+			// XXX: what about words larger than 8k?
+			codeAsm("r0", "push");
+			literals.prependNew(sym->lit_addr, out->addr);
+			codeAsm("pc", "0", "#(", "r0", "ldr,");
 		} else {
 			assert(!currently_naked);
 			codeAsm(sym->word, "bl,");
