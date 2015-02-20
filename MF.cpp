@@ -1980,6 +1980,7 @@ emit_num:
 			}
 		} else {
 			assert(!currently_naked);
+			assert(sym->addr != 0);
 			codeAsm(sym->word, "bl,");
 			if (sym->has_prolog)
 				codeAsm("r7", "4", "(#", "r6", "ldr,");
@@ -2034,11 +2035,6 @@ emit_num:
 		sym = symbols.appendNew(out->addr, getNextWord());
 		sym->is_addr = true;
 		sym->lit_addr = out->vaddr;
-		codeAsm("r0", "push");
-		codeAsm("4", "##", "pc", "r5", "add,");
-		code(0xe4150000);
-		code(0xe12fff1e);
-		code(out->vaddr);
 		out->vaddr += 4;
 	} else if (W("create")) {
 		symbols.appendNew(out->addr, getNextWord());
