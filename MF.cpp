@@ -1922,13 +1922,13 @@ parse_next:
 		} else if (getNextWordIf("!")) {
 			codeToThumb(); code16(0xbc00 | (1 << REG_R2) | (1 << REG_R3)); // pop {r2,r3}
 			codeToThumb(); codeAsm("r2", "0@", "r0", "str,");
-			codeToArm(); codeAsm("r3", "r0", "mov,");
+			codeToThumb(); codeAsm("r3", "r0", "mov,");
 		} else {
 			codeToArm(); codeAsm("sp", "r0", "r0", "swp,");
 		}
 	} else if (W("dup")) {
 		if (getNextWordIf("a!")) {
-			codeToArm(); codeAsm("r0", "r1", "mov,");
+			codeToThumb(); codeAsm("r0", "r1", "mov,");
 		} else {
 			codeToThumb(); codeAsm("r0", "push");
 		}
@@ -1941,18 +1941,18 @@ parse_next:
 			r5_const = false;
 			codeToThumb(); codeAsm("r5", "pop");
 			codeToThumb(); codeAsm("r5", "0@", "r0", "str,");
-			codeToArm(); codeAsm("r5", "r0", "mov,");
+			codeToThumb(); codeAsm("r5", "r0", "mov,");
 		} else {
 			codeToThumb(); codeAsm("r0", "push");
 			codeToThumb(); codeAsm("sp", "4", "#(", "r0", "ldr,");
 		}
 	} else if (W("pop")) {
 		codeToThumb(); codeAsm("r0", "push");
-		codeToArm(); codeAsm("r6", "r0", "mov,");
+		codeToThumb(); codeAsm("r6", "r0", "mov,");
 		codeToArm(); codeAsm("r7", "4", "(#", "r6", "ldr,");
 	} else if (W("push")) {
 		codeToArm(); codeAsm("r7", "db!", "r6", "stm,");
-		codeToArm(); codeAsm("r0", "r6", "mov,");
+		codeToThumb(); codeAsm("r0", "r6", "mov,");
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("0=")) {
 		codeToArm(); codeAsm("0", "##", "r0", "cmp,");
@@ -2203,7 +2203,7 @@ emit_num:
 		r5_const = false;
 	} else if (W("drop")) {
 		if (getNextWordIf("a")) {
-			codeToArm(); codeAsm("r1", "r0", "mov,");
+			codeToThumb(); codeAsm("r1", "r0", "mov,");
 		} else {
 			codeToThumb(); codeAsm("r0", "pop");
 		}
@@ -2220,7 +2220,7 @@ emit_num:
 		codeToThumb(); codeAsm("r5", "pop");
 		codeToArm(); codeAsm("r0", "r5", "r0", "mul,");
 	} else if (W("a!")) {
-		codeToArm(); codeAsm("r0", "r1", "mov,");
+		codeToThumb(); codeAsm("r0", "r1", "mov,");
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("a")) {
 		codeToThumb(); codeAsm("r0", "push");
@@ -2239,7 +2239,7 @@ emit_num:
 		codeToArm(); codeAsm("r1", "1", "(#", "r0", "ldrb,");
 	} else if (W("r@")) {
 		codeToThumb(); codeAsm("r0", "push");
-		codeToArm(); codeAsm("r6", "r0", "mov,");
+		codeToThumb(); codeAsm("r6", "r0", "mov,");
 	} else if (W("!")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
