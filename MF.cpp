@@ -1691,6 +1691,7 @@ void Parser::codeToArm()
 	if (thumb) {
 		codeAsm("pc", "bx,");
 		thumb = false;
+		out->alignDword();
 	}
 }
 
