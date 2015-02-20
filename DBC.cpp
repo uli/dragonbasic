@@ -991,10 +991,11 @@ void Compiler::doCmdData()
 	do {
 		bobj = parser->consumeNextBasicObj();
 		if (bobj->otype == OBJ_NUM) {
-			if (had_unary_minus)    // XXX: This should be reset, shouldn't it?
+			if (had_unary_minus)
 				minus = "-";
 			else
 				minus = "";
+			had_unary_minus = false;
 			emitTin("%s$%x , ", minus, bobj->val.numeric);
 		} else {
 			if (had_unary_minus || bobj->otype != OBJ_OP ||
@@ -1002,7 +1003,7 @@ void Compiler::doCmdData()
 				GLB_error(ERR_SYNTAX);
 			had_unary_minus = true;
 		}
-	} while (parser->requireRop(ROP_COMMA));
+	} while (had_unary_minus || parser->requireRop(ROP_COMMA));
 }
 
 TIN *Compiler::doCmdRead()
