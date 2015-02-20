@@ -275,6 +275,8 @@ public:
 	void codeBranch(unsigned int dest, const char *mnem);
 	void codeBranch(unsigned int dest, const char *cond, const char *mnem);
 	void codeCallThumb(unsigned int dest);
+	void codeToThumb();
+	void codeToArm();
 
 private:
 	// These numbers reflect the instruction groups as defined in the
@@ -1643,6 +1645,23 @@ void Parser::codeCallThumb(unsigned int dest)
 	code(dest | 1);                         // address with bit 0 set for Thumb mode
 }
 
+void Parser::codeToThumb()
+{
+	if (!thumb) {
+		codeAsm("1", "##", "pc", "lr", "add,");
+		codeAsm("lr", "bx,");
+		thumb = true;
+	}
+}
+
+void Parser::codeToArm()
+{
+	if (thumb) {
+		codeAsm("pc", "bx,");
+		thumb = false;
+	}
+}
+
 void Parser::parseAll()
 {
 	const char *word;
@@ -1735,7 +1754,7 @@ parse_next:
 		while (out->addr & 3)
 			out->emitByte(0);
 		r5_const = false;
-		currently_naked = word[1] == 'n';
+		currently_naked = false;//word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
 		if (!currently_naked) {
 			sym->has_prolog = true;
