@@ -1904,7 +1904,7 @@ parse_next:
 		} else if (getNextWordIf("over")) {
 			r5_const = false;
 			codeToThumb(); codeAsm("sp", "0@", "r5", "ldr,");
-			codeToArm(); codeAsm("sp", "db!", "r5", "stm,");
+			codeToThumb(); codeAsm("r5", "push");
 			codeToThumb(); codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
 			codeToArm(); codeAsm("sp", "ia!", "r2", "r3", "ldm,");
