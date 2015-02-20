@@ -2014,16 +2014,16 @@ parse_next:
 		if (getNextWordIf("1+")) {
 			codeToArm(); codeAsm("0", "##", "r0", "r0", "rsb,");
 		} else {
-			codeToArm(); codeAsm("r0", "r0", "mvn,");
+			codeToThumb(); codeAsm("r0", "r0", "mvn,");
 		}
 	} else if (W("and")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
-		codeToArm(); codeAsm("r0", "r5", "r0", "and,");
+		codeToThumb(); codeAsm("r5", "r0", "and,");
 	} else if (W("or")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
-		codeToArm(); codeAsm("r0", "r5", "r0", "orr,");
+		codeToThumb(); codeAsm("r5", "r0", "orr,");
 	} else if (isNum(word)) {
 		unsigned int num = TIN_parseNum(word);
 		if (getNextWordIf("swi")) {
@@ -2093,7 +2093,7 @@ parse_next:
 
 					r5_const = false;
 					codeToThumb(); codeAsm("r5", "pop");
-					codeToArm(); codeAsm("r0", "r5", "r0", "bic,");
+					codeToThumb(); codeAsm("r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
 					codeToThumb(); codeAsm("r0", "push");
 					if (can_immrot(num)) {
@@ -2126,7 +2126,7 @@ parse_next:
 					r5 = num;
 					r5_const = true;
 				}
-				codeToArm(); codeAsm("r5", "r0", "r0", "mul,");
+				codeToThumb(); codeAsm("r5", "r0", "mul,");
 			} else if (getNextWordIf("and")) {
 				if (can_immrot(num)) {
 					codeToArm(); codeAsm(num, "##", "r0", "r0", "and,");
@@ -2264,7 +2264,7 @@ emit_num:
 	} else if (W("*")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
-		codeToArm(); codeAsm("r0", "r5", "r0", "mul,");
+		codeToThumb(); codeAsm("r5", "r0", "mul,");
 	} else if (W("a!")) {
 		codeToThumb(); codeAsm("r0", "r1", "mov,");
 		codeToThumb(); codeAsm("r0", "pop");
@@ -2328,7 +2328,7 @@ emit_num:
 		codeAsm("lr", "bx,");
 	} else if (W("if")) {
 		r5_const = false;
-		codeToArm(); codeAsm("r0", "r0", "tst,");
+		codeToThumb(); codeAsm("r0", "r0", "tst,");
 		codeToThumb(); codeAsm("r0", "pop");
 		codeToArm();
 		loop_stack[lpsp++] = out->addr;
@@ -2348,7 +2348,7 @@ emit_num:
 		loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
 		r5_const = false;
-		codeToArm(); codeAsm("r0", "r0", "tst,");
+		codeToThumb(); codeAsm("r0", "r0", "tst,");
 		codeToThumb(); codeAsm("r0", "pop");
 		codeToArm();
 		loop_stack[lpsp++] = out->addr;
