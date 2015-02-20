@@ -1898,10 +1898,9 @@ parse_next:
 emit_num:
 				if (num > 0xff) {
 					if (!can_immrot(num)) {
-						assert(!currently_naked);
-						codeBranch(RT__tin_lit,
-							   "bl,");
-						code(num);
+						codeAsm("r0", "push");
+						literals.prependNew(num, out->addr);
+						codeAsm("pc", "0", "#(", "r0", "ldr,");
 #ifdef BUG_FOR_BUG
 						// Deoptimization to maintain
 						// byte-for-byte compatibility.
