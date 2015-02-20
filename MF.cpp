@@ -1920,7 +1920,7 @@ parse_next:
 			codeToThumb(); codeAsm("r5", "push");
 			codeToThumb(); codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
-			codeToArm(); codeAsm("sp", "ia!", "r2", "r3", "ldm,");
+			codeToThumb(); code16(0xbc00 | (1 << REG_R2) | (1 << REG_R3)); // pop {r2,r3}
 			codeToThumb(); codeAsm("r2", "0@", "r0", "str,");
 			codeToArm(); codeAsm("r3", "r0", "mov,");
 		} else {
