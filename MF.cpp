@@ -1821,7 +1821,7 @@ parse_next:
 			codeToArm(); codeAsm("sp", "4", "(#", "r1", "ldr,");
 		} else if (getNextWordIf("-")) {
 			r5_const = false;
-			codeToArm(); codeAsm("r5", "pop");
+			codeToThumb(); codeAsm("r5", "pop");
 			codeToArm(); codeAsm("r0", "r5", "r0", "rsb,");
 		} else if (getNextWordIf("over")) {
 			r5_const = false;
@@ -1923,7 +1923,7 @@ parse_next:
 			} else if (getNextWordIf("n*")) {
 				if (getNextWordIf("+")) {
 					r5_const = false;
-					codeToArm(); codeAsm("r5", "pop");
+					codeToThumb(); codeAsm("r5", "pop");
 					codeToArm(); codeAsm("r0");
 					codeToArm(); codeAsm(num, "#lsl", "r5", "r0",
 						"add,");
@@ -2084,7 +2084,7 @@ emit_num:
 						DEBUG("ls2 skip r5 load of 0x%x\n", sym->lit_addr);
 					codeToArm(); codeAsm("r5", "0@", "r0", "str,");
 				}
-				codeToArm(); codeAsm("r0", "pop");
+				codeToThumb(); codeAsm("r0", "pop");
 			} else {
 				// load from literal pool
 				// XXX: what about words larger than 2k?
@@ -2116,15 +2116,15 @@ emit_num:
 		}
 	} else if (W("+")) {
 		r5_const = false;
-		codeToArm(); codeAsm("r5", "pop");
+		codeToThumb(); codeAsm("r5", "pop");
 		codeToArm(); codeAsm("r0", "r5", "r0", "add,");
 	} else if (W("-")) {
 		r5_const = false;
-		codeToArm(); codeAsm("r5", "pop");
+		codeToThumb(); codeAsm("r5", "pop");
 		codeToArm(); codeAsm("r0", "r5", "r0", "sub,");
 	} else if (W("*")) {
 		r5_const = false;
-		codeToArm(); codeAsm("r5", "pop");
+		codeToThumb(); codeAsm("r5", "pop");
 		codeToArm(); codeAsm("r0", "r5", "r0", "mul,");
 	} else if (W("a!")) {
 		codeToArm(); codeAsm("r0", "r1", "mov,");
@@ -2148,7 +2148,7 @@ emit_num:
 		codeToArm(); codeAsm("r6", "r0", "mov,");
 	} else if (W("!")) {
 		r5_const = false;
-		codeToArm(); codeAsm("r5", "pop");
+		codeToThumb(); codeAsm("r5", "pop");
 		codeToArm(); codeAsm("r0", "0@", "r5", "str,");
 		codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
 	} else if (W("aligned")) {
@@ -2189,7 +2189,7 @@ emit_num:
 	} else if (W("if")) {
 		r5_const = false;
 		codeToArm(); codeAsm("r0", "r0", "tst,");
-		codeToArm(); codeAsm("r0", "pop");
+		codeToThumb(); codeAsm("r0", "pop");
 		codeToArm();
 		loop_stack[lpsp++] = out->addr;
 		codeBranch(out->addr, "eq?", "b,");
@@ -2209,7 +2209,7 @@ emit_num:
 	} else if (W("while")) {
 		r5_const = false;
 		codeToArm(); codeAsm("r0", "r0", "tst,");
-		codeToArm(); codeAsm("r0", "pop");
+		codeToThumb(); codeAsm("r0", "pop");
 		codeToArm();
 		loop_stack[lpsp++] = out->addr;
 		codeBranch(out->addr, "eq?", "b,");
@@ -2240,17 +2240,17 @@ emit_num:
 		codeToThumb(); codeAsm("r0", "push");
 		r5_const = false;
 		codeToArm(); codeCallThumb(RT_pimp_vblank);
-		codeToArm(); codeAsm("r0", "pop");
+		codeToThumb(); codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modframe")) {
 		codeToThumb(); codeAsm("r0", "push");
 		r5_const = false;
 		codeToArm(); codeCallThumb(RT_pimp_frame);
-		codeToArm(); codeAsm("r0", "pop");
+		codeToThumb(); codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modinit")) {
 		codeToArm(); codeAsm("r0", "4", "(#", "r1", "ldr,");
 		r5_const = false;
 		codeToArm(); codeCallThumb(RT_pimp_init);
-		codeToArm(); codeAsm("r0", "pop");
+		codeToThumb(); codeAsm("r0", "pop");
 	} else {
 		GLB_error("unknown word %s at %d\n", word,
 			  (int)(tptr - text));
