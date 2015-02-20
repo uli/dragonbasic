@@ -1424,25 +1424,57 @@ void Parser::parseAsm(const char *word)
 		code16(insn);
 	} else if (thumb && (W("ldr,") || W("str,"))) {
 		unsigned short insn;
+		unsigned int offset;
 		unsigned int rd = asm_stack[--asp][1];
 		ASSERT_TREG;
 		--asp;
-		assert(asm_stack[asp][0] == ASM_AMODE && asm_stack[asp][1] == AMODE_IND);
-		--asp;
-		ASSERT_REG;
-		if (asm_stack[asp][1] == REG_SP) {
-			// XXX: This is rarely used and pretty much untested.
-			insn = 0x9000;
-			if (word[0] == 'l')
-				insn |= 1 << 11;
-			insn |= rd << 8;
-		} else {
-			ASSERT_TREG;
-			insn = 0x6000;
-			if (word[0] == 'l')
-				insn |= 1 << 11;
-			insn |= rd << 0;
-			insn |= asm_stack[asp][1] << 3;
+		assert(asm_stack[asp][0] == ASM_AMODE);
+		switch (asm_stack[asp][1]) {
+			case AMODE_IND:
+				--asp;
+				ASSERT_REG;
+				if (asm_stack[asp][1] == REG_SP) {
+					// XXX: This is rarely used and pretty much untested.
+					insn = 0x9000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= rd << 8;
+				} else {
+					ASSERT_TREG;
+					insn = 0x6000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= rd << 0;
+					insn |= asm_stack[asp][1] << 3;
+				}
+				break;
+
+			case AMODE_PREIND:
+				--asp;
+				ASSERT_IMM;
+				assert(!(asm_stack[asp][1] & 3));
+				offset = asm_stack[asp][1] >> 2;
+				if (asm_stack[--asp][1] == REG_SP) {
+					assert(offset < 256);
+					insn = 0x9000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= rd << 8;
+					insn |= offset;
+				} else {
+					assert(offset < 32);
+					insn = 0x6000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= asm_stack[asp][1] << 3;
+					ASSERT_TREG;
+					insn |= rd << 0;
+					insn |= offset << 6;
+				}
+				break;
+
+			default:
+				GLB_error("internal error thumb ldst\n");
 		}
 		code16(insn);
 	}
