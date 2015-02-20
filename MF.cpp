@@ -1869,12 +1869,12 @@ parse_next:
 			codeToThumb(); codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("over")) {
 			r5_const = false;
-			codeToArm(); codeAsm("sp", "0@", "r5", "ldr,");
+			codeToThumb(); codeAsm("sp", "0@", "r5", "ldr,");
 			codeToArm(); codeAsm("sp", "db!", "r5", "stm,");
 			codeToArm(); codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
 			codeToArm(); codeAsm("sp", "ia!", "r2", "r3", "ldm,");
-			codeToArm(); codeAsm("r2", "0@", "r0", "str,");
+			codeToThumb(); codeAsm("r2", "0@", "r0", "str,");
 			codeToArm(); codeAsm("r3", "r0", "mov,");
 		} else {
 			codeToArm(); codeAsm("sp", "r0", "r0", "swp,");
@@ -1888,12 +1888,12 @@ parse_next:
 	} else if (W("over")) {
 		if (getNextWordIf("-")) {
 			r5_const = false;
-			codeToArm(); codeAsm("sp", "0@", "r5", "ldr,");
+			codeToThumb(); codeAsm("sp", "0@", "r5", "ldr,");
 			codeToThumb(); codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("!")) {
 			r5_const = false;
 			codeToArm(); codeAsm("sp", "4", "(#", "r5", "ldr,");
-			codeToArm(); codeAsm("r5", "0@", "r0", "str,");
+			codeToThumb(); codeAsm("r5", "0@", "r0", "str,");
 			codeToArm(); codeAsm("r5", "r0", "mov,");
 		} else {
 			codeToThumb(); codeAsm("r0", "push");
@@ -2108,7 +2108,7 @@ emit_num:
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
 					} else
 						DEBUG("ll2 skip r5 load of 0x%x\n", sym->lit_addr);
-					codeToArm(); codeAsm("r5", "0@", "r0", "ldr,");
+					codeToThumb(); codeAsm("r5", "0@", "r0", "ldr,");
 				}
 			} else if (getNextWordIf("!")) {
 				DEBUG("litstore\n");
@@ -2129,7 +2129,7 @@ emit_num:
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
 					} else
 						DEBUG("ls2 skip r5 load of 0x%x\n", sym->lit_addr);
-					codeToArm(); codeAsm("r5", "0@", "r0", "str,");
+					codeToThumb(); codeAsm("r5", "0@", "r0", "str,");
 				}
 				codeToThumb(); codeAsm("r0", "pop");
 			} else {
@@ -2183,7 +2183,7 @@ emit_num:
 		codeToArm(); codeAsm("r1", "1", "(#", "r0", "strb,");
 		codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
 	} else if (W("@")) {
-		codeToArm(); codeAsm("r0", "0@", "r0", "ldr,");
+		codeToThumb(); codeAsm("r0", "0@", "r0", "ldr,");
 	} else if (W("@a")) {
 		codeToThumb(); codeAsm("r0", "push");
 		codeToArm(); codeAsm("r1", "4", "(#", "r0", "ldr,");
@@ -2196,7 +2196,7 @@ emit_num:
 	} else if (W("!")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r5", "pop");
-		codeToArm(); codeAsm("r0", "0@", "r5", "str,");
+		codeToThumb(); codeAsm("r0", "0@", "r5", "str,");
 		codeToArm(); codeAsm("sp", "4", "(#", "r0", "ldr,");
 	} else if (W("aligned")) {
 		codeToArm(); codeAsm("3", "##", "r0", "tst,");
