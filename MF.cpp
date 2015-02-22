@@ -1363,6 +1363,10 @@ static bool can_branch(unsigned int from, unsigned int to)
 {
 	return abs(to - from) < (32 << 20);
 }
+static bool can_branch_thumb(unsigned int from, unsigned int to)
+{
+	return abs(to - from) < (4 << 20);
+}
 #endif
 
 void Parser::parseAsm(const char *word)
@@ -1613,6 +1617,19 @@ void Parser::parseAsm(const char *word)
 		insn |= asm_stack[--asp][1] << 8;
 		ASSERT_TREG;
 		code16(insn);
+	} else if (thumb && W("bl,")) {
+		unsigned short insn1 = 0xf000;
+		unsigned short insn2 = 0xf800;
+		unsigned int dest = asm_stack[--asp][1];
+		assert(asm_stack[asp][0] == ASM_OFF);
+		DEBUG("asm thumb branch from 0x%x to 0x%x\n", out->addr, dest);
+		assert(can_branch_thumb(out->addr, dest));
+		int soff = (dest - out->addr - 4) >> 1;
+		unsigned int off1 = (soff >> 11) & ((1 << 11) -1);
+		unsigned int off2 = soff & ((1 << 11) - 1);
+		DEBUG("off1 0x%x off2 0x%x\n", off1, off2);
+		code16(insn1 | off1);
+		code16(insn2 | off2);
 	}
 
 #define ARM5VOID(str, op) \
