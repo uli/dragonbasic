@@ -2075,7 +2075,7 @@ parse_next:
 	} else if (W("pop")) {
 		codeToThumb(); codeAsm("r0", "push");
 		codeToThumb(); codeAsm("r6", "r0", "mov,");
-		codeToArm(); codeAsm("r7", "4", "(#", "r6", "ldr,");
+		codeToThumb(); codeAsm("r7", "ia!", "r6", "ldm,");
 	} else if (W("push")) {
 		codeToArm(); codeAsm("r7", "db!", "r6", "stm,");
 		codeToThumb(); codeAsm("r0", "r6", "mov,");
