@@ -153,6 +153,7 @@ public:
 	void emitBitmap(const char *bmp);
 	void emitPalette(const char *bmp);
 	void patch32(unsigned int addr, unsigned int val);
+	void reloc8(Literal *lit);
 	void reloc12(Literal *lit);
 	void reloc24(unsigned int addr, unsigned int target);
 	void emitSound(const char *wav);
@@ -786,6 +787,37 @@ void Output::emitMusic(const char *mod)
 	fclose(fp);
 
 	alignDword();
+}
+
+void Output::reloc8(Literal *lit)
+{
+	unsigned int insn;
+	unsigned int target_addr;
+
+	// If the literal has already been coded elsewhere, we use that
+	// address. Otherwise we use the current output pointer.
+	if (lit->coded_at)
+		target_addr = lit->coded_at;
+	else
+		target_addr = addr;
+
+	DEBUG("reloc8 reloc 0x%x target_addr 0x%x val 0x%x\n", lit->reloc, target_addr,
+	      lit->val);
+	long cur = ftell(fp);
+	fseek(fp, lit->reloc - 0x8000000, SEEK_SET);
+	fread(&insn, 1, 2, fp);
+	//printf("oinsn 0x%x\n", insn);
+
+	unsigned int pc = (lit->reloc + 4) & (~3);
+	DEBUG("reloc8 offset 0x%x\n", (target_addr - pc) >> 2);
+
+	assert((target_addr - pc) >> 2 < 256);
+	insn |= (target_addr - pc) >> 2;
+
+	//printf("ninsn 0x%x\n", insn);
+	fseek(fp, lit->reloc - 0x8000000, SEEK_SET);
+	fwrite(&insn, 1, 2, fp);
+	fseek(fp, cur, SEEK_SET);
 }
 
 void Output::reloc12(Literal *lit)
