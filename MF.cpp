@@ -2035,7 +2035,8 @@ parse_next:
 	} else if (W("code")) {
 		thumb = false;
 		out->alignDword();
-		symbols.appendNew(out->addr, getNextWord());
+		sym = symbols.appendNew(out->addr, getNextWord());
+		sym->thumb = false;
 		asm_mode = true;
 		r5_const = false;
 		word_start = out->addr;
@@ -2049,14 +2050,16 @@ parse_next:
 	} else if (asm_mode) {
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
-		thumb = false;
+		thumb = true;
 		out->alignDword();
 		r5_const = false;
 		currently_naked = false;//word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
+		sym->thumb = true;
 		if (!currently_naked) {
 			sym->has_prolog = true;
-			codeAsm("r7", "db!", "r6", "stm,");
+			codeAsm("4", "##", "r7", "r7", "sub,");
+			codeAsm("r7", "0@", "r6", "str,");
 			codeAsm("lr", "r6", "mov,");
 		}
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
