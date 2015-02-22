@@ -180,12 +180,14 @@ public:
 	unsigned int reloc;
 	unsigned int coded_at;
 	Literal *next;
+	Literal *prev;
 };
 
 Literal::Literal()
 {
 	val = reloc = coded_at = 0;
 	next = NULL;
+	prev = NULL;
 }
 
 Literal::Literal(unsigned int val, unsigned int reloc)
@@ -194,6 +196,7 @@ Literal::Literal(unsigned int val, unsigned int reloc)
 	this->reloc = reloc;
 	coded_at = 0;
 	next = NULL;
+	prev = NULL;
 }
 
 // XXX: prepending literals is crap because it increases the chance of
@@ -204,24 +207,30 @@ Literal *Literal::prependNew(unsigned int val, unsigned int reloc)
 	Literal *lit = new Literal(val, reloc);
 
 	lit->next = next;
+	if (next)
+		next->prev = lit;
 	next = lit;
 	return lit;
 }
 
 void Literal::code(Output *out)
 {
-	Literal *lit = next;
+	out->alignDword();
+	Literal *tail = next;
+	while (tail && tail->next)
+		tail = tail->next;
+	Literal *lit = tail;
 	while (lit) {
 		// Check if this value has already been encoded earlier.
 		bool already_coded = false;
-		Literal* lit2 = next;
+		Literal* lit2 = tail;
 		// XXX: So this is quadratic. Sue me.
 		while (lit2 && lit2 != lit) {
 			if (lit2->coded_at && lit2->val == lit->val) {
 				already_coded = true;
 				break;
 			}
-			lit2 = lit2->next;
+			lit2 = lit2->prev;
 		}
 
 		if (already_coded) {
@@ -238,7 +247,7 @@ void Literal::code(Output *out)
 			out->emitDword(lit->val);
 		}
 
-		lit = lit->next;
+		lit = lit->prev;
 	}
 
 	while (next) {
