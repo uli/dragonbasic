@@ -2261,10 +2261,10 @@ parse_next:
 				//printf("misc num\n");
 emit_num:
 				if (num > 0xff) {
-					if (!can_immrot(num)) {
+					if (thumb || !can_immrot(num)) {
 						codeToThumb(); codeAsm("r0", "push");
-						codeToArm();
-						literals.prependNew(num, out->addr);
+						codeToThumb();
+						literals.prependNew(num, out->addr, true);
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					} else {
 						codeToThumb(); codeAsm("r0", "push");
@@ -2274,7 +2274,7 @@ emit_num:
 				} else {
 					//printf("small num\n");
 					codeToThumb(); codeAsm("r0", "push");
-					codeToArm(); codeAsm(num, "##", "r0", "mov,");
+					codeToThumb(); codeAsm(num, "##", "r0", "mov,");
 				}
 			}
 		} else if (getNextWordIf(",")) {
