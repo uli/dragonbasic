@@ -1507,6 +1507,13 @@ void Parser::parseAsm(const char *word)
 						insn |= 1 << 11;
 					insn |= rd << 8;
 					insn |= offset;
+				} else if (asm_stack[asp][1] == REG_PC) {
+					assert(offset < 256);
+					insn = 0x4800;
+					// only exists as load
+					assert(word[0] != 's');
+					insn |= rd << 8;
+					insn |= offset;
 				} else {
 					assert(offset < 32);
 					insn = 0x6000;
