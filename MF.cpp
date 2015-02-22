@@ -2053,7 +2053,6 @@ parse_next:
 		}
 		currently_naked = false;
 		thumb = false;
-		out->alignDword();
 		literals.code(out);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
