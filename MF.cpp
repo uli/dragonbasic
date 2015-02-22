@@ -172,13 +172,14 @@ public:
 class Literal {
 public:
 	Literal();
-	Literal(unsigned int val, unsigned int reloc);
-	Literal *prependNew(unsigned int val, unsigned int reloc);
+	Literal(unsigned int val, unsigned int reloc, bool thumb = false);
+	Literal *prependNew(unsigned int val, unsigned int reloc, bool thumb = false);
 	void code(Output *out);
 
 	unsigned int val;
 	unsigned int reloc;
 	unsigned int coded_at;
+	bool thumb;
 	Literal *next;
 	Literal *prev;
 };
@@ -186,14 +187,16 @@ public:
 Literal::Literal()
 {
 	val = reloc = coded_at = 0;
+	thumb = false;
 	next = NULL;
 	prev = NULL;
 }
 
-Literal::Literal(unsigned int val, unsigned int reloc)
+Literal::Literal(unsigned int val, unsigned int reloc, bool thumb)
 {
 	this->val = val;
 	this->reloc = reloc;
+	this->thumb = thumb;
 	coded_at = 0;
 	next = NULL;
 	prev = NULL;
@@ -202,9 +205,9 @@ Literal::Literal(unsigned int val, unsigned int reloc)
 // XXX: prepending literals is crap because it increases the chance of
 // exceeding the maximum displacement by putting the literals used by
 // the first instruction last.
-Literal *Literal::prependNew(unsigned int val, unsigned int reloc)
+Literal *Literal::prependNew(unsigned int val, unsigned int reloc, bool thumb)
 {
-	Literal *lit = new Literal(val, reloc);
+	Literal *lit = new Literal(val, reloc, thumb);
 
 	lit->next = next;
 	if (next)
@@ -240,9 +243,15 @@ void Literal::code(Output *out)
 			// current one's.  This doesn't cause problems
 			// because we have already processed lit2.
 			lit2->reloc = lit->reloc;
-			out->reloc12(lit2);
+			if (lit->thumb)
+				out->reloc8(lit2);
+			else
+				out->reloc12(lit2);
 		} else {
-			out->reloc12(lit);
+			if (lit->thumb)
+				out->reloc8(lit);
+			else
+				out->reloc12(lit);
 			lit->coded_at = out->addr;
 			out->emitDword(lit->val);
 		}
