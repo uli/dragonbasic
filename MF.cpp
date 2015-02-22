@@ -1700,14 +1700,25 @@ void Parser::parseAsm(const char *word)
 		code(insn);
 	} else if (W("mov,")) {
 		if (thumb) {
-			unsigned short insn = 0x4600;
+			unsigned short insn;
 			unsigned int rd = asm_stack[--asp][1];
 			ASSERT_REG;
-			unsigned int rs = asm_stack[--asp][1];
-			ASSERT_REG;
-			insn |= rs << 3;
-			insn |= rd & 7;
-			insn |= (!!(rd & 8)) << 7;
+			if (asm_stack[--asp][0] == ASM_REG) {
+				insn = 0x4600;
+				unsigned int rs = asm_stack[asp][1];
+				insn |= rs << 3;
+				insn |= rd & 7;
+				insn |= (!!(rd & 8)) << 7;
+			} else if (asm_stack[asp][0] == ASM_AMODE &&
+				   asm_stack[--asp][0] == ASM_IMM) {
+				assert(rd < REG_R8);
+				insn = 0x2000;
+				unsigned int imm = asm_stack[asp][1];
+				assert(imm < 256);
+				insn |= rd << 8;
+				insn |= imm;
+			} else
+				GLB_error("invalid thumb mov");
 			code16(insn);
 		} else {
 			unsigned int insn = 0x01a00000;
