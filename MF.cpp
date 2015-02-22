@@ -296,6 +296,7 @@ public:
 		     const char *w4 = NULL);
 	void codeBranch(unsigned int dest, const char *mnem);
 	void codeBranch(unsigned int dest, const char *cond, const char *mnem);
+	void codeCallArm(unsigned int dest);
 	void codeCallThumb(unsigned int dest);
 	void codeToThumb();
 	void codeToArm();
@@ -1905,6 +1906,12 @@ void Parser::codeCallThumb(unsigned int dest)
 	codeAsm("pc", "lr", "mov,");            // sets LR to skip the address when returning
 	codeAsm("r5", "bx,");
 	code(dest | 1);                         // address with bit 0 set for Thumb mode
+}
+
+void Parser::codeCallArm(unsigned int dest)
+{
+	codeToArm();
+	codeBranch(dest, "bl,");
 }
 
 void Parser::codeToThumb()
