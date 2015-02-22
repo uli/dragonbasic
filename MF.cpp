@@ -152,6 +152,7 @@ public:
 	void emitString(const char *str, int len);
 	void emitBitmap(const char *bmp);
 	void emitPalette(const char *bmp);
+	void patch16(unsigned int addr, unsigned short val);
 	void patch32(unsigned int addr, unsigned int val);
 	void reloc8(Literal *lit);
 	void reloc12(Literal *lit);
@@ -724,10 +725,19 @@ void Output::emitPalette(const char *bmp)
 
 void Output::patch32(unsigned int addr, unsigned int val)
 {
-	DEBUG("reloc32 addr 0x%x val 0x%x\n", addr, val);
+	DEBUG("patch32 addr 0x%x val 0x%x\n", addr, val);
 	long cur = ftell(fp);
 	fseek(fp, addr - 0x8000000, SEEK_SET);
 	fwrite(&val, 1, 4, fp);
+	fseek(fp, cur, SEEK_SET);
+}
+
+void Output::patch16(unsigned int addr, unsigned short val)
+{
+	DEBUG("patch16 addr 0x%x val 0x%x\n", addr, val);
+	long cur = ftell(fp);
+	fseek(fp, addr - 0x8000000, SEEK_SET);
+	fwrite(&val, 1, 2, fp);
 	fseek(fp, cur, SEEK_SET);
 }
 
