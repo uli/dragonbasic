@@ -2050,12 +2050,18 @@ parse_next:
 	} else if (asm_mode) {
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
-		thumb = true;
 		out->alignDword();
 		r5_const = false;
 		currently_naked = false;//word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
-		sym->thumb = true;
+		if (!strcmp(word, "start")) {
+			sym->thumb = false;
+			thumb = false;
+			codeToThumb();
+		} else {
+			thumb = true;
+			sym->thumb = true;
+		}
 		if (!currently_naked) {
 			sym->has_prolog = true;
 			codeAsm("4", "##", "r7", "r7", "sub,");
