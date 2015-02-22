@@ -2091,8 +2091,8 @@ parse_next:
 	} else if (W("1+")) {
 		codeToThumb(); codeAsm("1", "##", "r0", "r0", "add,");
 	} else if (W("com")) {
-		if (getNextWordIf("1+")) {
-			codeToArm(); codeAsm("0", "##", "r0", "r0", "rsb,");
+		if (!thumb && getNextWordIf("1+")) {
+			codeAsm("0", "##", "r0", "r0", "rsb,");
 		} else {
 			codeToThumb(); codeAsm("r0", "r0", "mvn,");
 		}
