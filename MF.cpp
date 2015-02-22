@@ -2279,12 +2279,13 @@ emit_num:
 	} else if ((sym = getSymbol(word))) {
 		DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x\n", sym->word, sym->addr,
 		      out->addr, sym->is_addr, sym->lit_addr);
+		// Can it be addressed by an _ARM_ PC-relative load?
 		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
 		if (sym->is_addr) {
 			if (getNextWordIf("@")) {
 				DEBUG("litload\n");
 				codeToThumb(); codeAsm("r0", "push");
-				if (small_offset) {
+				if (!thumb && small_offset) {
 					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
 						r5 = sym->lit_addr & 0xff000000;
 						r5_const = true;
@@ -2294,8 +2295,8 @@ emit_num:
 					codeToArm(); codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
 				} else {
 					if (!r5_const || r5 != sym->lit_addr) {
-						codeToArm();
-						literals.prependNew(sym->lit_addr, out->addr);
+						codeToThumb();
+						literals.prependNew(sym->lit_addr, out->addr, true);
 						r5 = sym->lit_addr;
 						r5_const = true;
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
@@ -2305,7 +2306,7 @@ emit_num:
 				}
 			} else if (getNextWordIf("!")) {
 				DEBUG("litstore\n");
-				if (small_offset) {
+				if (!thumb && small_offset) {
 					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
 						r5 = sym->lit_addr & 0xff000000;
 						r5_const = true;
@@ -2317,8 +2318,8 @@ emit_num:
 					if (!r5_const || r5 != sym->lit_addr) {
 						r5 = sym->lit_addr;
 						r5_const = true;
-						codeToArm();
-						literals.prependNew(sym->lit_addr, out->addr);
+						codeToThumb();
+						literals.prependNew(sym->lit_addr, out->addr, true);
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
 					} else
 						DEBUG("ls2 skip r5 load of 0x%x\n", sym->lit_addr);
@@ -2329,8 +2330,8 @@ emit_num:
 				// load from literal pool
 				// XXX: what about words larger than 2k?
 				codeToThumb(); codeAsm("r0", "push");
-				codeToArm();
-				literals.prependNew(sym->lit_addr, out->addr);
+				codeToThumb();
+				literals.prependNew(sym->lit_addr, out->addr, true);
 				codeAsm("pc", "0", "#(", "r0", "ldr,");
 			}
 		} else {
