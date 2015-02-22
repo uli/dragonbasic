@@ -1930,15 +1930,6 @@ void Parser::codeBranch(unsigned int dest, const char *cond, const char *mnem)
 	codeAsm(cond, mnem);
 }
 
-void Parser::codeCallThumb(unsigned int dest)
-{
-	codeToArm();
-	codeAsm("pc", "4", "#(", "r5", "ldr,"); // load function address
-	codeAsm("pc", "lr", "mov,");            // sets LR to skip the address when returning
-	codeAsm("r5", "bx,");
-	code(dest | 1);                         // address with bit 0 set for Thumb mode
-}
-
 void Parser::codeCallArm(unsigned int dest)
 {
 	codeToArm();
@@ -1964,6 +1955,18 @@ void Parser::codeToArm()
 		codeAsm("pc", "bx,");
 		thumb = false;
 		out->alignDword();
+	}
+}
+
+void Parser::codeCallThumb(unsigned int dest)
+{
+	if (thumb) {
+		codeBranch(dest, "bl,");
+	} else {
+		codeAsm("pc", "4", "#(", "r5", "ldr,"); // load function address
+		codeAsm("pc", "lr", "mov,");            // sets LR to skip the address when returning
+		codeAsm("r5", "bx,");
+		code(dest | 1);                         // address with bit 0 set for Thumb mode
 	}
 }
 
