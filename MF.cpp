@@ -1626,7 +1626,7 @@ void Parser::parseAsm(const char *word)
 	ARM5VOID(cmp, CMP)
 	ARM5VOID(cmn, CMN)
 
-	else if (W("b,") || W("bl,")) {
+	else if (!thumb && (W("b,") || W("bl,"))) {
 		unsigned insn = 0x0a000000;
 		if (word[1] == 'l')
 			insn |= 0x01000000;
