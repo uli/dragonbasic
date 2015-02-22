@@ -2359,7 +2359,10 @@ emit_num:
 			assert(!currently_naked);
 			assert(sym->addr != 0);
 			r5_const = false;
-			codeToArm(); codeAsm(sym->word, "bl,");
+			if (sym->thumb)
+				codeCallThumb(sym->addr);
+			else
+				codeCallArm(sym->addr);
 			if (sym->has_prolog) {
 				codeToArm(); codeAsm("r7", "4", "(#", "r6", "ldr,");
 			}
