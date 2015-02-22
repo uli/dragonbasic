@@ -100,6 +100,7 @@ public:
 	bool has_prolog;
 	bool is_addr;
 	unsigned int lit_addr;
+	bool thumb;
 };
 
 Symbol::Symbol(unsigned int addr, const char *word)
@@ -110,6 +111,7 @@ Symbol::Symbol(unsigned int addr, const char *word)
 	has_prolog = false;
 	is_addr = false;
 	lit_addr = 0;
+	thumb = false;
 }
 
 Symbol::Symbol()
@@ -120,6 +122,7 @@ Symbol::Symbol()
 	has_prolog = false;
 	is_addr = false;
 	lit_addr = 0;
+	thumb = false;
 }
 
 Symbol::~Symbol()
