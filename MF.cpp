@@ -1909,6 +1909,10 @@ void Parser::codeToThumb()
 void Parser::codeToArm()
 {
 	if (thumb) {
+		// According to specs, this is UNPREDICTABLE when not
+		// 32-bit aligned, but it seems to work fine on the GBA...
+		//if (out->addr & 3)
+		//	code16(0x46c0);	// NOP
 		codeAsm("pc", "bx,");
 		thumb = false;
 		out->alignDword();
