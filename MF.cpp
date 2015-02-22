@@ -1939,10 +1939,20 @@ void Parser::parseAll()
 	// track of its current value to avoid unnecessary reloading.
 	bool r5_const = false;
 	unsigned int r5 = 0;
+	unsigned int word_start = out->addr;
 
 parse_next:
 	if (r5_const)
 		DEBUG("r5 now at 0x%x\n", r5);
+
+	if (out->addr - word_start > 0x380 && literals.next) {
+		codeToThumb();
+		unsigned int branch = out->addr;
+		code16(0);
+		literals.code(out);
+		out->patch16(branch, 0xe000 | ((out->addr - branch - 4) >> 1));
+		word_start = out->addr;
+	}
 
 	word = getNextWord();
 	if (!word) {
@@ -2007,6 +2017,7 @@ parse_next:
 		symbols.appendNew(out->addr, getNextWord());
 		asm_mode = true;
 		r5_const = false;
+		word_start = out->addr;
 	} else if (W("end-code")) {
 		if (cur_icode)
 			cur_icode = 0;
@@ -2028,6 +2039,7 @@ parse_next:
 			codeAsm("lr", "r6", "mov,");
 		}
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
+		word_start = out->addr;
 	} else if (W("label")) {
 		sym = symbols.appendNew(out->addr, getNextWord());
 		DEBUG("===start label %s at 0x%x\n", sym->word, sym->addr);
