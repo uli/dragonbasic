@@ -2101,7 +2101,10 @@ parse_next:
 			codeToThumb(); codeAsm("r2", "0@", "r0", "str,");
 			codeToThumb(); codeAsm("r3", "r0", "mov,");
 		} else {
-			codeToArm(); codeAsm("sp", "r0", "r0", "swp,");
+			r5_const = false;
+			codeToThumb(); codeAsm("r5", "pop");
+			codeToThumb(); codeAsm("r0", "push");
+			codeToThumb(); codeAsm("r5", "r0", "mov,");
 		}
 	} else if (W("dup")) {
 		if (getNextWordIf("a!")) {
