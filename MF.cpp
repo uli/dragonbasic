@@ -1930,12 +1930,6 @@ void Parser::codeBranch(unsigned int dest, const char *cond, const char *mnem)
 	codeAsm(cond, mnem);
 }
 
-void Parser::codeCallArm(unsigned int dest)
-{
-	codeToArm();
-	codeBranch(dest, "bl,");
-}
-
 void Parser::codeToThumb()
 {
 	if (!thumb) {
@@ -1967,6 +1961,19 @@ void Parser::codeCallThumb(unsigned int dest)
 		codeAsm("pc", "lr", "mov,");            // sets LR to skip the address when returning
 		codeAsm("r5", "bx,");
 		code(dest | 1);                         // address with bit 0 set for Thumb mode
+	}
+}
+
+void Parser::codeCallArm(unsigned int dest)
+{
+	if (thumb) {
+		// Worst. Instruction set. Ever.
+		codeToArm();
+		codeAsm("1", "##", "pc", "lr", "add,");
+		codeBranch(dest, "b,");
+		thumb = true;
+	} else {
+		codeBranch(dest, "bl,");
 	}
 }
 
@@ -2393,8 +2400,10 @@ emit_num:
 			r5_const = false;
 			if (sym->thumb)
 				codeCallThumb(sym->addr);
-			else
+			else {
+				DEBUG("ARM call to %s\n", sym->word);
 				codeCallArm(sym->addr);
+			}
 			if (sym->has_prolog) {
 				codeToThumb(); codeAsm("r7", "ia!", "r6", "ldm,");
 			}
