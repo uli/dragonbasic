@@ -2209,9 +2209,11 @@ parse_next:
 		codeToThumb(); codeAsm("r0", "r6", "mov,");
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("0=")) {
-		codeToArm(); codeAsm("0", "##", "r0", "cmp,");
-		codeToArm(); codeAsm("0", "##", "r0", "ne?", "mov,");
-		codeToArm(); codeAsm("0", "##", "r0", "eq?", "mvn,");
+		codeToThumb(); codeAsm("1", "##", "r0", "sub,");
+		// If there is a borrow (ie. carry clear), we had 0 and are
+		// now at 0xffffffff -> mission accomplished.
+		codeToThumb(); codeBranch(out->addr + 4, "cc?", "b,");
+		codeToThumb(); codeAsm("0", "##", "r0", "mov,");
 	} else if (W("0<")) {
 		codeToArm(); codeAsm("0", "##", "r0", "cmp,");
 		codeToArm(); codeAsm("0", "##", "r0", "pl?", "mov,");
