@@ -1810,6 +1810,12 @@ bool Parser::parseThumb(const char *word)
 		insn |= 1 << asm_stack[--asp][1];
 		ASSERT_TREG;
 		code16(insn);
+	} else if (W("swi,")) {
+		unsigned short insn = 0xdf00;
+		insn |= asm_stack[--asp][1];
+		ASSERT_IMM;
+		assert(asm_stack[asp][1] < 256);
+		code16(insn);
 	} else
 		return false;
 
