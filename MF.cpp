@@ -158,6 +158,7 @@ public:
 	void patch16(unsigned int addr, unsigned short val);
 	void patch32(unsigned int addr, unsigned int val);
 	void reloc8(Literal *lit);
+	void reloc10(unsigned int addr, unsigned int target);
 	void reloc12(Literal *lit);
 	void reloc24(unsigned int addr, unsigned int target);
 	void emitSound(const char *wav);
@@ -895,6 +896,23 @@ void Output::reloc24(unsigned int addr, unsigned int target)
 
 	fseek(fp, addr - 0x8000000, SEEK_SET);
 	fwrite(&insn, 1, 4, fp);
+	fseek(fp, cur, SEEK_SET);
+}
+
+void Output::reloc10(unsigned int addr, unsigned int target)
+{
+	unsigned short insn;
+	long cur = ftell(fp);
+	fseek(fp, addr - 0x8000000, SEEK_SET);
+	fread(&insn, 1, 2, fp);
+
+	insn &= 0xf800;
+	int off = (target - addr - 4);
+	assert(abs(off) < 2048);
+	insn |= (off >> 1) & 0x7ff;
+
+	fseek(fp, addr - 0x8000000, SEEK_SET);
+	fwrite(&insn, 1, 2, fp);
 	fseek(fp, cur, SEEK_SET);
 }
 
