@@ -2572,41 +2572,71 @@ emit_num:
 		codeAsm("pc", "r0", "mov,");
 		r5_const = false;
 		codeAsm("lr", "bx,");
+	// Loop stack entries for Thumb point to the branch insn to relocate,
+	// so if they are used as a branch target, we jump to entry - 2.
+	// Thus if there is no branch insn to relocate, the entry must be
+	// encoded as the address + 2.
 	} else if (W("if")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r0", "r0", "tst,");
 		codeToThumb(); codeAsm("r0", "pop");
-		codeToArm();
-		loop_stack[lpsp++] = out->addr;
-		codeBranch(out->addr, "eq?", "b,");
+		if (thumb) {
+			codeBranch(out->addr + 4, "ne?", "b,");
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, "b,");
+		} else {
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, "eq?", "b,");
+		}
 	} else if (W("else")) {
 		r5_const = false;
-		codeToArm(); codeBranch(out->addr, "b,");
-		out->reloc24(loop_stack[--lpsp], out->addr);
-		loop_stack[lpsp++] = out->addr - 4;
+		codeBranch(out->addr, "b,");
+		if (thumb) {
+			out->reloc10(loop_stack[--lpsp], out->addr);
+			loop_stack[lpsp++] = out->addr - 2;
+		} else {
+			out->reloc24(loop_stack[--lpsp], out->addr);
+			loop_stack[lpsp++] = out->addr - 4;
+		}
 	} else if (W("then")) {
 		r5_const = false;
-		codeToArm();
-		out->reloc24(loop_stack[--lpsp], out->addr);
+		if (thumb)
+			out->reloc10(loop_stack[--lpsp], out->addr);
+		else
+			out->reloc24(loop_stack[--lpsp], out->addr);
 	} else if (W("begin")) {
 		r5_const = false;
-		codeToArm();
-		loop_stack[lpsp++] = out->addr;
+		if (thumb)
+			loop_stack[lpsp++] = out->addr + 2;
+		else
+			loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r0", "r0", "tst,");
 		codeToThumb(); codeAsm("r0", "pop");
-		codeToArm();
-		loop_stack[lpsp++] = out->addr;
-		codeBranch(out->addr, "eq?", "b,");
+		if (thumb) {
+			codeBranch(out->addr + 4, "ne?", "b,");
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, "b,");
+		} else {
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, "eq?", "b,");
+		}
 	} else if (W("repeat")) {
 		r5_const = false;
-		codeToArm();
-		out->reloc24(loop_stack[--lpsp], out->addr + 4);
-		codeBranch(loop_stack[--lpsp], "b,");
+		if (thumb) {
+			out->reloc10(loop_stack[--lpsp], out->addr + 2);
+			codeBranch(loop_stack[--lpsp] - 2, "b,");
+		} else {
+			out->reloc24(loop_stack[--lpsp], out->addr + 4);
+			codeBranch(loop_stack[--lpsp], "b,");
+		}
 	} else if (W("again")) {
 		r5_const = false;
-		codeToArm(); codeBranch(loop_stack[--lpsp], "b,");
+		if (thumb)
+			codeBranch(loop_stack[--lpsp] - 2, "b,");
+		else
+			codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("interrupt")) {
 		out->alignDword();
 		r5_const = false;
