@@ -2371,13 +2371,12 @@ parse_next:
 				}
 			} else if (getNextWordIf("+")) {
 				if (num != 0) {
-					if (num < 8) {
-						codeToThumb(); codeAsm(num, "##", "r0",
+					if (thumb && num < 8) {
+						codeAsm(num, "##", "r0",
 							"r0", "add,");
 					} else if (!thumb && can_immrot(num)) {
-						codeToArm(); codeAsm(num, "##", "r0",
+						codeAsm(num, "##", "r0",
 							"r0", "add,");
-						codeToThumb();
 					} else {
 						r5_const = true;
 						r5 = num;
