@@ -2298,10 +2298,10 @@ parse_next:
 		codeToThumb(); codeBranch(out->addr + 4, "cc?", "b,");
 		codeToThumb(); codeAsm("0", "##", "r0", "mov,");
 	} else if (W("0<")) {
-		codeToArm(); codeAsm("0", "##", "r0", "cmp,");
-		codeToArm(); codeAsm("0", "##", "r0", "pl?", "mov,");
-		codeToArm(); codeAsm("0", "##", "r0", "mi?", "mvn,");
-		codeToThumb();
+		if (!thumb)
+			codeAsm("r0", "31", "#asr", "r0", "mov,");
+		else
+			codeAsm("31", "##", "r0", "r0", "asr,");
 	} else if (W("1+")) {
 		codeToThumb(); codeAsm("1", "##", "r0", "r0", "add,");
 	} else if (W("com")) {
