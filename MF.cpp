@@ -2535,15 +2535,15 @@ emit_num:
 		codeToArm(); codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("interrupt")) {
 		out->alignDword();
-		symbols.appendNew(out->addr, getNextWord());
-		thumb = false;
-		codeAsm("r0", "push");
-		codeAsm("pc", "r0", "mov,");
 		r5_const = false;
-		codeAsm("lr", "bx,");
+		sym = symbols.appendNew(out->addr, getNextWord());
+		sym->is_addr = true;
+		sym->lit_addr = out->addr;
+		thumb = false;
 		codeAsm("sp", "db!", "lr", "r10", "r9", "r8", "stm,");
-		codeToArm(); codeAsm("$3000000", "##", "r7", "mov,");
-		codeToArm(); codeAsm("$f00", "##", "r7", "r7", "add,");
+		codeAsm("$3000000", "##", "r7", "mov,");
+		codeAsm("$f00", "##", "r7", "r7", "add,");
+		codeToThumb();
 	} else if (W("exit")) {
 		codeToArm(); codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		r5_const = false;
