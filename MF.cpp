@@ -2283,7 +2283,12 @@ parse_next:
 		codeToThumb(); codeAsm("r6", "r0", "mov,");
 		codeToThumb(); codeAsm("r7", "ia!", "r6", "ldm,");
 	} else if (W("push")) {
-		codeToArm(); codeAsm("r7", "db!", "r6", "stm,");
+		if (!thumb)
+			codeAsm("r7", "db!", "r6", "stm,");
+		else {
+			codeAsm("4", "##", "r7", "sub,");
+			codeAsm("r7", "0@", "r6", "str,");
+		}
 		codeToThumb(); codeAsm("r0", "r6", "mov,");
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (W("0=")) {
