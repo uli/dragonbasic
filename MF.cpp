@@ -2352,9 +2352,12 @@ parse_next:
 				} else
 					codeAsm(num, "##", "r0", "r0", "lsr,");
 			} else if (getNextWordIf("a/")) {
-				codeToArm(); codeAsm("r0");
-				codeAsm(num, "#asr", "r0", "mov,");
-				codeToThumb();
+				if (!thumb) {
+					codeAsm("r0");
+					codeAsm(num, "#asr", "r0", "mov,");
+				}
+				else
+					codeAsm(num, "##", "r0", "r0", "asr,");
 			} else if (getNextWordIf("n*")) {
 				if (!thumb && getNextWordIf("+")) {
 					r5_const = false;
