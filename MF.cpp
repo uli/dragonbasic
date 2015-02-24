@@ -2346,9 +2346,11 @@ parse_next:
 			if (have_num)
 				goto emit_num;
 			if (getNextWordIf("n/")) {
-				codeToArm(); codeAsm("r0");
-				codeAsm(num, "#lsr", "r0", "mov,");
-				codeToThumb();
+				if (!thumb) {
+					codeAsm("r0");
+					codeAsm(num, "#lsr", "r0", "mov,");
+				} else
+					codeAsm(num, "##", "r0", "r0", "lsr,");
 			} else if (getNextWordIf("a/")) {
 				codeToArm(); codeAsm("r0");
 				codeAsm(num, "#asr", "r0", "mov,");
