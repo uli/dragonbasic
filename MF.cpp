@@ -2557,8 +2557,13 @@ emit_num:
 		// Thumb substitute for "movs"
 		codeToThumb(); codeAsm("0", "##", "r1", "r0", "add,");
 	} else if (W("c!a")) {
-		codeToArm(); codeAsm("r1", "1", "(#", "r0", "strb,");
-		codeToThumb(); codeAsm("r0", "pop");
+		if (!thumb)
+			codeAsm("r1", "1", "(#", "r0", "strb,");
+		else {
+			codeAsm("r1", "0@", "r0", "strb,");
+			codeAsm("1", "##", "r1", "add,");
+		}
+		codeAsm("r0", "pop");
 	} else if (W("@")) {
 		codeToThumb(); codeAsm("r0", "0@", "r0", "ldr,");
 	} else if (W("@a")) {
