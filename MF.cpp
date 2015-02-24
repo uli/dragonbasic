@@ -2247,6 +2247,7 @@ parse_next:
 		codeToArm(); codeAsm("0", "##", "r0", "cmp,");
 		codeToArm(); codeAsm("0", "##", "r0", "pl?", "mov,");
 		codeToArm(); codeAsm("0", "##", "r0", "mi?", "mvn,");
+		codeToThumb();
 	} else if (W("1+")) {
 		codeToThumb(); codeAsm("1", "##", "r0", "r0", "add,");
 	} else if (W("com")) {
@@ -2266,7 +2267,7 @@ parse_next:
 	} else if (isNum(word)) {
 		unsigned int num = TIN_parseNum(word);
 		if (getNextWordIf("swi")) {
-			codeToArm(); codeAsm(num, "swi,");
+			codeToArm(); codeAsm(num, "swi,"); codeToThumb();
 		} else if (getNextWordIf("#")) {
 			//printf("got imm 0x%x\n", num);
 			int have_num = 0;
@@ -2293,9 +2294,11 @@ parse_next:
 			if (getNextWordIf("n/")) {
 				codeToArm(); codeAsm("r0");
 				codeAsm(num, "#lsr", "r0", "mov,");
+				codeToThumb();
 			} else if (getNextWordIf("a/")) {
 				codeToArm(); codeAsm("r0");
 				codeAsm(num, "#asr", "r0", "mov,");
+				codeToThumb();
 			} else if (getNextWordIf("n*")) {
 				if (getNextWordIf("+")) {
 					r5_const = false;
@@ -2303,9 +2306,11 @@ parse_next:
 					codeToArm(); codeAsm("r0");
 					codeToArm(); codeAsm(num, "#lsl", "r5", "r0",
 						"add,");
+					codeToThumb();
 				} else {
 					codeToArm(); codeAsm("r0");
 					codeToArm(); codeAsm(num, "#lsl", "r0", "mov,");
+					codeToThumb();
 				}
 			} else if (getNextWordIf("+")) {
 				if (num != 0) {
@@ -2315,6 +2320,7 @@ parse_next:
 					} else if (can_immrot(num)) {
 						codeToArm(); codeAsm(num, "##", "r0",
 							"r0", "add,");
+						codeToThumb();
 					} else
 						GLB_error("unimp add1\n");
 
@@ -2327,6 +2333,7 @@ parse_next:
 					if (can_immrot(num)) {
 						codeToArm(); codeAsm(num, "##", "r0",
 							"mov,");
+						codeToThumb();
 					} else
 						GLB_error("unimp com/and\n");
 
@@ -2338,16 +2345,19 @@ parse_next:
 					if (can_immrot(num)) {
 						codeToArm(); codeAsm(num, "##", "r0",
 							"mov,");
+						codeToThumb();
 					} else
 						GLB_error("unimp com/1+\n");
 
 					codeToArm(); codeAsm("0", "##", "r0", "r0",
 						"rsb,");
+					codeToThumb();
 				} else {
 					codeToThumb(); codeAsm("r0", "push");
 					if (can_immrot(num)) {
 						codeToArm(); codeAsm(num, "##", "r0",
 							"mvn,");
+						codeToThumb();
 					} else
 						GLB_error("unimp com1\n");
 
@@ -2359,17 +2369,20 @@ parse_next:
 					r5 = num;
 					r5_const = true;
 					codeToArm(); codeAsm(num, "##", "r5", "mov,");
+					codeToThumb();
 				} else {
 					assert(!currently_naked);
 					codeToArm(); codeBranch(RT__tin_wlit, "bl,");
 					code(num);
 					r5 = num;
 					r5_const = true;
+					codeToThumb();
 				}
 				codeToThumb(); codeAsm("r5", "r0", "mul,");
 			} else if (getNextWordIf("and")) {
 				if (can_immrot(num)) {
 					codeToArm(); codeAsm(num, "##", "r0", "r0", "and,");
+					codeToThumb();
 				} else
 					GLB_error("unimp and1\n");
 			} else {
@@ -2385,6 +2398,7 @@ emit_num:
 						codeToThumb(); codeAsm("r0", "push");
 						codeToArm(); codeAsm(num, "##", "r0",
 							"mov,");
+						codeToThumb();
 					}
 				} else {
 					//printf("small num\n");
@@ -2428,10 +2442,10 @@ emit_num:
 					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
 						r5 = sym->lit_addr & 0xff000000;
 						r5_const = true;
-						codeToArm(); codeAsm(r5, "##", "r5", "mov,");
+						codeToArm(); codeAsm(r5, "##", "r5", "mov,"); codeToThumb();
 					} else
 						DEBUG("ll1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
-					codeToArm(); codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
+					codeToArm(); codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,"); codeToThumb();
 				} else {
 					if (!r5_const || r5 != sym->lit_addr) {
 						codeToThumb();
@@ -2449,10 +2463,10 @@ emit_num:
 					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
 						r5 = sym->lit_addr & 0xff000000;
 						r5_const = true;
-						codeToArm(); codeAsm(r5, "##", "r5", "mov,");
+						codeToArm(); codeAsm(r5, "##", "r5", "mov,"); codeToThumb();
 					} else
 						DEBUG("ls1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
-					codeToArm(); codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
+					codeToArm(); codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,"); codeToThumb();
 				} else {
 					if (!r5_const || r5 != sym->lit_addr) {
 						r5 = sym->lit_addr;
@@ -2493,6 +2507,7 @@ emit_num:
 		codeToArm();
 		out->emitString(icode->code, icode->len);
 		r5_const = false;
+		codeToThumb();
 	} else if (W("drop")) {
 		if (getNextWordIf("a")) {
 			codeToThumb(); codeAsm("r1", "r0", "mov,");
@@ -2525,10 +2540,10 @@ emit_num:
 		codeToThumb(); codeAsm("r0", "0@", "r0", "ldr,");
 	} else if (W("@a")) {
 		codeToThumb(); codeAsm("r0", "push");
-		codeToArm(); codeAsm("r1", "4", "(#", "r0", "ldr,");
+		codeToArm(); codeAsm("r1", "4", "(#", "r0", "ldr,"); codeToThumb();
 	} else if (W("c@a")) {
 		codeToThumb(); codeAsm("r0", "push");
-		codeToArm(); codeAsm("r1", "1", "(#", "r0", "ldrb,");
+		codeToArm(); codeAsm("r1", "1", "(#", "r0", "ldrb,"); codeToThumb();
 	} else if (W("r@")) {
 		codeToThumb(); codeAsm("r0", "push");
 		codeToThumb(); codeAsm("r6", "r0", "mov,");
@@ -2540,7 +2555,7 @@ emit_num:
 	} else if (W("aligned")) {
 		codeToArm(); codeAsm("3", "##", "r0", "tst,");
 		codeToArm(); codeAsm("3", "##", "r0", "r0", "bic,");
-		codeToArm(); codeAsm("4", "##", "r0", "r0", "ne?", "add,");
+		codeToArm(); codeAsm("4", "##", "r0", "r0", "ne?", "add,"); codeToThumb();
 	} else if (W("variable")) {
 		sym = symbols.appendNew(out->addr, getNextWord());
 		sym->is_addr = true;
