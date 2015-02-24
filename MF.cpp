@@ -1642,10 +1642,10 @@ bool Parser::parseThumb(const char *word)
 		assert(asm_stack[asp][0] == ASM_AMODE);
 		switch (asm_stack[asp][1]) {
 			case AMODE_IND:
-				assert(word[3] != 'b');
 				--asp;
 				ASSERT_REG;
 				if (asm_stack[asp][1] == REG_SP) {
+					assert(word[3] != 'b');
 					// XXX: This is rarely used and pretty much untested.
 					insn = 0x9000;
 					if (word[0] == 'l')
@@ -1655,7 +1655,9 @@ bool Parser::parseThumb(const char *word)
 					ASSERT_TREG;
 					insn = 0x6000;
 					if (word[0] == 'l')
-						insn |= 1 << 11;
+						insn |= 0x800;
+					if (word[3] == 'b')
+						insn |= 0x1000;
 					insn |= rd << 0;
 					insn |= asm_stack[asp][1] << 3;
 				}
@@ -1686,9 +1688,9 @@ bool Parser::parseThumb(const char *word)
 					assert(offset < 32);
 					insn = 0x6000;
 					if (word[0] == 'l')
-						insn |= 0x400;
-					if (word[3] == 'b')
 						insn |= 0x800;
+					if (word[3] == 'b')
+						insn |= 0x1000;
 					insn |= asm_stack[asp][1] << 3;
 					ASSERT_TREG;
 					insn |= rd << 0;
