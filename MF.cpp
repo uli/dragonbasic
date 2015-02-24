@@ -2321,7 +2321,7 @@ parse_next:
 	} else if (isNum(word)) {
 		unsigned int num = TIN_parseNum(word);
 		if (getNextWordIf("swi")) {
-			codeToArm(); codeAsm(num, "swi,"); codeToThumb();
+			codeAsm(num, "swi,");
 		} else if (getNextWordIf("#")) {
 			//printf("got imm 0x%x\n", num);
 			int have_num = 0;
