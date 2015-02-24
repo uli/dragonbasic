@@ -1557,6 +1557,26 @@ bool Parser::parseThumb(const char *word)
 {
 	if (!thumb)
 		return false;
+#define THUMBSHIFT(str, op) \
+	else if (W(#str ",") && asp > 3 && \
+		 asm_stack[asp - 3][0] == ASM_AMODE && \
+		 asm_stack[asp - 3][1] == AMODE_IMM) { \
+		unsigned short insn = op << 11; \
+		insn |= asm_stack[--asp][1] << 0; \
+		ASSERT_TREG; \
+		insn |= asm_stack[--asp][1] << 3; \
+		ASSERT_TREG; \
+		--asp; \
+		insn |= asm_stack[--asp][1] << 6; \
+		ASSERT_IMM; \
+		assert(asm_stack[asp][1] < 32); \
+		code16(insn); \
+	}
+
+	THUMBSHIFT(lsl, 0)
+	THUMBSHIFT(lsr, 1)
+	THUMBSHIFT(asr, 2)
+
 #define THUMB4(str, op) \
 	else if (W(#str ",")) { \
 		unsigned short insn = 0x4000 | TOP_ ## op; \
