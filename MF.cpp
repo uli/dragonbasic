@@ -2422,12 +2422,16 @@ parse_next:
 					codeToThumb();
 				} else {
 					codeToThumb(); codeAsm("r0", "push");
-					if (can_immrot(num)) {
-						codeToArm(); codeAsm(num, "##", "r0",
+					if (!thumb && can_immrot(num)) {
+						codeAsm(num, "##", "r0",
 							"mvn,");
-						codeToThumb();
-					} else
-						GLB_error("unimp com1\n");
+					} else {
+						r5_const = true;
+						r5 = num;
+						literals.prependNew(num, out->addr, thumb);
+						codeAsm("pc", "0", "#(", "r5", "ldr,");
+						codeAsm("r5", "r0", "mvn,");
+					}
 
 				}
 			} else if (num < 8 && getNextWordIf("-")) {
