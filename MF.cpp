@@ -1632,7 +1632,7 @@ bool Parser::parseThumb(const char *word)
 			}
 		}
 		code16(insn);
-	} else if ((W("ldr,") || W("str,"))) {
+	} else if (W("ldr,") || W("str,") || W("ldrb,") || W("strb,")) {
 		DEBUG("thumbldr @ 0x%x\n", out->addr);
 		unsigned short insn;
 		unsigned int offset;
@@ -1642,6 +1642,7 @@ bool Parser::parseThumb(const char *word)
 		assert(asm_stack[asp][0] == ASM_AMODE);
 		switch (asm_stack[asp][1]) {
 			case AMODE_IND:
+				assert(word[3] != 'b');
 				--asp;
 				ASSERT_REG;
 				if (asm_stack[asp][1] == REG_SP) {
@@ -1663,9 +1664,10 @@ bool Parser::parseThumb(const char *word)
 			case AMODE_PREIND:
 				--asp;
 				ASSERT_IMM;
-				assert(!(asm_stack[asp][1] & 3));
+				assert(word[3] == 'b' || !(asm_stack[asp][1] & 3));
 				offset = asm_stack[asp][1] >> 2;
 				if (asm_stack[--asp][1] == REG_SP) {
+					assert(word[3] != 'b');
 					assert(offset < 256);
 					insn = 0x9000;
 					if (word[0] == 'l')
@@ -1673,6 +1675,7 @@ bool Parser::parseThumb(const char *word)
 					insn |= rd << 8;
 					insn |= offset;
 				} else if (asm_stack[asp][1] == REG_PC) {
+					assert(word[3] != 'b');
 					assert(offset < 256);
 					insn = 0x4800;
 					// only exists as load
@@ -1683,7 +1686,9 @@ bool Parser::parseThumb(const char *word)
 					assert(offset < 32);
 					insn = 0x6000;
 					if (word[0] == 'l')
-						insn |= 1 << 11;
+						insn |= 0x400;
+					if (word[3] == 'b')
+						insn |= 0x800;
 					insn |= asm_stack[asp][1] << 3;
 					ASSERT_TREG;
 					insn |= rd << 0;
