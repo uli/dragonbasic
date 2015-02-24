@@ -318,6 +318,9 @@ private:
 	unsigned int arm9CodeAddr();
 	unsigned int arm10CodeAddr();
 
+	bool parseArm(const char *word);
+	bool parseThumb(const char *word);
+
 public:
 	Output *out;
 	char *text;
@@ -1388,6 +1391,404 @@ static bool can_branch_thumb(unsigned int from, unsigned int to)
 }
 #endif
 
+bool Parser::parseArm(const char *word)
+{
+	if (thumb)
+		return false;
+#define ARM53OP(str, op) \
+	else if (!thumb && W(#str ",")) { \
+		unsigned int insn = OP_ ## op; \
+		CODE_ARM5_3OPS; \
+	}
+
+	ARM53OP(and, AND)
+	ARM53OP(orr, ORR)
+	ARM53OP(eor, EOR)
+	ARM53OP(add, ADD)
+	ARM53OP(adc, ADC)
+	ARM53OP(sub, SUB)
+	ARM53OP(sbc, SBC)
+	ARM53OP(rsb, RSB)
+	ARM53OP(rsc, RSC)
+	ARM53OP(bic, BIC)
+
+#define ARM5VOID(str, op) \
+	else if (W(#str ",")) { \
+		unsigned int insn = OP_ ## op; \
+		CODE_ARM5_VOID; \
+	}
+
+	ARM5VOID(tst, TST)
+	ARM5VOID(teq, TEQ)
+	ARM5VOID(cmp, CMP)
+	ARM5VOID(cmn, CMN)
+
+	else if (W("b,") || W("bl,")) {
+		unsigned insn = 0x0a000000;
+		if (word[1] == 'l')
+			insn |= 0x01000000;
+		CODE_COND;
+		unsigned int dest = asm_stack[--asp][1];
+		assert(asm_stack[asp][0] == ASM_OFF);
+		DEBUG("asm branch from 0x%x to 0x%x\n", out->addr, dest);
+		assert(can_branch(out->addr, dest));
+		code(insn | (((dest - out->addr - 8) >> 2) & 0x00ffffff));
+	} else if (W("bx,")) {
+		unsigned insn = 0x012fff10;
+		CODE_COND;
+		code(insn | asm_stack[--asp][1]);
+		ASSERT_REG;
+	} else if (W("ldm,") || W("stm,")) {
+		/* format ARM.11 */
+		unsigned int insn = 0;
+		CODE_COND;
+		while (asm_stack[--asp][0] == ASM_REG)
+			//printf("reg %d\n", asm_stack[asp][1]);
+			insn |= 1 << asm_stack[asp][1];
+		if (word[0] == 'l')
+			insn |= OP_LDM;
+		else
+			insn |= OP_STM;
+
+		insn |= asm_stack[asp][1];
+		assert(asm_stack[asp][0] == ASM_DIR);
+
+		insn |= asm_stack[--asp][1] << 16;
+		ASSERT_REG;
+		code(insn);
+	} else if (W("ldr,") || W("str,") || W("ldrb,") || W("strb,")) {
+		unsigned insn;
+
+		if (word[0] == 'l')
+			insn = OP_LDR;
+		else
+			insn = OP_STR;
+
+		if (word[3] == 'b')
+			insn |= 1 << 22;
+
+		CODE_COND;
+		CODE_RD;
+		insn |= arm9CodeAddr();
+		code(insn);
+	} else if (W("ldrh,")) {
+		unsigned int insn = OP_LDRH;
+		CODE_COND;
+		CODE_RD;
+		insn |= arm10CodeAddr();
+		code(insn);
+	} else if (W("strh,")) {
+		unsigned int insn = OP_STRH;
+		CODE_COND;
+		CODE_RD;
+		insn |= arm10CodeAddr();
+		code(insn);
+	// XXX: mrs, msr, cdp, stc, ldc, mcr, mrc
+	} else if (W("link")) {
+		unsigned int insn = 0xe9270000;
+		insn |= 1 << (asm_stack[--asp][1]);
+		ASSERT_REG;
+		code(insn);
+	} else if (W("mov,")) {
+		unsigned int insn = 0x01a00000;
+		CODE_ARM5_MOV;
+	} else if (W("mvn,")) {
+		unsigned int insn = 0x01e00000;
+		CODE_ARM5_MOV;
+	// XXX: mla, um??l, sm??l
+	} else if (W("mul,")) {
+		unsigned int insn = 0x00000090;
+		CODE_COND;
+		insn |= asm_stack[--asp][1] << 16;
+		ASSERT_REG;
+		insn |= asm_stack[--asp][1];
+		ASSERT_REG;
+		insn |= asm_stack[--asp][1] << 8;
+		ASSERT_REG;
+		code(insn);
+	} else if (W("ret")) {
+		unsigned int insn = 0x012fff1e;
+		CODE_COND;
+		code(insn);
+	} else if (W("swp,")) {
+		unsigned int insn = 0x01000090;
+		CODE_COND;
+		CODE_RD;
+		insn |= asm_stack[--asp][1];
+		ASSERT_REG;
+		insn |= asm_stack[--asp][1] << 16;
+		ASSERT_REG;
+		code(insn);
+	} else if (W("pop")) {
+		unsigned int insn = 0x04bd0004;
+		CODE_COND;
+		CODE_RD;
+		code(insn);
+	} else if (W("push")) {
+		unsigned int insn = 0x092d0000;
+		CODE_COND;
+		insn |= 1 << asm_stack[--asp][1];
+		code(insn);
+	} else if (W("swi,")) {
+		unsigned int insn = 0x0f000000;
+		CODE_COND;
+		insn |= asm_stack[--asp][1] << 16;
+		ASSERT_IMM;
+		code(insn);
+	} else if (W("unlink")) {
+		unsigned int insn = 0xe4b70004;
+		CODE_RD;
+		code(insn);
+	} else if (W("literal")) {
+		unsigned int insn = 0x051f0000;
+		CODE_COND;
+		CODE_RD;
+		literals.prependNew(asm_stack[--asp][1], out->addr);
+		assert(asm_stack[asp][0] == ASM_IMM ||
+		       asm_stack[asp][0] == ASM_OFF);
+		code(insn);
+	} else
+		return false;
+
+	return true;
+}
+
+bool Parser::parseThumb(const char *word)
+{
+	if (!thumb)
+		return false;
+#define THUMB4(str, op) \
+	else if (W(#str ",")) { \
+		unsigned short insn = 0x4000 | TOP_ ## op; \
+		insn |= asm_stack[--asp][1] << 0; \
+		ASSERT_TREG; \
+		insn |= asm_stack[--asp][1] << 3; \
+		ASSERT_TREG; \
+		code16(insn); \
+	}
+
+	THUMB4(and, AND)
+	THUMB4(eor, EOR)
+	THUMB4(lsl, LSL)
+	THUMB4(lsr, LSR)
+	THUMB4(asr, ASR)
+	THUMB4(adc, ADC)
+	THUMB4(sbc, SBC)
+	THUMB4(ror, ROR)
+	THUMB4(tst, TST)
+	THUMB4(neg, NEG)
+	THUMB4(cmn, CMN)
+	THUMB4(orr, ORR)
+	THUMB4(mul, MUL)
+	THUMB4(bic, BIC)
+	THUMB4(mvn, MVN)
+
+	else if (W("cmp,")) {
+		unsigned short insn;
+		unsigned int rd = asm_stack[--asp][1];
+		ASSERT_TREG;
+		if (asm_stack[--asp][0] == ASM_AMODE &&
+		    asm_stack[asp][1] == AMODE_IMM) {
+			insn = 0x2800;
+			insn |= asm_stack[--asp][1] << 0;
+			assert(asm_stack[asp][1] < 256);
+			insn |= rd << 8;
+			DEBUG("tcmpimm\n");
+		} else {
+			insn = 0x4000 | TOP_CMP;
+			insn |= rd << 0;
+			insn |= asm_stack[asp][1] << 3;
+			ASSERT_TREG;
+		}
+		code16(insn);
+	} else if ((W("sub,") || W("add,"))) {
+		unsigned short insn;
+		unsigned int rd = asm_stack[--asp][1];
+		ASSERT_TREG;
+		if (asm_stack[--asp][0] == ASM_AMODE &&
+		    asm_stack[asp][1] == AMODE_IMM) {
+			insn = 0x3000;
+			if (word[0] == 's')
+				insn |= 0x800;
+			insn |= rd << 8;
+			insn |= asm_stack[--asp][1];
+			ASSERT_IMM;
+			assert(asm_stack[asp][1] < 256);
+		} else {
+			insn = 0x1800 | (rd << 0);
+			if (word[0] == 's')
+				insn |= 1 << 9;
+			insn |= asm_stack[asp][1] << 3;
+			ASSERT_TREG;
+			if (asm_stack[--asp][0] == ASM_AMODE) {
+				assert(asm_stack[asp][1] == AMODE_IMM);
+				insn |= 1 << 10;
+				insn |= asm_stack[--asp][1] << 6;
+				assert(asm_stack[asp][1] < 8);
+				DEBUG("tsub at 0x%x\n", out->addr);
+			} else {
+				insn |= asm_stack[asp][1] << 6;
+				ASSERT_TREG;
+			}
+		}
+		code16(insn);
+	} else if ((W("ldr,") || W("str,"))) {
+		DEBUG("thumbldr @ 0x%x\n", out->addr);
+		unsigned short insn;
+		unsigned int offset;
+		unsigned int rd = asm_stack[--asp][1];
+		ASSERT_TREG;
+		--asp;
+		assert(asm_stack[asp][0] == ASM_AMODE);
+		switch (asm_stack[asp][1]) {
+			case AMODE_IND:
+				--asp;
+				ASSERT_REG;
+				if (asm_stack[asp][1] == REG_SP) {
+					// XXX: This is rarely used and pretty much untested.
+					insn = 0x9000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= rd << 8;
+				} else {
+					ASSERT_TREG;
+					insn = 0x6000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= rd << 0;
+					insn |= asm_stack[asp][1] << 3;
+				}
+				break;
+
+			case AMODE_PREIND:
+				--asp;
+				ASSERT_IMM;
+				assert(!(asm_stack[asp][1] & 3));
+				offset = asm_stack[asp][1] >> 2;
+				if (asm_stack[--asp][1] == REG_SP) {
+					assert(offset < 256);
+					insn = 0x9000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= rd << 8;
+					insn |= offset;
+				} else if (asm_stack[asp][1] == REG_PC) {
+					assert(offset < 256);
+					insn = 0x4800;
+					// only exists as load
+					assert(word[0] != 's');
+					insn |= rd << 8;
+					insn |= offset;
+				} else {
+					assert(offset < 32);
+					insn = 0x6000;
+					if (word[0] == 'l')
+						insn |= 1 << 11;
+					insn |= asm_stack[asp][1] << 3;
+					ASSERT_TREG;
+					insn |= rd << 0;
+					insn |= offset << 6;
+				}
+				break;
+
+			default:
+				GLB_error("internal error thumb ldst\n");
+		}
+		code16(insn);
+	} else if ((W("ldm,") || W("stm,"))) {
+		// XXX: unused and thus entirely untested
+		unsigned short insn = 0xc000;
+		while (asm_stack[--asp][0] == ASM_REG) {
+			//printf("reg %d\n", asm_stack[asp][1]);
+			insn |= 1 << asm_stack[asp][1];
+			ASSERT_TREG;
+		}
+
+		if (word[0] == 'l')
+			insn |= 1 << 11;
+
+		insn |= asm_stack[asp][1];
+		assert(asm_stack[asp][0] == ASM_DIR &&
+		       asm_stack[asp][1] == DIR_IAW);
+
+		insn |= asm_stack[--asp][1] << 8;
+		ASSERT_TREG;
+		code16(insn);
+	} else if (W("bl,")) {
+		unsigned short insn1 = 0xf000;
+		unsigned short insn2 = 0xf800;
+		unsigned int dest = asm_stack[--asp][1];
+		assert(asm_stack[asp][0] == ASM_OFF);
+		DEBUG("asm thumb branch from 0x%x to 0x%x\n", out->addr, dest);
+		assert(can_branch_thumb(out->addr, dest));
+		int soff = (dest - out->addr - 4) >> 1;
+		unsigned int off1 = (soff >> 11) & ((1 << 11) -1);
+		unsigned int off2 = soff & ((1 << 11) - 1);
+		DEBUG("off1 0x%x off2 0x%x\n", off1, off2);
+		code16(insn1 | off1);
+		code16(insn2 | off2);
+	} else if (W("b,")) {
+		unsigned short insn;
+		if (asm_stack[asp-1][0] == ASM_COND) {
+			insn = 0xd000;
+			CODE_TCOND;
+			unsigned int dest = asm_stack[--asp][1];
+			assert(asm_stack[asp][0] == ASM_OFF);
+			DEBUG("asm thumb cond branch from 0x%x to 0x%x\n", out->addr, dest);
+			int soff = dest - out->addr - 4;
+			assert(soff >= -256 && soff < 256);
+			insn |= (soff >> 1) & 0xff;
+		} else {
+			insn = 0xe000;
+			unsigned int dest = asm_stack[--asp][1];
+			assert(asm_stack[asp][0] == ASM_OFF);
+			DEBUG("asm thumb uncond branch from 0x%x to 0x%x\n", out->addr, dest);
+			int soff = dest - out->addr - 4;
+			assert(soff >= -2048 && soff < 2048);
+			insn |= (soff >> 1) & 0x7ff;
+		}
+		code16(insn);
+	} else if (W("bx,")) {
+		unsigned short insn = 0x4700;
+		code16(insn | (asm_stack[--asp][1] << 3));
+		ASSERT_REG;
+	} else if (W("mov,")) {
+		unsigned short insn;
+		unsigned int rd = asm_stack[--asp][1];
+		ASSERT_REG;
+		if (asm_stack[--asp][0] == ASM_REG) {
+			insn = 0x4600;
+			unsigned int rs = asm_stack[asp][1];
+			insn |= rs << 3;
+			insn |= rd & 7;
+			insn |= (!!(rd & 8)) << 7;
+		} else if (asm_stack[asp][0] == ASM_AMODE &&
+			   asm_stack[--asp][0] == ASM_IMM) {
+			assert(rd < REG_R8);
+			insn = 0x2000;
+			unsigned int imm = asm_stack[asp][1];
+			assert(imm < 256);
+			insn |= rd << 8;
+			insn |= imm;
+		} else
+			GLB_error("invalid thumb mov");
+		code16(insn);
+	} else if (W("pop")) {
+		unsigned short insn = 0xbc00;
+		insn |= 1 << asm_stack[--asp][1];
+		ASSERT_TREG;
+		code16(insn);
+	} else if (W("push")) {
+		unsigned short insn = 0xb400;
+		insn |= 1 << asm_stack[--asp][1];
+		ASSERT_TREG;
+		code16(insn);
+	} else
+		return false;
+
+	return true;
+}
+
 void Parser::parseAsm(const char *word)
 {
 	Symbol *sym;
@@ -1492,388 +1893,11 @@ void Parser::parseAsm(const char *word)
 	else if (W("nv?"))
 		PUSH_ASM(ASM_COND, COND_NV);
 
-#define ARM53OP(str, op) \
-	else if (!thumb && W(#str ",")) { \
-		unsigned int insn = OP_ ## op; \
-		CODE_ARM5_3OPS; \
-	}
+	else if (parseThumb(word)) {
+		/* nop */
+	} else if (parseArm(word)) {
+		/* nop */
 
-	ARM53OP(and, AND)
-	ARM53OP(orr, ORR)
-	ARM53OP(eor, EOR)
-	ARM53OP(add, ADD)
-	ARM53OP(adc, ADC)
-	ARM53OP(sub, SUB)
-	ARM53OP(sbc, SBC)
-	ARM53OP(rsb, RSB)
-	ARM53OP(rsc, RSC)
-	ARM53OP(bic, BIC)
-
-#define THUMB4(str, op) \
-	else if (thumb && W(#str ",")) { \
-		unsigned short insn = 0x4000 | TOP_ ## op; \
-		insn |= asm_stack[--asp][1] << 0; \
-		ASSERT_TREG; \
-		insn |= asm_stack[--asp][1] << 3; \
-		ASSERT_TREG; \
-		code16(insn); \
-	}
-
-	THUMB4(and, AND)
-	THUMB4(eor, EOR)
-	THUMB4(lsl, LSL)
-	THUMB4(lsr, LSR)
-	THUMB4(asr, ASR)
-	THUMB4(adc, ADC)
-	THUMB4(sbc, SBC)
-	THUMB4(ror, ROR)
-	THUMB4(tst, TST)
-	THUMB4(neg, NEG)
-	THUMB4(cmn, CMN)
-	THUMB4(orr, ORR)
-	THUMB4(mul, MUL)
-	THUMB4(bic, BIC)
-	THUMB4(mvn, MVN)
-
-	else if (thumb && W("cmp,")) {
-		unsigned short insn;
-		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_TREG;
-		if (asm_stack[--asp][0] == ASM_AMODE &&
-		    asm_stack[asp][1] == AMODE_IMM) {
-			insn = 0x2800;
-			insn |= asm_stack[--asp][1] << 0;
-			assert(asm_stack[asp][1] < 256);
-			insn |= rd << 8;
-			DEBUG("tcmpimm\n");
-		} else {
-			insn = 0x4000 | TOP_CMP;
-			insn |= rd << 0;
-			insn |= asm_stack[asp][1] << 3;
-			ASSERT_TREG;
-		}
-		code16(insn);
-	}
-
-
-	else if (thumb && (W("sub,") || W("add,"))) {
-		unsigned short insn;
-		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_TREG;
-		if (asm_stack[--asp][0] == ASM_AMODE &&
-		    asm_stack[asp][1] == AMODE_IMM) {
-			insn = 0x3000;
-			if (word[0] == 's')
-				insn |= 0x800;
-			insn |= rd << 8;
-			insn |= asm_stack[--asp][1];
-			ASSERT_IMM;
-			assert(asm_stack[asp][1] < 256);
-		} else {
-			insn = 0x1800 | (rd << 0);
-			if (word[0] == 's')
-				insn |= 1 << 9;
-			insn |= asm_stack[asp][1] << 3;
-			ASSERT_TREG;
-			if (asm_stack[--asp][0] == ASM_AMODE) {
-				assert(asm_stack[asp][1] == AMODE_IMM);
-				insn |= 1 << 10;
-				insn |= asm_stack[--asp][1] << 6;
-				assert(asm_stack[asp][1] < 8);
-				DEBUG("tsub at 0x%x\n", out->addr);
-			} else {
-				insn |= asm_stack[asp][1] << 6;
-				ASSERT_TREG;
-			}
-		}
-		code16(insn);
-	} else if (thumb && (W("ldr,") || W("str,"))) {
-		unsigned short insn;
-		unsigned int offset;
-		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_TREG;
-		--asp;
-		assert(asm_stack[asp][0] == ASM_AMODE);
-		switch (asm_stack[asp][1]) {
-			case AMODE_IND:
-				--asp;
-				ASSERT_REG;
-				if (asm_stack[asp][1] == REG_SP) {
-					// XXX: This is rarely used and pretty much untested.
-					insn = 0x9000;
-					if (word[0] == 'l')
-						insn |= 1 << 11;
-					insn |= rd << 8;
-				} else {
-					ASSERT_TREG;
-					insn = 0x6000;
-					if (word[0] == 'l')
-						insn |= 1 << 11;
-					insn |= rd << 0;
-					insn |= asm_stack[asp][1] << 3;
-				}
-				break;
-
-			case AMODE_PREIND:
-				--asp;
-				ASSERT_IMM;
-				assert(!(asm_stack[asp][1] & 3));
-				offset = asm_stack[asp][1] >> 2;
-				if (asm_stack[--asp][1] == REG_SP) {
-					assert(offset < 256);
-					insn = 0x9000;
-					if (word[0] == 'l')
-						insn |= 1 << 11;
-					insn |= rd << 8;
-					insn |= offset;
-				} else if (asm_stack[asp][1] == REG_PC) {
-					assert(offset < 256);
-					insn = 0x4800;
-					// only exists as load
-					assert(word[0] != 's');
-					insn |= rd << 8;
-					insn |= offset;
-				} else {
-					assert(offset < 32);
-					insn = 0x6000;
-					if (word[0] == 'l')
-						insn |= 1 << 11;
-					insn |= asm_stack[asp][1] << 3;
-					ASSERT_TREG;
-					insn |= rd << 0;
-					insn |= offset << 6;
-				}
-				break;
-
-			default:
-				GLB_error("internal error thumb ldst\n");
-		}
-		code16(insn);
-	} else if (thumb && (W("ldm,") || W("stm,"))) {
-		// XXX: unused and thus entirely untested
-		unsigned short insn = 0xc000;
-		while (asm_stack[--asp][0] == ASM_REG) {
-			//printf("reg %d\n", asm_stack[asp][1]);
-			insn |= 1 << asm_stack[asp][1];
-			ASSERT_TREG;
-		}
-
-		if (word[0] == 'l')
-			insn |= 1 << 11;
-
-		insn |= asm_stack[asp][1];
-		assert(asm_stack[asp][0] == ASM_DIR &&
-		       asm_stack[asp][1] == DIR_IAW);
-
-		insn |= asm_stack[--asp][1] << 8;
-		ASSERT_TREG;
-		code16(insn);
-	} else if (thumb && W("bl,")) {
-		unsigned short insn1 = 0xf000;
-		unsigned short insn2 = 0xf800;
-		unsigned int dest = asm_stack[--asp][1];
-		assert(asm_stack[asp][0] == ASM_OFF);
-		DEBUG("asm thumb branch from 0x%x to 0x%x\n", out->addr, dest);
-		assert(can_branch_thumb(out->addr, dest));
-		int soff = (dest - out->addr - 4) >> 1;
-		unsigned int off1 = (soff >> 11) & ((1 << 11) -1);
-		unsigned int off2 = soff & ((1 << 11) - 1);
-		DEBUG("off1 0x%x off2 0x%x\n", off1, off2);
-		code16(insn1 | off1);
-		code16(insn2 | off2);
-	} else if (thumb && W("b,")) {
-		unsigned short insn;
-		if (asm_stack[asp-1][0] == ASM_COND) {
-			insn = 0xd000;
-			CODE_TCOND;
-			unsigned int dest = asm_stack[--asp][1];
-			assert(asm_stack[asp][0] == ASM_OFF);
-			DEBUG("asm thumb cond branch from 0x%x to 0x%x\n", out->addr, dest);
-			int soff = dest - out->addr - 4;
-			assert(soff >= -256 && soff < 256);
-			insn |= (soff >> 1) & 0xff;
-		} else {
-			insn = 0xe000;
-			unsigned int dest = asm_stack[--asp][1];
-			assert(asm_stack[asp][0] == ASM_OFF);
-			DEBUG("asm thumb uncond branch from 0x%x to 0x%x\n", out->addr, dest);
-			int soff = dest - out->addr - 4;
-			assert(soff >= -2048 && soff < 2048);
-			insn |= (soff >> 1) & 0x7ff;
-		}
-		code16(insn);
-	}
-
-#define ARM5VOID(str, op) \
-	else if (W(#str ",")) { \
-		unsigned int insn = OP_ ## op; \
-		CODE_ARM5_VOID; \
-	}
-
-	ARM5VOID(tst, TST)
-	ARM5VOID(teq, TEQ)
-	ARM5VOID(cmp, CMP)
-	ARM5VOID(cmn, CMN)
-
-	else if (!thumb && (W("b,") || W("bl,"))) {
-		unsigned insn = 0x0a000000;
-		if (word[1] == 'l')
-			insn |= 0x01000000;
-		CODE_COND;
-		unsigned int dest = asm_stack[--asp][1];
-		assert(asm_stack[asp][0] == ASM_OFF);
-		DEBUG("asm branch from 0x%x to 0x%x\n", out->addr, dest);
-		assert(can_branch(out->addr, dest));
-		code(insn | (((dest - out->addr - 8) >> 2) & 0x00ffffff));
-	} else if (W("bx,")) {
-		if (thumb) {
-			unsigned short insn = 0x4700;
-			code16(insn | (asm_stack[--asp][1] << 3));
-			ASSERT_REG;
-		} else {
-			unsigned insn = 0x012fff10;
-			CODE_COND;
-			code(insn | asm_stack[--asp][1]);
-			ASSERT_REG;
-		}
-	} else if (!thumb && (W("ldm,") || W("stm,"))) {
-		/* format ARM.11 */
-		unsigned int insn = 0;
-		CODE_COND;
-		while (asm_stack[--asp][0] == ASM_REG)
-			//printf("reg %d\n", asm_stack[asp][1]);
-			insn |= 1 << asm_stack[asp][1];
-		if (word[0] == 'l')
-			insn |= OP_LDM;
-		else
-			insn |= OP_STM;
-
-		insn |= asm_stack[asp][1];
-		assert(asm_stack[asp][0] == ASM_DIR);
-
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_REG;
-		code(insn);
-	} else if (!thumb && (W("ldr,") || W("str,") || W("ldrb,") || W("strb,"))) {
-		unsigned insn;
-
-		if (word[0] == 'l')
-			insn = OP_LDR;
-		else
-			insn = OP_STR;
-
-		if (word[3] == 'b')
-			insn |= 1 << 22;
-
-		CODE_COND;
-		CODE_RD;
-		insn |= arm9CodeAddr();
-		code(insn);
-	} else if (W("ldrh,")) {
-		unsigned int insn = OP_LDRH;
-		CODE_COND;
-		CODE_RD;
-		insn |= arm10CodeAddr();
-		code(insn);
-	} else if (W("strh,")) {
-		unsigned int insn = OP_STRH;
-		CODE_COND;
-		CODE_RD;
-		insn |= arm10CodeAddr();
-		code(insn);
-	// XXX: mrs, msr, cdp, stc, ldc, mcr, mrc
-	} else if (W("link")) {
-		unsigned int insn = 0xe9270000;
-		insn |= 1 << (asm_stack[--asp][1]);
-		ASSERT_REG;
-		code(insn);
-	} else if (W("mov,")) {
-		if (thumb) {
-			unsigned short insn;
-			unsigned int rd = asm_stack[--asp][1];
-			ASSERT_REG;
-			if (asm_stack[--asp][0] == ASM_REG) {
-				insn = 0x4600;
-				unsigned int rs = asm_stack[asp][1];
-				insn |= rs << 3;
-				insn |= rd & 7;
-				insn |= (!!(rd & 8)) << 7;
-			} else if (asm_stack[asp][0] == ASM_AMODE &&
-				   asm_stack[--asp][0] == ASM_IMM) {
-				assert(rd < REG_R8);
-				insn = 0x2000;
-				unsigned int imm = asm_stack[asp][1];
-				assert(imm < 256);
-				insn |= rd << 8;
-				insn |= imm;
-			} else
-				GLB_error("invalid thumb mov");
-			code16(insn);
-		} else {
-			unsigned int insn = 0x01a00000;
-			CODE_ARM5_MOV;
-		}
-	} else if (W("mvn,")) {
-		unsigned int insn = 0x01e00000;
-		CODE_ARM5_MOV;
-	// XXX: mla, um??l, sm??l
-	} else if (W("mul,")) {
-		unsigned int insn = 0x00000090;
-		CODE_COND;
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_REG;
-		insn |= asm_stack[--asp][1];
-		ASSERT_REG;
-		insn |= asm_stack[--asp][1] << 8;
-		ASSERT_REG;
-		code(insn);
-	} else if (W("ret")) {
-		unsigned int insn = 0x012fff1e;
-		CODE_COND;
-		code(insn);
-	} else if (W("swp,")) {
-		unsigned int insn = 0x01000090;
-		CODE_COND;
-		CODE_RD;
-		insn |= asm_stack[--asp][1];
-		ASSERT_REG;
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_REG;
-		code(insn);
-	} else if (W("pop")) {
-		if (thumb) {
-			unsigned short insn = 0xbc00;
-			insn |= 1 << asm_stack[--asp][1];
-			ASSERT_TREG;
-			code16(insn);
-		} else {
-			unsigned int insn = 0x04bd0004;
-			CODE_COND;
-			CODE_RD;
-			code(insn);
-		}
-	} else if (W("push")) {
-		if (thumb) {
-			unsigned short insn = 0xb400;
-			insn |= 1 << asm_stack[--asp][1];
-			ASSERT_TREG;
-			code16(insn);
-		} else {
-			unsigned int insn = 0x092d0000;
-			CODE_COND;
-			insn |= 1 << asm_stack[--asp][1];
-			code(insn);
-		}
-	} else if (W("swi,")) {
-		unsigned int insn = 0x0f000000;
-		CODE_COND;
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_IMM;
-		code(insn);
-	} else if (W("unlink")) {
-		unsigned int insn = 0xe4b70004;
-		CODE_RD;
-		code(insn);
 	} else if (W("l:")) {
 		asm_labels[lsp].label = strdup(getNextWord());
 		asm_labels[lsp++].addr = out->addr;
@@ -1926,16 +1950,8 @@ void Parser::parseAsm(const char *word)
 	} else if (W("(+")) {
 		PUSH_ASM(ASM_AMODE, AMODE_POSTINDR);
 
-	} else if (W("literal")) {
-		unsigned int insn = 0x051f0000;
-		CODE_COND;
-		CODE_RD;
-		literals.prependNew(asm_stack[--asp][1], out->addr);
-		assert(asm_stack[asp][0] == ASM_IMM ||
-		       asm_stack[asp][0] == ASM_OFF);
-		code(insn);
 	} else if ((sym = getSymbol(word))) {
-		DEBUG("asmsym %s 0x%x\n", word, sym->addr);
+		DEBUG("asmsym %s 0x%x thumb %d\n", word, sym->addr, sym->thumb);
 		PUSH_ASM(ASM_OFF, sym->addr);
 	} else {
 		int i;
