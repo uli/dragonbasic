@@ -2556,7 +2556,12 @@ emit_num:
 		codeToThumb(); codeAsm("r0", "0@", "r0", "ldr,");
 	} else if (W("@a")) {
 		codeToThumb(); codeAsm("r0", "push");
-		codeToArm(); codeAsm("r1", "4", "(#", "r0", "ldr,"); codeToThumb();
+		if (thumb) {
+			codeAsm("r1", "0@", "r0", "ldr,");
+			codeAsm("4", "##", "r1", "add,");
+		} else {
+			codeAsm("r1", "4", "(#", "r0", "ldr,");
+		}
 	} else if (W("c@a")) {
 		codeToThumb(); codeAsm("r0", "push");
 		codeToArm(); codeAsm("r1", "1", "(#", "r0", "ldrb,"); codeToThumb();
