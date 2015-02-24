@@ -2435,12 +2435,8 @@ parse_next:
 				r5 = num;
 				r5_const = true;
 				codeToThumb(); codeAsm("r5", "r0", "mul,");
-			} else if (getNextWordIf("and")) {
-				if (can_immrot(num)) {
-					codeToArm(); codeAsm(num, "##", "r0", "r0", "and,");
-					codeToThumb();
-				} else
-					GLB_error("unimp and1\n");
+			} else if (!thumb && can_immrot(num) && getNextWordIf("and")) {
+				codeAsm(num, "##", "r0", "r0", "and,");
 			} else {
 				//printf("misc num\n");
 emit_num:
