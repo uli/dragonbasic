@@ -2426,19 +2426,14 @@ parse_next:
 			} else if (num < 8 && getNextWordIf("-")) {
 				codeToThumb(); codeAsm(num, "##", "r0", "r0", "sub,");
 			} else if (getNextWordIf("*")) {
-				if (can_immrot(num)) {
-					r5 = num;
-					r5_const = true;
-					codeToArm(); codeAsm(num, "##", "r5", "mov,");
-					codeToThumb();
-				} else {
-					assert(!currently_naked);
-					codeToArm(); codeBranch(RT__tin_wlit, "bl,");
-					code(num);
-					r5 = num;
-					r5_const = true;
-					codeToThumb();
+				if (!thumb && can_immrot(num))
+					codeAsm(num, "##", "r5", "mov,");
+				else {
+					literals.prependNew(num, out->addr, thumb);
+					codeAsm("pc", "0", "#(", "r5", "ldr,");
 				}
+				r5 = num;
+				r5_const = true;
 				codeToThumb(); codeAsm("r5", "r0", "mul,");
 			} else if (getNextWordIf("and")) {
 				if (can_immrot(num)) {
