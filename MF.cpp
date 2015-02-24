@@ -2356,13 +2356,12 @@ parse_next:
 				codeAsm(num, "#asr", "r0", "mov,");
 				codeToThumb();
 			} else if (getNextWordIf("n*")) {
-				if (getNextWordIf("+")) {
+				if (!thumb && getNextWordIf("+")) {
 					r5_const = false;
-					codeToThumb(); codeAsm("r5", "pop");
-					codeToArm(); codeAsm("r0");
-					codeToArm(); codeAsm(num, "#lsl", "r5", "r0",
+					codeAsm("r5", "pop");
+					codeAsm("r0");
+					codeAsm(num, "#lsl", "r5", "r0",
 						"add,");
-					codeToThumb();
 				} else {
 					codeToArm(); codeAsm("r0");
 					codeToArm(); codeAsm(num, "#lsl", "r0", "mov,");
