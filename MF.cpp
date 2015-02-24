@@ -2340,12 +2340,17 @@ parse_next:
 					if (num < 8) {
 						codeToThumb(); codeAsm(num, "##", "r0",
 							"r0", "add,");
-					} else if (can_immrot(num)) {
+					} else if (!thumb && can_immrot(num)) {
 						codeToArm(); codeAsm(num, "##", "r0",
 							"r0", "add,");
 						codeToThumb();
-					} else
-						GLB_error("unimp add1\n");
+					} else {
+						r5_const = true;
+						r5 = num;
+						literals.prependNew(num, out->addr, true);
+						codeAsm("pc", "0", "#(", "r5", "ldr,");
+						codeAsm("r5", "r0", "r0", "add,");
+					}
 
 				}
 			} else if (num == 0 && getNextWordIf("or")) {
