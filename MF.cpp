@@ -2363,9 +2363,11 @@ parse_next:
 					codeAsm(num, "#lsl", "r5", "r0",
 						"add,");
 				} else {
-					codeToArm(); codeAsm("r0");
-					codeToArm(); codeAsm(num, "#lsl", "r0", "mov,");
-					codeToThumb();
+					if (!thumb) {
+						codeAsm("r0");
+						codeAsm(num, "#lsl", "r0", "mov,");
+					} else
+						codeAsm(num, "##", "r0", "r0", "lsl,");
 				}
 			} else if (getNextWordIf("+")) {
 				if (num != 0) {
