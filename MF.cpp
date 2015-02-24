@@ -1511,30 +1511,62 @@ void Parser::parseAsm(const char *word)
 	THUMB4(ror, ROR)
 	THUMB4(tst, TST)
 	THUMB4(neg, NEG)
-	THUMB4(cmp, CMP)
 	THUMB4(cmn, CMN)
 	THUMB4(orr, ORR)
 	THUMB4(mul, MUL)
 	THUMB4(bic, BIC)
 	THUMB4(mvn, MVN)
 
-	else if (thumb && (W("sub,") || W("add,"))) {
-		unsigned short insn = 0x1800;
-		if (word[0] == 's')
-			insn |= 1 << 9;
-		insn |= asm_stack[--asp][1];
+	else if (thumb && W("cmp,")) {
+		unsigned short insn;
+		unsigned int rd = asm_stack[--asp][1];
 		ASSERT_TREG;
-		insn |= asm_stack[--asp][1] << 3;
-		ASSERT_TREG;
-		if (asm_stack[--asp][0] == ASM_AMODE) {
-			assert(asm_stack[asp][1] == AMODE_IMM);
-			insn |= 1 << 10;
-			insn |= asm_stack[--asp][1] << 6;
-			assert(asm_stack[asp][1] < 8);
-			DEBUG("tsub at 0x%x\n", out->addr);
+		if (asm_stack[--asp][0] == ASM_AMODE &&
+		    asm_stack[asp][1] == AMODE_IMM) {
+			insn = 0x2800;
+			insn |= asm_stack[--asp][1] << 0;
+			assert(asm_stack[asp][1] < 256);
+			insn |= rd << 8;
+			DEBUG("tcmpimm\n");
 		} else {
-			insn |= asm_stack[asp][1] << 6;
+			insn = 0x4000 | TOP_CMP;
+			insn |= rd << 0;
+			insn |= asm_stack[asp][1] << 3;
 			ASSERT_TREG;
+		}
+		code16(insn);
+	}
+
+
+	else if (thumb && (W("sub,") || W("add,"))) {
+		unsigned short insn;
+		unsigned int rd = asm_stack[--asp][1];
+		ASSERT_TREG;
+		if (asm_stack[--asp][0] == ASM_AMODE &&
+		    asm_stack[asp][1] == AMODE_IMM) {
+			insn = 0x3000;
+			if (word[0] == 's')
+				insn |= 0x800;
+			insn |= rd << 8;
+			insn |= asm_stack[--asp][1];
+			ASSERT_IMM;
+			assert(asm_stack[asp][1] < 256);
+		} else {
+			insn = 0x1800 | (rd << 0);
+			if (word[0] == 's')
+				insn |= 1 << 9;
+			insn |= asm_stack[asp][1] << 3;
+			ASSERT_TREG;
+			if (asm_stack[--asp][0] == ASM_AMODE) {
+				assert(asm_stack[asp][1] == AMODE_IMM);
+				insn |= 1 << 10;
+				insn |= asm_stack[--asp][1] << 6;
+				assert(asm_stack[asp][1] < 8);
+				DEBUG("tsub at 0x%x\n", out->addr);
+			} else {
+				insn |= asm_stack[asp][1] << 6;
+				ASSERT_TREG;
+			}
 		}
 		code16(insn);
 	} else if (thumb && (W("ldr,") || W("str,"))) {
