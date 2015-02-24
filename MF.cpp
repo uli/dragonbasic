@@ -2270,6 +2270,7 @@ parse_next:
 					codeToArm(); codeAsm("0", "##", "r0", "r0",
 						"rsb,");
 				} else {
+					codeToThumb(); codeAsm("r0", "push");
 					if (can_immrot(num)) {
 						codeToArm(); codeAsm(num, "##", "r0",
 							"mvn,");
