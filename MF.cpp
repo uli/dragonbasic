@@ -1682,14 +1682,25 @@ void Parser::parseAsm(const char *word)
 		code16(insn1 | off1);
 		code16(insn2 | off2);
 	} else if (thumb && W("b,")) {
-		unsigned short insn = 0xd000;
-		CODE_TCOND;
-		unsigned int dest = asm_stack[--asp][1];
-		assert(asm_stack[asp][0] == ASM_OFF);
-		DEBUG("asm thumb cond branch from 0x%x to 0x%x\n", out->addr, dest);
-		int soff = dest - out->addr - 4;
-		assert(soff >= -256 && soff < 256);
-		insn |= (soff >> 1) & 0xff;
+		unsigned short insn;
+		if (asm_stack[asp-1][0] == ASM_COND) {
+			insn = 0xd000;
+			CODE_TCOND;
+			unsigned int dest = asm_stack[--asp][1];
+			assert(asm_stack[asp][0] == ASM_OFF);
+			DEBUG("asm thumb cond branch from 0x%x to 0x%x\n", out->addr, dest);
+			int soff = dest - out->addr - 4;
+			assert(soff >= -256 && soff < 256);
+			insn |= (soff >> 1) & 0xff;
+		} else {
+			insn = 0xe000;
+			unsigned int dest = asm_stack[--asp][1];
+			assert(asm_stack[asp][0] == ASM_OFF);
+			DEBUG("asm thumb uncond branch from 0x%x to 0x%x\n", out->addr, dest);
+			int soff = dest - out->addr - 4;
+			assert(soff >= -2048 && soff < 2048);
+			insn |= (soff >> 1) & 0x7ff;
+		}
 		code16(insn);
 	}
 
