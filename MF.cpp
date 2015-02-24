@@ -1344,6 +1344,7 @@ unsigned int Parser::armCodeCond()
 	return insn;
 }
 #define CODE_COND do { insn |= armCodeCond(); } while (0)
+#define CODE_TCOND do { insn |= armCodeCond() >> 20; } while (0)
 
 #define CODE_FLAGS do { \
 		if (asm_stack[asp - 1][0] == ASM_AMODE && \
@@ -1630,6 +1631,16 @@ void Parser::parseAsm(const char *word)
 		DEBUG("off1 0x%x off2 0x%x\n", off1, off2);
 		code16(insn1 | off1);
 		code16(insn2 | off2);
+	} else if (thumb && W("b,")) {
+		unsigned short insn = 0xd000;
+		CODE_TCOND;
+		unsigned int dest = asm_stack[--asp][1];
+		assert(asm_stack[asp][0] == ASM_OFF);
+		DEBUG("asm thumb cond branch from 0x%x to 0x%x\n", out->addr, dest);
+		int soff = dest - out->addr - 4;
+		assert(soff >= -256 && soff < 256);
+		insn |= (soff >> 1) & 0xff;
+		code16(insn);
 	}
 
 #define ARM5VOID(str, op) \
