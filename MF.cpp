@@ -302,7 +302,7 @@ public:
 	void codeBranch(unsigned int dest, const char *cond, const char *mnem);
 	void codeCallArm(unsigned int dest);
 	void codeCallThumb(unsigned int dest);
-	void codeToThumb();
+	void codeToThumb(bool save_lr = true);
 	void codeToArm();
 
 private:
@@ -2088,14 +2088,20 @@ void Parser::codeBranch(unsigned int dest, const char *cond, const char *mnem)
 	codeAsm(cond, mnem);
 }
 
-void Parser::codeToThumb()
+void Parser::codeToThumb(bool save_lr)
 {
 	if (!thumb) {
-		codeAsm("r0", "push");
-		codeAsm("1", "##", "pc", "r0", "add,");
-		codeAsm("r0", "bx,");
-		thumb = true;
-		codeAsm("r0", "pop");
+		if (save_lr) {
+			codeAsm("r0", "push");
+			codeAsm("1", "##", "pc", "r0", "add,");
+			codeAsm("r0", "bx,");
+			thumb = true;
+			codeAsm("r0", "pop");
+		} else {
+			codeAsm("1", "##", "pc", "lr", "add,");
+			codeAsm("lr", "bx,");
+			thumb = true;
+		}
 	}
 }
 
