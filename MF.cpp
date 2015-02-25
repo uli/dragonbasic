@@ -2544,10 +2544,10 @@ emit_num:
 					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
 						r5 = sym->lit_addr & 0xff000000;
 						r5_const = true;
-						codeToArm(); codeAsm(r5, "##", "r5", "mov,"); codeToThumb();
+						codeAsm(r5, "##", "r5", "mov,");
 					} else
 						DEBUG("ll1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
-					codeToArm(); codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,"); codeToThumb();
+					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
 				} else {
 					if (!r5_const || r5 != sym->lit_addr) {
 						codeToThumb();
@@ -2565,10 +2565,10 @@ emit_num:
 					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
 						r5 = sym->lit_addr & 0xff000000;
 						r5_const = true;
-						codeToArm(); codeAsm(r5, "##", "r5", "mov,"); codeToThumb();
+						codeAsm(r5, "##", "r5", "mov,");
 					} else
 						DEBUG("ls1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
-					codeToArm(); codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,"); codeToThumb();
+					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
 				} else {
 					if (!r5_const || r5 != sym->lit_addr) {
 						r5 = sym->lit_addr;
