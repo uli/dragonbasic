@@ -2692,12 +2692,9 @@ emit_num:
 		out->vaddr += 4 * size;
 	} else if (W("data:")) {
 		out->alignDword();
-		symbols.appendNew(out->addr, getNextWord());
-		thumb = false;
-		codeAsm("r0", "push");
-		codeAsm("pc", "r0", "mov,");
-		r5_const = false;
-		codeAsm("lr", "bx,");
+		sym = symbols.appendNew(out->addr, getNextWord());
+		sym->is_addr = true;
+		sym->lit_addr = out->addr;
 	// Loop stack entries for Thumb point to the branch insn to relocate,
 	// so if they are used as a branch target, we jump to entry - 2.
 	// Thus if there is no branch insn to relocate, the entry must be
