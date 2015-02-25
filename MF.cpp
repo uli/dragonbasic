@@ -2450,16 +2450,15 @@ parse_next:
 					codeToThumb(); codeAsm("r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
 					codeToThumb(); codeAsm("r0", "push");
-					if (can_immrot(num)) {
-						codeToArm(); codeAsm(num, "##", "r0",
+					if (!thumb && can_immrot(num)) {
+						codeAsm(num, "##", "r0",
 							"mov,");
-						codeToThumb();
-					} else
-						GLB_error("unimp com/1+\n");
-
-					codeToArm(); codeAsm("0", "##", "r0", "r0",
-						"rsb,");
-					codeToThumb();
+						codeAsm("0", "##", "r0", "r0",
+							"rsb,");
+					} else {
+						literals.prependNew(-num, out->addr, thumb);
+						codeAsm("pc", "0", "#(", "r0", "ldr,");
+					}
 				} else {
 					codeToThumb(); codeAsm("r0", "push");
 					if (!thumb && can_immrot(num)) {
