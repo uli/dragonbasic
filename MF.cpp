@@ -2511,8 +2511,10 @@ emit_num:
 	} else if (W("c\"")) {
 		unsigned int end_str;
 		const char *str = getNextWord();
-		assert(!currently_naked);
-		codeToArm(); codeBranch(RT__tin_slit, "bl,");
+		codeAsm("r0", "push");
+		codeAsm("pc", "r0", "mov,");
+		unsigned int skip = out->addr;
+		codeBranch(out->addr, "b,");
 		end_str = out->addr + 4 + 1 + strlen(str);
 #ifdef BUG_FOR_BUG
 		// This emulates the behavior of the legacy compiler
@@ -2521,11 +2523,14 @@ emit_num:
 		end_str++;
 #endif
 		end_str = (end_str + 3) & ~3;
-		code(end_str);
 		out->emitByte(strlen(str));
 		out->emitString(str, strlen(str));
 		while (out->addr < end_str)
 			out->emitByte(0);
+		if (thumb)
+			out->reloc10(skip, out->addr);
+		else
+			out->reloc24(skip, out->addr);
 	} else if ((sym = getSymbol(word))) {
 		DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x\n", sym->word, sym->addr,
 		      out->addr, sym->is_addr, sym->lit_addr);
