@@ -2180,11 +2180,14 @@ parse_next:
 		asm_mode = true;
 		thumb = false;
 		r5_const = false;
-	} else if (W("code")) {
-		thumb = false;
+	} else if (W("code") || W("code-thumb")) {
 		out->alignDword();
+		if (word[5] == 't')
+			thumb = true;
+		else
+			thumb = false;
 		sym = symbols.appendNew(out->addr, getNextWord());
-		sym->thumb = false;
+		sym->thumb = thumb;
 		asm_mode = true;
 		r5_const = false;
 		word_start = out->addr;
