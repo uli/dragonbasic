@@ -2465,13 +2465,9 @@ parse_next:
 						codeAsm(num, "##", "r0",
 							"mvn,");
 					} else {
-						r5_const = true;
-						r5 = num;
-						literals.prependNew(num, out->addr, thumb);
-						codeAsm("pc", "0", "#(", "r5", "ldr,");
-						codeAsm("r5", "r0", "mvn,");
+						literals.prependNew(~num, out->addr, thumb);
+						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					}
-
 				}
 			} else if (num < 8 && getNextWordIf("-")) {
 				codeToThumb(); codeAsm(num, "##", "r0", "r0", "sub,");
