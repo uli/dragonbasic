@@ -1926,10 +1926,8 @@ void Parser::parseAsm(const char *word)
 	else if (W("nv?"))
 		PUSH_ASM(ASM_COND, COND_NV);
 
-	else if (parseThumb(word)) {
-		/* nop */
-	} else if (parseArm(word)) {
-		/* nop */
+	else if (parseThumb(word) || parseArm(word)) {
+		assert(asp == 0);
 
 	} else if (W("l:")) {
 		asm_labels[lsp].label = strdup(getNextWord());
