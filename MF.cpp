@@ -2583,7 +2583,6 @@ emit_num:
 				codeToThumb(); codeAsm("r0", "pop");
 			} else {
 				// load from literal pool
-				// XXX: what about words larger than 2k?
 				codeToThumb(); codeAsm("r0", "push");
 				codeToThumb();
 				literals.prependNew(sym->lit_addr, out->addr, true);
