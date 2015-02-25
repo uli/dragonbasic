@@ -2600,7 +2600,10 @@ emit_num:
 				codeCallArm(sym->addr);
 			}
 			if (sym->has_prolog) {
-				codeToThumb(); codeAsm("r7", "ia!", "r6", "ldm,");
+				if (!thumb)
+					codeAsm("r7", "4", "(#", "r6", "ldr,");
+				else
+					codeAsm("r7", "ia!", "r6", "ldm,");
 			}
 		}
 	} else if ((icode = getIcode(word))) {
