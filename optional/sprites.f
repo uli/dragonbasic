@@ -193,28 +193,35 @@ code spritehidden ( sprite -- flag )
 end-code
 
 \ set the absolute position of a sprite
-code positionsprite ( sprite x y -- )
-	sp ia! v1 v2 ldm,
+code-thumb positionsprite ( sprite x y -- )
+	v1 v2 pop
 
-	$3000000 ## w mov,
-	v2 3 #lsl w v2 add,
+	$3000000 w LITERAL
+	3 ## v2 v2 lsl,
+	v2 w v2 add,
 	
 	\ fix position
+	$100 w LITERAL
 	0 ## tos cmp,
-	$100 ## tos tos lt? add,
+	4 #offset ge? b,
+	w tos tos add,
 	0 ## v1 cmp,
-	$200 ## v1 v1 lt? add,
+	6 #offset ge? b,
+	w v1 v1 add,
+	w v1 v1 add,
 	
 	\ y position
 	v2 0@ w ldrh,
-	$ff00 ## w w and,
-	tos w w orr,
+	$ff00 v0 LITERAL
+	v0 w and,
+	tos w orr,
 	v2 0@ w strh,
 	
 	\ x position
 	v2 2 #( w ldrh,
-	$fe00 ## w w and,
-	v1 w w orr,
+	$fe00 v0 LITERAL
+	v0 w and,
+	v1 w orr,
 	v2 2 #( w strh,
 	
 	\ done
