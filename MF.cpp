@@ -2493,10 +2493,9 @@ emit_num:
 						literals.prependNew(num, out->addr, true);
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					} else {
-						codeToThumb(); codeAsm("r0", "push");
-						codeToArm(); codeAsm(num, "##", "r0",
+						codeAsm("r0", "push");
+						codeAsm(num, "##", "r0",
 							"mov,");
-						codeToThumb();
 					}
 				} else {
 					//printf("small num\n");
