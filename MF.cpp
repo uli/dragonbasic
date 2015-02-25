@@ -2671,10 +2671,6 @@ emit_num:
 		codeToThumb(); codeAsm("r5", "pop");
 		codeToThumb(); codeAsm("r0", "0@", "r5", "str,");
 		codeToThumb(); codeAsm("r0", "pop");
-	} else if (W("aligned")) {
-		codeToArm(); codeAsm("3", "##", "r0", "tst,");
-		codeToArm(); codeAsm("3", "##", "r0", "r0", "bic,");
-		codeToArm(); codeAsm("4", "##", "r0", "r0", "ne?", "add,"); codeToThumb();
 	} else if (W("variable")) {
 		sym = symbols.appendNew(out->addr, getNextWord());
 		sym->is_addr = true;
