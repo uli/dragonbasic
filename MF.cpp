@@ -1853,6 +1853,8 @@ bool Parser::parseThumb(const char *word)
 		assert(asm_stack[asp][0] == ASM_IMM ||
 		       asm_stack[asp][0] == ASM_OFF);
 		code16(insn);
+	} else if (W("ret")) {
+		code16(0x4700 | (REG_LR << 3));
 	} else
 		return false;
 
