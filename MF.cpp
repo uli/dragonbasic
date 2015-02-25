@@ -2159,8 +2159,7 @@ parse_next:
 	if (r5_const)
 		DEBUG("r5 now at 0x%x\n", r5);
 
-	if (out->addr - word_start > 0x380 && literals.next) {
-		codeToThumb();
+	if (thumb && out->addr - word_start > 0x380 && literals.next) {
 		unsigned int branch = out->addr;
 		code16(0);
 		literals.code(out);
@@ -2251,6 +2250,8 @@ parse_next:
 		currently_naked = word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
 		if (!strcmp(word, "start")) {
+			// Runtime assumes that "start" is an ARM word, so we
+			// have to code a switch to Thumb.
 			sym->thumb = false;
 			thumb = false;
 			codeToThumb();
@@ -2280,54 +2281,54 @@ parse_next:
 		literals.code(out);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
-			codeToThumb(); codeAsm("r1", "pop");
+			codeAsm("r1", "pop");
 		} else if (getNextWordIf("-")) {
 			r5_const = false;
-			codeToThumb(); codeAsm("r5", "pop");
-			codeToThumb(); codeAsm("r5", "r0", "r0", "sub,");
+			codeAsm("r5", "pop");
+			codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("over")) {
 			r5_const = false;
-			codeToThumb(); codeAsm("sp", "0@", "r5", "ldr,");
-			codeToThumb(); codeAsm("r5", "push");
-			codeToThumb(); codeAsm("sp", "4", "#(", "r0", "str,");
+			codeAsm("sp", "0@", "r5", "ldr,");
+			codeAsm("r5", "push");
+			codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
-			codeToThumb(); code16(0xbc00 | (1 << REG_R2) | (1 << REG_R3)); // pop {r2,r3}
-			codeToThumb(); codeAsm("r2", "0@", "r0", "str,");
-			codeToThumb(); codeAsm("r3", "r0", "mov,");
+			code16(0xbc00 | (1 << REG_R2) | (1 << REG_R3)); // pop {r2,r3}
+			codeAsm("r2", "0@", "r0", "str,");
+			codeAsm("r3", "r0", "mov,");
 		} else {
 			if (!thumb)
 				codeAsm("sp", "r0", "r0", "swp,");
 			else {
 				r5_const = false;
-				codeToThumb(); codeAsm("r5", "pop");
-				codeToThumb(); codeAsm("r0", "push");
-				codeToThumb(); codeAsm("r5", "r0", "mov,");
+				codeAsm("r5", "pop");
+				codeAsm("r0", "push");
+				codeAsm("r5", "r0", "mov,");
 			}
 		}
 	} else if (W("dup")) {
 		if (getNextWordIf("a!")) {
-			codeToThumb(); codeAsm("r0", "r1", "mov,");
+			codeAsm("r0", "r1", "mov,");
 		} else {
-			codeToThumb(); codeAsm("r0", "push");
+			codeAsm("r0", "push");
 		}
 	} else if (W("over")) {
 		if (getNextWordIf("-")) {
 			r5_const = false;
-			codeToThumb(); codeAsm("sp", "0@", "r5", "ldr,");
-			codeToThumb(); codeAsm("r5", "r0", "r0", "sub,");
+			codeAsm("sp", "0@", "r5", "ldr,");
+			codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("!")) {
 			r5_const = false;
-			codeToThumb(); codeAsm("r5", "pop");
-			codeToThumb(); codeAsm("r5", "0@", "r0", "str,");
-			codeToThumb(); codeAsm("r5", "r0", "mov,");
+			codeAsm("r5", "pop");
+			codeAsm("r5", "0@", "r0", "str,");
+			codeAsm("r5", "r0", "mov,");
 		} else {
-			codeToThumb(); codeAsm("r0", "push");
-			codeToThumb(); codeAsm("sp", "4", "#(", "r0", "ldr,");
+			codeAsm("r0", "push");
+			codeAsm("sp", "4", "#(", "r0", "ldr,");
 		}
 	} else if (W("pop")) {
-		codeToThumb(); codeAsm("r0", "push");
-		codeToThumb(); codeAsm("r6", "r0", "mov,");
-		codeToThumb(); codeAsm("r7", "ia!", "r6", "ldm,");
+		codeAsm("r0", "push");
+		codeAsm("r6", "r0", "mov,");
+		codeAsm("r7", "ia!", "r6", "ldm,");
 	} else if (W("push")) {
 		if (!thumb)
 			codeAsm("r7", "db!", "r6", "stm,");
@@ -2335,35 +2336,35 @@ parse_next:
 			codeAsm("4", "##", "r7", "sub,");
 			codeAsm("r7", "0@", "r6", "str,");
 		}
-		codeToThumb(); codeAsm("r0", "r6", "mov,");
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r0", "r6", "mov,");
+		codeAsm("r0", "pop");
 	} else if (W("0=")) {
-		codeToThumb(); codeAsm("1", "##", "r0", "sub,");
+		codeAsm("1", "##", "r0", "sub,");
 		// If there is a borrow (ie. carry clear), we had 0 and are
 		// now at 0xffffffff -> mission accomplished.
-		codeToThumb(); codeBranch(out->addr + 4, "cc?", "b,");
-		codeToThumb(); codeAsm("0", "##", "r0", "mov,");
+		codeBranch(out->addr + 4, "cc?", "b,");
+		codeAsm("0", "##", "r0", "mov,");
 	} else if (W("0<")) {
 		if (!thumb)
 			codeAsm("r0", "31", "#asr", "r0", "mov,");
 		else
 			codeAsm("31", "##", "r0", "r0", "asr,");
 	} else if (W("1+")) {
-		codeToThumb(); codeAsm("1", "##", "r0", "r0", "add,");
+		codeAsm("1", "##", "r0", "r0", "add,");
 	} else if (W("com")) {
 		if (!thumb && getNextWordIf("1+")) {
 			codeAsm("0", "##", "r0", "r0", "rsb,");
 		} else {
-			codeToThumb(); codeAsm("r0", "r0", "mvn,");
+			codeAsm("r0", "r0", "mvn,");
 		}
 	} else if (W("and")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r5", "pop");
-		codeToThumb(); codeAsm("r5", "r0", "and,");
+		codeAsm("r5", "pop");
+		codeAsm("r5", "r0", "and,");
 	} else if (W("or")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r5", "pop");
-		codeToThumb(); codeAsm("r5", "r0", "orr,");
+		codeAsm("r5", "pop");
+		codeAsm("r5", "r0", "orr,");
 	} else if (isNum(word)) {
 		unsigned int num = TIN_parseNum(word);
 		if (getNextWordIf("swi")) {
@@ -2439,7 +2440,7 @@ parse_next:
 				/* nop */
 			} else if (getNextWordIf("com")) {
 				if (getNextWordIf("and")) {
-					codeToThumb(); codeAsm("r0", "push");
+					codeAsm("r0", "push");
 					if ((thumb && num < 256) ||
 					    (!thumb && can_immrot(num))) {
 						codeAsm(num, "##", "r0",
@@ -2452,10 +2453,10 @@ parse_next:
 					}
 
 					r5_const = false;
-					codeToThumb(); codeAsm("r5", "pop");
-					codeToThumb(); codeAsm("r5", "r0", "bic,");
+					codeAsm("r5", "pop");
+					codeAsm("r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
-					codeToThumb(); codeAsm("r0", "push");
+					codeAsm("r0", "push");
 					if (!thumb && can_immrot(num)) {
 						codeAsm(num, "##", "r0",
 							"mov,");
@@ -2466,7 +2467,7 @@ parse_next:
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					}
 				} else {
-					codeToThumb(); codeAsm("r0", "push");
+					codeAsm("r0", "push");
 					if (!thumb && can_immrot(num)) {
 						codeAsm(num, "##", "r0",
 							"mvn,");
@@ -2476,7 +2477,7 @@ parse_next:
 					}
 				}
 			} else if (num < 8 && getNextWordIf("-")) {
-				codeToThumb(); codeAsm(num, "##", "r0", "r0", "sub,");
+				codeAsm(num, "##", "r0", "r0", "sub,");
 			} else if (getNextWordIf("*")) {
 				if (!thumb && can_immrot(num))
 					codeAsm(num, "##", "r5", "mov,");
@@ -2486,7 +2487,7 @@ parse_next:
 				}
 				r5 = num;
 				r5_const = true;
-				codeToThumb(); codeAsm("r5", "r0", "mul,");
+				codeAsm("r5", "r0", "mul,");
 			} else if (!thumb && can_immrot(num) && getNextWordIf("and")) {
 				codeAsm(num, "##", "r0", "r0", "and,");
 			} else {
@@ -2494,9 +2495,8 @@ parse_next:
 emit_num:
 				if (num > 0xff) {
 					if (thumb || !can_immrot(num)) {
-						codeToThumb(); codeAsm("r0", "push");
-						codeToThumb();
-						literals.prependNew(num, out->addr, true);
+						codeAsm("r0", "push");
+						literals.prependNew(num, out->addr, thumb);
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					} else {
 						codeAsm("r0", "push");
@@ -2504,9 +2504,9 @@ emit_num:
 							"mov,");
 					}
 				} else {
-					//printf("small num\n");
-					codeToThumb(); codeAsm("r0", "push");
-					codeToThumb(); codeAsm(num, "##", "r0", "mov,");
+					DEBUG("small num 0x%x\n", num);
+					codeAsm("r0", "push");
+					codeAsm(num, "##", "r0", "mov,");
 				}
 			}
 		} else if (getNextWordIf(",")) {
@@ -2545,7 +2545,7 @@ emit_num:
 		if (sym->is_addr) {
 			if (getNextWordIf("@")) {
 				DEBUG("litload\n");
-				codeToThumb(); codeAsm("r0", "push");
+				codeAsm("r0", "push");
 				if (!thumb && small_offset) {
 					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
 						r5 = sym->lit_addr & 0xff000000;
@@ -2556,14 +2556,13 @@ emit_num:
 					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
 				} else {
 					if (!r5_const || r5 != sym->lit_addr) {
-						codeToThumb();
-						literals.prependNew(sym->lit_addr, out->addr, true);
+						literals.prependNew(sym->lit_addr, out->addr, thumb);
 						r5 = sym->lit_addr;
 						r5_const = true;
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
 					} else
 						DEBUG("ll2 skip r5 load of 0x%x\n", sym->lit_addr);
-					codeToThumb(); codeAsm("r5", "0@", "r0", "ldr,");
+					codeAsm("r5", "0@", "r0", "ldr,");
 				}
 			} else if (getNextWordIf("!")) {
 				DEBUG("litstore\n");
@@ -2579,19 +2578,17 @@ emit_num:
 					if (!r5_const || r5 != sym->lit_addr) {
 						r5 = sym->lit_addr;
 						r5_const = true;
-						codeToThumb();
-						literals.prependNew(sym->lit_addr, out->addr, true);
+						literals.prependNew(sym->lit_addr, out->addr, thumb);
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
 					} else
 						DEBUG("ls2 skip r5 load of 0x%x\n", sym->lit_addr);
-					codeToThumb(); codeAsm("r5", "0@", "r0", "str,");
+					codeAsm("r5", "0@", "r0", "str,");
 				}
-				codeToThumb(); codeAsm("r0", "pop");
+				codeAsm("r0", "pop");
 			} else {
 				// load from literal pool
-				codeToThumb(); codeAsm("r0", "push");
-				codeToThumb();
-				literals.prependNew(sym->lit_addr, out->addr, true);
+				codeAsm("r0", "push");
+				literals.prependNew(sym->lit_addr, out->addr, thumb);
 				codeAsm("pc", "0", "#(", "r0", "ldr,");
 			}
 		} else {
@@ -2617,32 +2614,33 @@ emit_num:
 		codeToArm();
 		out->emitString(icode->code, icode->len);
 		r5_const = false;
+		// XXX: what if we already were in ARM mode?
 		codeToThumb();
 	} else if (W("drop")) {
 		if (getNextWordIf("a")) {
-			codeToThumb(); codeAsm("r1", "r0", "mov,");
+			codeAsm("r1", "r0", "mov,");
 		} else {
-			codeToThumb(); codeAsm("r0", "pop");
+			codeAsm("r0", "pop");
 		}
 	} else if (W("+")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r5", "pop");
-		codeToThumb(); codeAsm("r0", "r5", "r0", "add,");
+		codeAsm("r5", "pop");
+		codeAsm("r0", "r5", "r0", "add,");
 	} else if (W("-")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r5", "pop");
-		codeToThumb(); codeAsm("r0", "r5", "r0", "sub,");
+		codeAsm("r5", "pop");
+		codeAsm("r0", "r5", "r0", "sub,");
 	} else if (W("*")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r5", "pop");
-		codeToThumb(); codeAsm("r5", "r0", "mul,");
+		codeAsm("r5", "pop");
+		codeAsm("r5", "r0", "mul,");
 	} else if (W("a!")) {
-		codeToThumb(); codeAsm("r0", "r1", "mov,");
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r0", "r1", "mov,");
+		codeAsm("r0", "pop");
 	} else if (W("a")) {
-		codeToThumb(); codeAsm("r0", "push");
+		codeAsm("r0", "push");
 		// Thumb substitute for "movs"
-		codeToThumb(); codeAsm("0", "##", "r1", "r0", "add,");
+		codeAsm("0", "##", "r1", "r0", "add,");
 	} else if (W("c!a")) {
 		if (!thumb)
 			codeAsm("r1", "1", "(#", "r0", "strb,");
@@ -2652,9 +2650,9 @@ emit_num:
 		}
 		codeAsm("r0", "pop");
 	} else if (W("@")) {
-		codeToThumb(); codeAsm("r0", "0@", "r0", "ldr,");
+		codeAsm("r0", "0@", "r0", "ldr,");
 	} else if (W("@a")) {
-		codeToThumb(); codeAsm("r0", "push");
+		codeAsm("r0", "push");
 		if (thumb) {
 			codeAsm("r1", "0@", "r0", "ldr,");
 			codeAsm("4", "##", "r1", "add,");
@@ -2662,7 +2660,7 @@ emit_num:
 			codeAsm("r1", "4", "(#", "r0", "ldr,");
 		}
 	} else if (W("c@a")) {
-		codeToThumb(); codeAsm("r0", "push");
+		codeAsm("r0", "push");
 		if (!thumb)
 			codeAsm("r1", "1", "(#", "r0", "ldrb,");
 		else {
@@ -2670,13 +2668,13 @@ emit_num:
 			codeAsm("1", "##", "r1", "add,");
 		}
 	} else if (W("r@")) {
-		codeToThumb(); codeAsm("r0", "push");
-		codeToThumb(); codeAsm("r6", "r0", "mov,");
+		codeAsm("r0", "push");
+		codeAsm("r6", "r0", "mov,");
 	} else if (W("!")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r5", "pop");
-		codeToThumb(); codeAsm("r0", "0@", "r5", "str,");
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r5", "pop");
+		codeAsm("r0", "0@", "r5", "str,");
+		codeAsm("r0", "pop");
 	} else if (W("variable")) {
 		sym = symbols.appendNew(out->addr, getNextWord());
 		sym->is_addr = true;
@@ -2709,8 +2707,8 @@ emit_num:
 	// 2" to make any jumps to it end up in the right place.
 	} else if (W("if")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r0", "r0", "tst,");
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r0", "r0", "tst,");
+		codeAsm("r0", "pop");
 		if (thumb) {
 			codeBranch(out->addr + 4, "ne?", "b,");
 			loop_stack[lpsp++] = out->addr;
@@ -2743,8 +2741,8 @@ emit_num:
 			loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
 		r5_const = false;
-		codeToThumb(); codeAsm("r0", "r0", "tst,");
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r0", "r0", "tst,");
+		codeAsm("r0", "pop");
 		if (thumb) {
 			codeBranch(out->addr + 4, "ne?", "b,");
 			loop_stack[lpsp++] = out->addr;
@@ -2785,15 +2783,15 @@ emit_num:
 		codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		codeAsm("lr", "bx,");
 	} else if (out->use_pimp && W("modvblank")) {
-		codeToThumb(); codeAsm("r0", "push");
+		codeAsm("r0", "push");
 		r5_const = false;
 		codeCallThumb(RT_pimp_vblank);
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modframe")) {
-		codeToThumb(); codeAsm("r0", "push");
+		codeAsm("r0", "push");
 		r5_const = false;
 		codeCallThumb(RT_pimp_frame);
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modinit")) {
 		if (!thumb)
 			codeAsm("r0", "4", "(#", "r1", "ldr,");
@@ -2803,7 +2801,7 @@ emit_num:
 		}
 		r5_const = false;
 		codeCallThumb(RT_pimp_init);
-		codeToThumb(); codeAsm("r0", "pop");
+		codeAsm("r0", "pop");
 	} else {
 		GLB_error("unknown word %s at %d\n", word,
 			  (int)(tptr - text));
