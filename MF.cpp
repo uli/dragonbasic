@@ -1722,6 +1722,35 @@ bool Parser::parseThumb(const char *word)
 				GLB_error("internal error thumb ldst\n");
 		}
 		code16(insn);
+	} else if (W("ldrh,") || W("strh,")) {
+		unsigned short insn;
+		unsigned int rd = asm_stack[--asp][1];
+		ASSERT_TREG;
+		--asp;
+		assert(asm_stack[asp][0] == ASM_AMODE);
+		if (asm_stack[asp][1] == AMODE_PREIND ||
+		    asm_stack[asp][1] == AMODE_IND) {
+			insn = 0x8000;
+			if (word[0] == 'l')
+				insn |= 0x800;
+			if (asm_stack[asp][1] == AMODE_PREIND) {
+				insn |= (asm_stack[--asp][1] >> 1) << 6;
+				assert(asm_stack[asp][1] < 64);
+			}
+			insn |= asm_stack[--asp][1] << 3;
+			ASSERT_TREG;
+		} else if (asm_stack[asp][1] == AMODE_PREINDR) {
+			insn = 0x5200;
+			if (word[0] == 'l')
+				insn |= 0x800;
+			insn |= asm_stack[--asp][1] << 6;	// offset
+			ASSERT_TREG;
+			insn |= asm_stack[--asp][1] << 3;	// base
+			ASSERT_TREG;
+		} else
+			GLB_error("invalid addressing mode on %s\n", word);
+		insn |= rd << 0;
+		code16(insn);
 	} else if ((W("ldm,") || W("stm,"))) {
 		// XXX: unused and thus entirely untested
 		unsigned short insn = 0xc000;
