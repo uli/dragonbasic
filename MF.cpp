@@ -2091,9 +2091,11 @@ void Parser::codeBranch(unsigned int dest, const char *cond, const char *mnem)
 void Parser::codeToThumb()
 {
 	if (!thumb) {
-		codeAsm("1", "##", "pc", "lr", "add,");
-		codeAsm("lr", "bx,");
+		codeAsm("r0", "push");
+		codeAsm("1", "##", "pc", "r0", "add,");
+		codeAsm("r0", "bx,");
 		thumb = true;
+		codeAsm("r0", "pop");
 	}
 }
 
@@ -2240,7 +2242,7 @@ parse_next:
 	} else if (W(":") || W(":n")) {
 		out->alignDword();
 		r5_const = false;
-		currently_naked = false;//word[1] == 'n';
+		currently_naked = word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
 		if (!strcmp(word, "start")) {
 			sym->thumb = false;
@@ -2263,12 +2265,10 @@ parse_next:
 		DEBUG("===start label %s at 0x%x\n", sym->word, sym->addr);
 	} else if (W(";")) {
 		r5_const = false;
-		if (currently_naked) {
-			assert(!thumb);
+		if (currently_naked)
 			codeAsm("lr", "bx,");
-		} else {
-			codeToThumb(); codeAsm("r6", "bx,");
-		}
+		else
+			codeAsm("r6", "bx,");
 		currently_naked = false;
 		thumb = false;
 		literals.code(out);
