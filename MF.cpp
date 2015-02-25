@@ -1845,6 +1845,14 @@ bool Parser::parseThumb(const char *word)
 		ASSERT_IMM;
 		assert(asm_stack[asp][1] < 256);
 		code16(insn);
+	} else if (W("literal")) {
+		unsigned short insn = 0x4800;
+		insn |= asm_stack[--asp][1] << 8;
+		ASSERT_TREG;
+		literals.prependNew(asm_stack[--asp][1], out->addr, true);
+		assert(asm_stack[asp][0] == ASM_IMM ||
+		       asm_stack[asp][0] == ASM_OFF);
+		code16(insn);
 	} else
 		return false;
 
