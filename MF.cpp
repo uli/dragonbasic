@@ -2695,10 +2695,12 @@ emit_num:
 		sym = symbols.appendNew(out->addr, getNextWord());
 		sym->is_addr = true;
 		sym->lit_addr = out->addr;
-	// Loop stack entries for Thumb point to the branch insn to relocate,
-	// so if they are used as a branch target, we jump to entry - 2.
-	// Thus if there is no branch insn to relocate, the entry must be
-	// encoded as the address + 2.
+
+	// Loop stack entries for Thumb point to the (unconditional) branch
+	// insn to relocate, so if they are used as a branch target, we must
+	// jump to "entry - 2" (the conditional branch).  If there is no
+	// branch insn to relocate, the entry must be encoded as "address +
+	// 2" to make any jumps to it end up in the right place.
 	} else if (W("if")) {
 		r5_const = false;
 		codeToThumb(); codeAsm("r0", "r0", "tst,");
