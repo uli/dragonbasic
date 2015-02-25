@@ -2678,7 +2678,7 @@ emit_num:
 		out->vaddr += 4;
 	} else if (W("create")) {
 		out->alignDword();
-		symbols.appendNew(out->addr, getNextWord());
+		sym = symbols.appendNew(out->addr, getNextWord());
 		thumb = false;
 		unsigned int size = TIN_parseNum(getNextWord());
 		const char *type = getNextWord();
@@ -2687,12 +2687,8 @@ emit_num:
 		DEBUG("reserve type %s at 0x%x\n", type, out->vaddr);
 		if (strcmp(getNextWord(), "reserve"))
 			GLB_error("create without reserve\n");
-		codeAsm("r0", "push");
-		r5_const = false;	// XXX: actually it is constant...
-		codeToArm(); codeAsm("4", "##", "pc", "r5", "add,");
-		codeToArm(); codeAsm("r5", "0@", "r0", "ldr,");
-		codeToArm(); codeAsm("lr", "bx,");
-		code(out->vaddr);
+		sym->is_addr = true;
+		sym->lit_addr = out->vaddr;
 		out->vaddr += 4 * size;
 	} else if (W("data:")) {
 		out->alignDword();
