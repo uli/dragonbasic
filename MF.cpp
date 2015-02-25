@@ -1831,8 +1831,10 @@ bool Parser::parseThumb(const char *word)
 		code16(insn);
 	} else if (W("pop")) {
 		unsigned short insn = 0xbc00;
-		insn |= 1 << asm_stack[--asp][1];
-		ASSERT_TREG;
+		while (asp) {
+			insn |= 1 << asm_stack[--asp][1];
+			ASSERT_TREG;
+		}
 		code16(insn);
 	} else if (W("push")) {
 		unsigned short insn = 0xb400;
