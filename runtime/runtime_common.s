@@ -73,13 +73,6 @@ irq_handler:
 	pop	{r4-r11, lr}
 	bx	lr
 
-.global _tin_slit
-_tin_slit:
-	stmfd	sp!, {r0}
-	movs	r0, lr
-	ldrt	lr, [r0], #4
-	bx	lr
-
 .global _tin_wlit
 _tin_wlit:
 	ldrt	r5, [lr], #4
