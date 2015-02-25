@@ -2778,7 +2778,7 @@ emit_num:
 		codeAsm("sp", "db!", "lr", "r10", "r9", "r8", "stm,");
 		codeAsm("$3000000", "##", "r7", "mov,");
 		codeAsm("$f00", "##", "r7", "r7", "add,");
-		codeToThumb();
+		codeToThumb(false);
 	} else if (W("exit")) {
 		codeToArm(); codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		r5_const = false;
