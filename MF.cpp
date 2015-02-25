@@ -2795,7 +2795,12 @@ emit_num:
 		codeCallThumb(RT_pimp_frame);
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modinit")) {
-		codeToArm(); codeAsm("r0", "4", "(#", "r1", "ldr,");
+		if (!thumb)
+			codeAsm("r0", "4", "(#", "r1", "ldr,");
+		else {
+			codeAsm("r0", "0@", "r1", "ldr,");
+			codeAsm("4", "##", "r0", "add,");
+		}
 		r5_const = false;
 		codeCallThumb(RT_pimp_init);
 		codeToThumb(); codeAsm("r0", "pop");
