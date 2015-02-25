@@ -64,22 +64,26 @@ code sizesprite ( sprite shape size -- )
 end-code
 
 \ set a sprite to 16-color and select palette
-code colorsprite ( sprite index -- )
+code-thumb colorsprite ( sprite index -- )
 	w pop
 	
 	\ sprite address
-	$3000000 ## v2 mov,
-	w 3 #lsl v2 w add,
+	$3000000 v2 LITERAL
+	3 ## w v1 lsl,
+	v1 v2 w add,
 	
 	\ set palette entry
 	w 4 #( v2 ldrh, 
-	$f000 ## v2 v2 bic,
-	tos 12 #lsl v2 tos orr,
-	w 4 #( tos strh,
+	$f000 v1 LITERAL
+	v1 v2 bic,
+	12 ## tos v1 lsl,
+	v1 v2 orr,
+	w 4 #( v2 strh,
 	
 	\ clear 256-color bit
 	w 0@ v2 ldrh,
-	$2000 ## v2 v2 bic,
+	$2000 v1 LITERAL
+	v1 v2 bic,
 	w 0@ v2 strh,
 
 	\ done
