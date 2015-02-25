@@ -2780,23 +2780,24 @@ emit_num:
 		codeAsm("$f00", "##", "r7", "r7", "add,");
 		codeToThumb(false);
 	} else if (W("exit")) {
-		codeToArm(); codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		r5_const = false;
-		codeToArm(); codeAsm("lr", "bx,");
+		codeToArm();
+		codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
+		codeAsm("lr", "bx,");
 	} else if (out->use_pimp && W("modvblank")) {
 		codeToThumb(); codeAsm("r0", "push");
 		r5_const = false;
-		codeToArm(); codeCallThumb(RT_pimp_vblank);
+		codeCallThumb(RT_pimp_vblank);
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modframe")) {
 		codeToThumb(); codeAsm("r0", "push");
 		r5_const = false;
-		codeToArm(); codeCallThumb(RT_pimp_frame);
+		codeCallThumb(RT_pimp_frame);
 		codeToThumb(); codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modinit")) {
 		codeToArm(); codeAsm("r0", "4", "(#", "r1", "ldr,");
 		r5_const = false;
-		codeToArm(); codeCallThumb(RT_pimp_init);
+		codeCallThumb(RT_pimp_init);
 		codeToThumb(); codeAsm("r0", "pop");
 	} else {
 		GLB_error("unknown word %s at %d\n", word,
