@@ -263,7 +263,8 @@ void GLB_runProgram(const char *lpApplicationName, const char *args,
 	CloseHandle(ProcessInformation.hThread);
 	GLB_popDir();
 #else
-	system(CommandLine);
+	if (system(CommandLine))
+		GLB_error(ERR_LAUNCH, lpApplicationName);
 #endif
 }
 
