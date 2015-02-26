@@ -84,6 +84,7 @@ Symbol::Symbol(unsigned int addr, const char *word)
 	next = NULL;
 	has_prolog = false;
 	is_addr = false;
+	is_const = false;
 	lit_addr = 0;
 	thumb = false;
 }
@@ -95,6 +96,7 @@ Symbol::Symbol()
 	word = NULL;
 	has_prolog = false;
 	is_addr = false;
+	is_const = false;
 	lit_addr = 0;
 	thumb = false;
 }

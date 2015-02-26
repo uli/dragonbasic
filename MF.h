@@ -49,6 +49,7 @@ public:
 	Symbol *next;
 	bool has_prolog;
 	bool is_addr;
+	bool is_const;
 	unsigned int lit_addr;
 	bool thumb;
 };
