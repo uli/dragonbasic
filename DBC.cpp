@@ -2133,7 +2133,8 @@ BasicObject *Parser::parseNext()
 
 	do {
 		if (*text_ptr > ' ') {
-			if (isalpha(*text_ptr)) {
+			if (isalpha(*text_ptr) ||
+			    (*text_ptr == '_' && text_ptr[1] != '\n')) {
 				result = parseToken();
 			} else {
 				if (isdigit(*text_ptr)) {
