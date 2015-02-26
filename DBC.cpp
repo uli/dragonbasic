@@ -518,6 +518,9 @@ void Compiler::doDirective(BasicObject *bobj)
 	case DIR_BITMAP:
 		doDirBitmap();
 		break;
+	case DIR_MAP:
+		doDirMap();
+		break;
 	case DIR_PALETTE:
 		doDirPalette();
 		break;
@@ -627,6 +630,15 @@ TIN *Compiler::doDirBitmap()
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
 	checkNotSegment(SEG_INTR | SEG_SUB, "#BITMAP");
 	return emitTin("BITMAP\" %s\"", bobj->val.symbolic);
+}
+
+TIN *Compiler::doDirMap()
+{
+	BasicObject *bobj;
+
+	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
+	checkNotSegment(SEG_INTR | SEG_SUB, "#MAP");
+	return emitTin("MAP\" %s\"", bobj->val.symbolic);
 }
 
 TIN *Compiler::doDirPalette()
@@ -2371,6 +2383,8 @@ BasicObject *Parser::parseDirective()
 		bobj = new BasicObject(DIR_IMPORT, cur_line);
 	} else if (!strcasecmp(dir_name, "bitmap")) {
 		bobj = new BasicObject(DIR_BITMAP, cur_line);
+	} else if (!strcasecmp(dir_name, "map")) {
+		bobj = new BasicObject(DIR_MAP, cur_line);
 	} else if (!strcasecmp(dir_name, "palette")) {
 		bobj = new BasicObject(DIR_PALETTE, cur_line);
 	} else if (!strcasecmp(dir_name, "sound")) {

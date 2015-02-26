@@ -251,6 +251,7 @@ enum directive_t {
 	DIR_MUSIC = 7,
 	DIR_CONSTANT = 8,
 	DIR_REQUIRES = 9,
+	DIR_MAP = 10,
 };
 
 enum rop_t {
@@ -365,6 +366,7 @@ public:
 	void doDirInclude();
 	TIN *doDirImport();
 	TIN *doDirBitmap();
+	TIN *doDirMap();
 	TIN *doDirPalette();
 	TIN *doDirSound();
 	TIN *doDirMusic();
