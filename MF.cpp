@@ -58,6 +58,7 @@ public:
 	char *code;
 	char *cp;
 	int len;
+	bool thumb;
 	Icode *next;
 };
 
@@ -67,6 +68,7 @@ Icode::Icode()
 	cp = code = NULL;
 	len = 0;
 	next = NULL;
+	thumb = false;
 }
 
 Icode::Icode(const char *word)
@@ -75,6 +77,7 @@ Icode::Icode(const char *word)
 	cp = code = new char[1 << 16];
 	len = 0;
 	next = NULL;
+	thumb = false;
 }
 
 Icode *Icode::appendNew(const char *word)
@@ -2237,10 +2240,16 @@ parse_next:
 		while (isspace(*tptr))
 			tptr++;
 		//printf("==\n");
-	} else if (W("icode")) {
+	} else if (W("icode") || W("icode-thumb")) {
 		cur_icode = icodes.appendNew(getNextWord());
 		asm_mode = true;
-		thumb = false;
+		if (word[6] == 't') {
+			thumb = true;
+			cur_icode->thumb = true;
+		} else {
+			thumb = false;
+			cur_icode->thumb = false;
+		}
 		r5_const = false;
 	} else if (W("code") || W("code-thumb")) {
 		out->alignDword();
@@ -2629,11 +2638,22 @@ emit_num:
 	} else if ((icode = getIcode(word))) {
 		DEBUG("emit icode %s len %d\n", icode->word,
 		      icode->len);
-		codeToArm();
+		bool change = false;
+		if (thumb != icode->thumb) {
+			change = true;
+			if (thumb)
+				codeToArm();
+			else
+				codeToThumb();
+		}
 		out->emitString(icode->code, icode->len);
+		if (change) {
+			if (icode->thumb)
+				codeToArm();
+			else
+				codeToThumb();
+		}
 		r5_const = false;
-		// XXX: what if we already were in ARM mode?
-		codeToThumb();
 	} else if (W("drop")) {
 		if (getNextWordIf("a")) {
 			codeAsm("r1", "r0", "mov,");
