@@ -2776,8 +2776,6 @@ emit_num:
 		sym->lit_addr = out->addr;
 		thumb = false;
 		codeAsm("sp", "db!", "lr", "r10", "r9", "r8", "stm,");
-		codeAsm("$3000000", "##", "r7", "mov,");
-		codeAsm("$f00", "##", "r7", "r7", "add,");
 		codeToThumb(false);
 	} else if (W("exit")) {
 		r5_const = false;
