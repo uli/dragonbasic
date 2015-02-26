@@ -2383,6 +2383,13 @@ emit_num:
 			}
 		} else if (getNextWordIf(",")) {
 			code(num);
+		} else if (getNextWordIf("n>r")) {
+			unsigned off = 0xc;
+			while (num--) {
+				codeAsm("r7", off, "#(", "r0", "str,");
+				codeAsm("r0", "pop");
+				off += 4;
+			}
 		} else {
 			GLB_error("unimp num\n");
 		}
