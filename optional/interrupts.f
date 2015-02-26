@@ -22,7 +22,7 @@ code onkey ( addr n1 n2 -- )
 	r9 -206 #( r1 strh,
 	
 	\ write address of interrupt handler
-	$3000000 ## r8 mov,
+	IWRAM ## r8 mov,
 	GLOBALS ## r8 r8 add,
 	r8 INT_P1 #( r2 str,
 	0 ## r2 cmp,

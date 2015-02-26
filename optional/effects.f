@@ -28,7 +28,7 @@ code spritemosaic ( sprite flag -- )
 	0 ## tos cmp,
 	
 	\ address of sprite
-	$3000000 ## v2 mov,
+	IWRAM ## v2 mov,
 	w 3 #lsl v2 w add,
 	
 	\ load and clear or set

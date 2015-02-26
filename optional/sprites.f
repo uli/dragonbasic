@@ -21,7 +21,7 @@
 \ create a new sprite
 code makesprite ( sprite n -- )
 	sp ia! v1 v3 ldm,
-	$3000000 ## v2 mov,
+	IWRAM ## v2 mov,
 	v1 3 #lsl v2 v1 add,
 	
 	\ clear sprite attribute 0 and set 256 color bit
@@ -41,7 +41,7 @@ end-code
 \ set the shape and size of a sprite
 code sizesprite ( sprite shape size -- )
 	sp ia! v1 v2 ldm,
-	$3000000 ## v3 mov,
+	IWRAM ## v3 mov,
 	
 	\ get sprite address
 	v2 3 #lsl v3 v2 add,
@@ -68,7 +68,7 @@ code-thumb colorsprite ( sprite index -- )
 	w pop
 	
 	\ sprite address
-	$3000000 v2 LITERAL
+	IWRAM v2 LITERAL
 	3 ## w v1 lsl,
 	v1 v2 w add,
 	
@@ -118,7 +118,7 @@ end-code
 
 \ return the x coordinate of a sprite
 code spritex ( sprite -- x )
-	$3000000 ## w mov,
+	IWRAM ## w mov,
 	tos 3 #lsl w tos add,
 	tos 2 #( tos ldrh,
 	
@@ -133,7 +133,7 @@ end-code
 
 \ return the y coordinate of a sprite
 code spritey ( sprite -- y )
-	$3000000 ## w mov,
+	IWRAM ## w mov,
 	tos 3 #lsl w tos add,
 	tos 0@ tos ldrh,
 	
@@ -148,7 +148,7 @@ end-code
 
 \ move the sprite offscreen so it is hidden
 code hidesprite ( sprite -- )
-	$3000000 ## w mov,
+	IWRAM ## w mov,
 	tos 3 #lsl w tos add,
 	
 	\ y = 160
@@ -170,7 +170,7 @@ end-code
 
 \ returns -1 if sprite is offscreen or 0 if onscreen
 code spritehidden ( sprite -- flag )
-	$3000000 ## w mov,
+	IWRAM ## w mov,
 	r0 3 #lsl w r0 add,
 	
 	\ check y >= 160
@@ -196,7 +196,7 @@ end-code
 code-thumb positionsprite ( sprite x y -- )
 	v1 v2 pop
 
-	$3000000 w LITERAL
+	IWRAM w LITERAL
 	3 ## v2 v2 lsl,
 	v2 w v2 add,
 	
@@ -234,7 +234,7 @@ code movesprite ( sprite dx dy -- )
 	sp ia! v1 v2 ldm,
 
 	\ get address
-	$3000000 ## w mov,
+	IWRAM ## w mov,
 	v2 3 #lsl w v2 add,
 	
 	\ setup registers for speed
@@ -282,7 +282,7 @@ code ordersprite ( sprite priority -- )
 	w pop
 	
 	\ address of sprite
-	$3000000 ## v2 mov,
+	IWRAM ## v2 mov,
 	w 3 #lsl v2 w add,
 	
 	\ load, clear and set priority bit
@@ -301,7 +301,7 @@ code animsprite ( sprite start end blocks -- )
 	sp ia! v1 v2 v3 ldm,
 	
 	\ sprite address
-	$3000000 ## v0 mov,
+	IWRAM ## v0 mov,
 	v3 3 #lsl v0 v0 add,
 	
 	\ load current frame
@@ -422,7 +422,7 @@ end-code
 
 \ copy all updated sprite data from IWRAM to OAM
 code updatesprites ( -- )
-	$3000000 ## v3 mov,
+	IWRAM ## v3 mov,
 	$7000000 ## v1 mov,
 	$400 ## v2 mov,
 	
