@@ -155,7 +155,7 @@ code onvcount ( a count -- )
 	\ write address of interrupt handler
 	IWRAM ## v2 mov,
 	GLOBALS ## v2 v2 add,
-	v2 INT_VB #( w str,
+	v2 INT_VC #( w str,
 	
 	\ set vblank interrupt flag
 	v3 0@ tos ldrh,
