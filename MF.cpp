@@ -2020,6 +2020,8 @@ void Parser::parseAll()
 	bool r5_const = false;
 	unsigned int r5 = 0;
 	unsigned int word_start = out->addr;
+	unsigned int local_idx = 0xc;
+	unsigned int num;
 
 parse_next:
 	if (r5_const)
@@ -2141,9 +2143,15 @@ parse_next:
 		}
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 		word_start = out->addr;
+		local_idx = 0xc;
 	} else if (W("label")) {
 		sym = symbols.appendNew(out->addr, getNextWord());
 		DEBUG("===start label %s at 0x%x\n", sym->word, sym->addr);
+	} else if (W("local:")) {
+		sym = symbols.appendNew(local_idx, getNextWord());
+		sym->is_const = true;
+		sym->lit_addr = local_idx;
+		local_idx += 4;
 	} else if (W(";")) {
 		r5_const = false;
 		if (currently_naked)
@@ -2239,8 +2247,12 @@ parse_next:
 		r5_const = false;
 		codeAsm("r5", "pop");
 		codeAsm("r5", "r0", "orr,");
+	} else if ((sym = getSymbol(word)) && sym->is_const) {
+		num = sym->lit_addr;
+		goto handle_const;
 	} else if (isNum(word)) {
-		unsigned int num = TIN_parseNum(word);
+		num = TIN_parseNum(word);
+handle_const:
 		if (getNextWordIf("swi")) {
 			codeAsm(num, "swi,");
 		} else if (getNextWordIf("#")) {
