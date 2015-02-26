@@ -2,8 +2,8 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ inlined peek and poke values into GBA memory
-icode peek ( a -- h ) tos 0@ tos ldrh, end-code
-icode poke ( a h -- ) w pop w 0@ tos strh, tos pop end-code
+icode-thumb peek ( a -- h ) tos 0@ tos ldrh, end-code
+icode-thumb poke ( a h -- ) w pop w 0@ tos strh, tos pop end-code
 
 \ divide and modula
 :n / ( n1 n2 -- n3 ) swap a! 7 swi ;
