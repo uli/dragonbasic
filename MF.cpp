@@ -2393,6 +2393,8 @@ emit_num:
 		} else {
 			GLB_error("unimp num\n");
 		}
+	} else if (W("+r")) {
+		codeAsm("r0", "r7", "r0", "add,");
 	} else if (W("c\"")) {
 		unsigned int end_str;
 		const char *str = getNextWord();
