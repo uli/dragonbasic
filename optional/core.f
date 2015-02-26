@@ -125,8 +125,8 @@ code graphics ( mode sprites -- )
 end-code
 
 \ wait for the next vertical blank
-code vblank ( -- )
-	$4000000 ## v0 mov,
+code-thumb vblank ( -- )
+	$4000000 v0 LITERAL
 	
 	\ wait for vertical blank
 	l: __wait
