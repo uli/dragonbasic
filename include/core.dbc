@@ -14,7 +14,11 @@ PROTOTYPE SUB       LOG(string$)
 
 ; CORE memory functions
 PROTOTYPE FUNCTION	PEEK(address)
+PROTOTYPE FUNCTION	PEEKB(address)
+PROTOTYPE FUNCTION	PEEKW(address)
 PROTOTYPE SUB		POKE(address,n)
+PROTOTYPE SUB		POKEB(address,n)
+PROTOTYPE SUB		POKEW(address,n)
 
 ; Memory routines
 PROTOTYPE SUB       COPY(address,source,bytes)
