@@ -250,7 +250,7 @@ end-code
 
 \ finish drawing a line
 code /line ( -- )
-	sp db u rsp ldm,
+	sp db u r9 ldm,
 	tos pop
 	ret
 end-code
@@ -267,7 +267,7 @@ code (h-line) ( -- )
 
 	\ horizontal loop
 	0 ## r10 cmp,
-	r7 r3 r3 pl? add,
+	r9 r3 r3 pl? add,
 	r6 r10 r10 pl? sub,
 	r8 r4 r4 add,
 	r5 r10 r10 add,
@@ -291,7 +291,7 @@ code (v-line) ( -- )
 	0 ## r10 cmp,
 	r8 r4 r4 pl? add,
 	r5 r10 r10 pl? sub,
-	r7 r3 r3 add,
+	r9 r3 r3 add,
 	r6 r10 r10 add,
 	
 	\ write pixel
@@ -307,22 +307,22 @@ code line ( screen x1 y1 x2 y2 color -- )
 	r1 0@ r1 ldrh,
 	7 ## r1 r1 and,
 	5 ## r1 cmp,
-	320 ## r7 eq? mov,
-	480 ## r7 ne? mov,
+	320 ## r9 eq? mov,
+	480 ## r9 ne? mov,
 
 	\ load arguments and save forth registers
 	sp ia! r1 r2 r3 r4 r10 ldm,
-	sp db u rsp stm,
+	sp db u r9 stm,
 
 	\ prepare
 	1 ## r8 mov,
 	r3 r1 r5 s! sub,
-	r7 r1 r1 mul,
-	r7 r3 r3 mul,
+	r9 r1 r1 mul,
+	r9 r3 r3 mul,
 
 	\ setup bresenham algorithm
 	0 ## r5 r5 mi? rsb,
-	0 ## r7 r7 mi? rsb,
+	0 ## r9 r9 mi? rsb,
 	r4 r2 r6 s! sub,
 	0 ## r6 r6 mi? rsb,
 	0 ## r8 r8 mi? rsb,
