@@ -153,6 +153,7 @@ public:
 	void emitDword(const unsigned int dword);
 	void emitWord(const unsigned short word);
 	void emitString(const char *str, int len);
+	void emitBinary(const char *file);
 	void emitBitmap(const char *bmp);
 	void emitPalette(const char *bmp);
 	void patch16(unsigned int addr, unsigned short val);
@@ -608,6 +609,19 @@ static unsigned short bgra2gba(unsigned const char *bgra)
 	gbapal |= RGB8TO5(r);
 
 	return gbapal;
+}
+
+void Output::emitBinary(const char *file)
+{
+	FILE* fp = fopen(file, "rb");
+	if (!fp)
+		GLB_error("failed to open %s\n", file);
+	char buf[4096];
+	int size;
+	while ((size = fread(buf, 1, 4096, fp))) {
+		emitString(buf, size);
+	}
+	fclose(fp);
 }
 
 void Output::emitBitmap(const char *bmp)
@@ -2187,6 +2201,8 @@ parse_next:
 	DEBUG("word -%s- at 0x%x\n", word, out->addr);
 	if (W("requires\"")) {
 		pushText(getNextWord());
+	} else if (W("import\"")) {
+		out->emitBinary(getNextWord());
 	} else if (W("bitmap\"")) {
 		out->emitBitmap(getNextWord());
 	} else if (W("palette\"")) {
