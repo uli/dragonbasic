@@ -577,15 +577,20 @@ void Compiler::doDirInclude()
 	     --basename)
 		;
 	change_dir = basename >= lpPathName;
-	if (basename < lpPathName) {
+	if (!change_dir) {
 		filename = bobj->val.symbolic;
 	} else {
 		*basename = 0;
 		filename = basename + 1;
-		if (!strncasecmp(lpPathName, "c:\\db\\", 6)) {
+		if (!strncasecmp(lpPathName, "c:\\db\\", 6) ||
+		    !strncasecmp(lpPathName, "$INC", 4)) {
 			GLB_getAppDir(appdir_path);
 			strcat(appdir_path, PATHSEP);
-			strcat(appdir_path, lpPathName + 6);
+			if (lpPathName[0] == '$') {
+				strcat(appdir_path, "include" PATHSEP);
+				strcat(appdir_path, lpPathName + 4);
+			} else
+				strcat(appdir_path, lpPathName + 6);
 			lpPathName = appdir_path;
 		}
 	}
