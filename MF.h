@@ -181,3 +181,6 @@ public:
 
 #define GLB_error(x ...) do { fprintf(stderr, "ERROR: " x); exit(1); } while (0)
 #define GLB_warning(x ...) do { fprintf(stderr, "WARNING: " x); } while (0)
+
+int Decode(const char *filename,Output *out);
+

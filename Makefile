@@ -26,7 +26,7 @@ LIBS += -lfreeimage
 endif
 
 BOBJS = DBC.o.$(PLATFORM)
-MOBJS = MF.o.$(PLATFORM)
+MOBJS = MF.o.$(PLATFORM) MF_mappy.o.$(PLATFORM)
 
 all: win linux runtime.gba runpimp.gba
 
@@ -41,13 +41,13 @@ clean:
 	rm -f dbc.exe dbc mf.exe mf *.o.* run*.gba run*.elf runtime_syms.h
 
 mf$(SUFF): $(MOBJS)
-	$(CXX) -o $@ MF.o.$(PLATFORM) $(LDFLAGS) $(LIBS)
+	$(CXX) -o $@ $(MOBJS) $(LDFLAGS) $(LIBS)
 
 dbc$(SUFF): $(BOBJS)
 	$(CXX) -o $@ DBC.o.$(PLATFORM) $(LDFLAGS)
 
 DBC.o.$(PLATFORM): DBC.h os.h
-MF.o.$(PLATFORM): os.h runtime_syms.h
+MF.o.$(PLATFORM): os.h runtime_syms.h MF.h
 
 $(BOBJS): %.o.$(PLATFORM): %.cpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@

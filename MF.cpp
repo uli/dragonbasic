@@ -541,6 +541,11 @@ void Output::emitBitmap(const char *bmp)
 	FreeImage_Unload(img);
 }
 
+void Output::emitMap(const char *fmp)
+{
+	Decode(fmp, this);
+}
+
 void Output::emitPalette(const char *bmp)
 {
 	int i;
@@ -2057,6 +2062,8 @@ parse_next:
 		out->emitBinary(getNextWord());
 	} else if (W("bitmap\"")) {
 		out->emitBitmap(getNextWord());
+	} else if (W("map\"")) {
+		out->emitMap(getNextWord());
 	} else if (W("palette\"")) {
 		out->emitPalette(getNextWord());
 	} else if (W("sound\"")) {
