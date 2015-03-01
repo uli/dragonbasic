@@ -2034,7 +2034,7 @@ void Parser::parseAll()
 	bool r5_const = false;
 	unsigned int r5 = 0;
 	unsigned int word_start = out->addr;
-	unsigned int local_idx = 0xc;
+	unsigned int local_idx = 0;
 	unsigned int num;
 
 parse_next:
@@ -2159,7 +2159,7 @@ parse_next:
 		}
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 		word_start = out->addr;
-		local_idx = 0xc;
+		local_idx = 0;
 	} else if (W("label")) {
 		sym = symbols.appendNew(out->addr, getNextWord());
 		DEBUG("===start label %s at 0x%x\n", sym->word, sym->addr);
@@ -2413,18 +2413,37 @@ emit_num:
 			}
 		} else if (getNextWordIf(",")) {
 			code(num);
-		} else if (getNextWordIf("n>r")) {
-			unsigned off = 0xc;
-			while (num--) {
-				codeAsm("r7", off, "#(", "r0", "str,");
-				codeAsm("r0", "pop");
-				off += 4;
-			}
+		} else if (getNextWordIf("lprolog")) {
+			assert(!currently_naked);
+			codeAsm("r0", "push");	// last param to stack
+			// Reserve space for additional local variables.
+			if (num)
+				codeAsm(num, "##", "sp", "sub,");
+			// Save return address.
+			codeAsm("r6", "push");
+			// Set up R6 as base pointer.
+			codeAsm("sp", "r6", "mov,");
+			codeAsm("4", "##", "r6", "add,");
+		} else if (getNextWordIf("lepilog")) {
+			// Restore return address.
+			codeAsm("r6", "pop");
+			// Purge locals from stack...
+			codeAsm(num, "##", "sp", "add,");
+			// ...including TOS.
+			codeAsm("r0", "pop");
+		} else if (getNextWordIf("flepilog")) {
+			// Restore return address.
+			codeAsm("r6", "pop");
+			// Purge locals from stack...
+			codeAsm(num, "##", "sp", "add,");
+			// ...but keep TOS because it contains the return
+			// value.
 		} else {
 			GLB_error("unimp num\n");
 		}
 	} else if (W("+r")) {
-		codeAsm("r0", "r7", "r0", "add,");
+		// XXX: optimize me!
+		codeAsm("r0", "r6", "r0", "add,");
 	} else if (W("c\"")) {
 		unsigned int end_str;
 		const char *str = getNextWord();
