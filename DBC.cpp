@@ -376,9 +376,13 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 		doArgs(emit_code);
 	if (emit_code == OBJ_SUB) {
 		emitTin(": %s ", bobj->val.symbolic);
-		if (sub_head->num_args > 0)
-			emitTin("%d # R-ALLOC PUSH %d N>R",
-				4 * sub_head->num_args, sub_head->num_args);
+		if (sub_head->num_args > 0) {
+			// Code the local variable prolog.  Arguments
+			// are assumed to have been placed on the stack
+			// already, so until we implement non-argument
+			// local variables, we reserve 0 bytes.
+			emitTin("%d LPROLOG", 0);
+		}
 	}
 }
 
@@ -964,8 +968,15 @@ void Compiler::doCmdReturn()
 	checkNotSegment(SEG_INTR | SEG_TOP, "RETURN");
 	if (sub_head->is_function && compileExpression() != sub_head->ret_vtype)
 		GLB_error(ERR_TYPE_MISMATCH);
-	if (sub_head->num_args > 0)
-		emitTin("POP DROP ");
+	if (sub_head->num_args > 0) {
+		// Local variable epilog.  Cleans locals off the stack,
+		// including parameters.  The argument is the number of
+		// bytes to drop off the stack.
+		// A different word ("FLEPILOG") is emitted for functions
+		// because the return value at TOS must be preserved.
+		emitTin("%d %sEPILOG ", 4 * sub_head->num_args,
+			sub_head->is_function ? "FL" : "L");
+	}
 	emitTin("; ");
 	if (!loop_stack.getStackPtr())
 		is_top_level = true;
