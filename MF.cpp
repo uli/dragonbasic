@@ -1493,16 +1493,25 @@ bool Parser::parseThumb(const char *word)
 	} else if ((W("sub,") || W("add,"))) {
 		unsigned short insn;
 		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_TREG;
+		assert(rd < 8 || rd == REG_SP);
 		if (asm_stack[--asp][0] == ASM_AMODE &&
 		    asm_stack[asp][1] == AMODE_IMM) {
-			insn = 0x3000;
-			if (word[0] == 's')
-				insn |= 0x800;
-			insn |= rd << 8;
-			insn |= asm_stack[--asp][1];
-			ASSERT_IMM;
-			assert(asm_stack[asp][1] < 256);
+			if (rd == REG_SP) {
+				insn = 0xb000;
+				if (word[0] == 's')
+					insn |= 0x80;
+				insn |= asm_stack[--asp][1] >> 2;
+				ASSERT_IMM;
+				assert(asm_stack[asp][1] < 512);
+			} else {
+				insn = 0x3000;
+				if (word[0] == 's')
+					insn |= 0x800;
+				insn |= rd << 8;
+				insn |= asm_stack[--asp][1];
+				ASSERT_IMM;
+				assert(asm_stack[asp][1] < 256);
+			}
 		} else {
 			insn = 0x1800 | (rd << 0);
 			if (word[0] == 's')
