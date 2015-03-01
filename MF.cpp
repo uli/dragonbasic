@@ -2397,7 +2397,18 @@ handle_const:
 			} else {
 				//printf("misc num\n");
 emit_num:
-				if (num > 0xff) {
+				if (isWordN(0, "+r") &&
+				    (isWordN(1, "@") || isWordN(1, "!"))) {
+					getNextWord();
+					if (getNextWordIf("@")) {
+						codeAsm("r0", "push");
+						codeAsm("r6", num, "#(", "r0", "ldr,");
+					} else if (getNextWordIf("!")) {
+						codeAsm("r6", num, "#(", "r0", "str,");
+						codeAsm("r0", "pop");
+					} else
+						GLB_error("internal error\n");
+				} else if (num > 0xff) {
 					if (thumb || !can_immrot(num)) {
 						codeAsm("r0", "push");
 						literals.prependNew(num, out->addr, thumb);
@@ -2444,7 +2455,6 @@ emit_num:
 			GLB_error("unimp num\n");
 		}
 	} else if (W("+r")) {
-		// XXX: optimize me!
 		codeAsm("r0", "r6", "r0", "add,");
 	} else if (W("c\"")) {
 		unsigned int end_str;
