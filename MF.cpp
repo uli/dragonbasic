@@ -1717,8 +1717,13 @@ bool Parser::parseThumb(const char *word)
 	} else if (W("push")) {
 		unsigned short insn = 0xb400;
 		while (asp) {
-			insn |= 1 << asm_stack[--asp][1];
-			ASSERT_TREG;
+			if (asm_stack[--asp][1] == REG_LR) {
+				insn |= 0x100;
+				ASSERT_REG;
+			} else {
+				insn |= 1 << asm_stack[asp][1];
+				ASSERT_TREG;
+			}
 		}
 		code16(insn);
 	} else if (W("swi,")) {
