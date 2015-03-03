@@ -1,0 +1,51 @@
+;  FMP.dbc: FMP map handling functions
+;
+;  Copyright (C) 2015 Ulrich Hecht
+;
+;  This software is provided 'as-is', without any express or implied
+;  warranty.  In no event will the authors be held liable for any damages
+;  arising from the use of this software.
+;
+;  Permission is granted to anyone to use this software for any purpose,
+;  including commercial applications, and to alter it and redistribute it
+;  freely, subject to the following restrictions:
+;
+;  1. The origin of this software must not be misrepresented; you must not
+;     claim that you wrote the original software. If you use this software
+;     in a product, an acknowledgment in the product documentation would be
+;     appreciated but is not required.
+;  2. Altered source versions must be plainly marked as such, and must not be
+;     misrepresented as being the original software.
+;  3. This notice may not be removed or altered from any source distribution.
+;
+;  Ulrich Hecht
+;  ulrich.hecht@gmail.com
+
+
+SUB FMPMAPTILES16x16(fmp, screen_block, start_x, start_y, width, height)
+	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
+	LOCAL x, y		; 16x16 FMP tile coordinates
+	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
+	LOCAL block		; screen block (SCx)
+	LOCAL cell		; tile index
+
+	fmp = peekw(fmp + 8)	; pointer to map data
+
+	width = width - 1	; thanks, BASIC :(
+	height = height - 1
+
+	FOR y = 0 TO width
+		dest_y = y * 2 + start_y
+		yy = dest_y mod 32
+		FOR x = 0 TO height
+			dest_x = x * 2 + start_x
+			block = screen_block + (dest_x / 32) + (dest_y / 32) * 2
+			xx = dest_x mod 32
+			cell = peekb(fmp + y * 32 + x) * 4
+			settile tile(block, xx, yy), cell
+			settile tile(block, xx+1, yy), cell+1
+			settile tile(block, xx, yy+1), cell+2
+			settile tile(block, xx+1, yy+1), cell+3
+		NEXT
+	NEXT
+END SUB
