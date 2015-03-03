@@ -245,7 +245,7 @@ void GLB_runProgram(const char *lpApplicationName, const char *args,
 	memset(&StartupInfo, 0, 68u);
 	StartupInfo.cb = 68;
 	StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
-	StartupInfo.wShowWindow = show_window != 0 ? SW_SHOW : 0;
+	StartupInfo.wShowWindow = show_window ? SW_SHOW : 0;
 	if (!CreateProcessA(
 		    lpApplicationName,
 		    CommandLine,
@@ -270,7 +270,7 @@ void GLB_runProgram(const char *lpApplicationName, const char *args,
 
 void GLB_runProgramWithArgs(const char *lpApplicationName, const char *options,
 			    const char *lpFileName, const char *outfile,
-			    char del_output)
+			    bool del_output)
 {
 	char buf[256];
 	char args[256];
@@ -278,7 +278,7 @@ void GLB_runProgramWithArgs(const char *lpApplicationName, const char *options,
 	getcwd(buf, 256);
 	sprintf(args, "%s\"%s" PATHSEP "%s\" \"%s" PATHSEP "%s\"", options, buf,
 		lpFileName, buf, outfile);
-	GLB_runProgram(lpApplicationName, args, del_output == 0);
+	GLB_runProgram(lpApplicationName, args, !del_output);
 	if (del_output)
 		unlink(lpFileName);
 }
@@ -374,7 +374,7 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 	addNewSub(bobj->val.symbolic, is_function, bobj->vtype);
 	if (bobj->otype == OBJ_SUB)
 		doArgs(emit_code);
-	if (emit_code == OBJ_SUB) {
+	if (emit_code) {
 		emitTin(": %s ", bobj->val.symbolic);
 		if (sub_head->num_args > 0) {
 			// Code the local variable prolog.  Arguments
@@ -1061,7 +1061,7 @@ void Compiler::doCmdFunction()
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "FUNCTION");
 	bobj = parser->consumeNextBasicObj();
-	doSubroutine(bobj, 1, true);
+	doSubroutine(bobj, true, true);
 	cur_seg = SEG_SUB;
 	is_top_level = false;
 }
@@ -1354,7 +1354,7 @@ void Compiler::doRvalFunction(BasicObject *bobj)
 		GLB_error(ERR_TOO_MANY_ARGS, sub->ident);
 }
 
-bool Compiler::doRvalArray(BasicObject *bobj)
+void Compiler::doRvalArray(BasicObject *bobj)
 {
 	bool result;
 	Subroutine *sub;
@@ -1989,7 +1989,7 @@ void GLB_runMF(const char *lpFileName, const char *outfile)
 		omod = "";
 	sprintf(options, "%s%s%s%s", omod, omb, odbg, oopt);
 	GLB_runProgramWithArgs("mf" EXE, options, lpFileName, outfile,
-			       option_debug == 0);
+			       !option_debug);
 }
 
 void GLB_main(int argc, char **argv)

@@ -403,7 +403,7 @@ public:
 	void doLval(BasicObject *bobj);
 	void doLvalNotSub(BasicObject *bobj);
 	void doRvalFunction(BasicObject *bobj);
-	bool doRvalArray(BasicObject *bobj);
+	void doRvalArray(BasicObject *bobj);
 	void doAssign(BasicObject *bobj);
 	void doRval(BasicObject *bobj);
 	enum vartype_t compileExpression();
