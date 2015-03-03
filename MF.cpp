@@ -2437,11 +2437,10 @@ emit_num:
 			// Reserve space for additional local variables.
 			if (num)
 				codeAsm(num, "##", "sp", "sub,");
-			// Save return address.
-			codeAsm("r6", "push");
 			// Set up R6 as base pointer.
 			codeAsm("sp", "r6", "mov,");
-			codeAsm("4", "##", "r6", "add,");
+			// Save return address.
+			codeAsm("lr", "push");
 		} else if (getNextWordIf("lepilog")) {
 			// Restore return address.
 			codeAsm("r6", "pop");
