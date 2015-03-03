@@ -1356,7 +1356,6 @@ void Compiler::doRvalFunction(BasicObject *bobj)
 
 void Compiler::doRvalArray(BasicObject *bobj)
 {
-	bool result;
 	Subroutine *sub;
 	char buf[256];
 
@@ -1367,10 +1366,8 @@ void Compiler::doRvalArray(BasicObject *bobj)
 	if (!sub->is_function)
 		GLB_error(ERR_NEED_RVAL, bobj->val.symbolic);
 	callSubroutine(sub);
-	result = parser->requireRop(ROP_CBRACK);
-	if (!result)
+	if (!parser->requireRop(ROP_CBRACK))
 		GLB_error(ERR_TOO_MANY_ARGS, sub->ident);
-	return result;
 }
 
 void Compiler::doAssign(BasicObject *bobj)
@@ -1415,7 +1412,6 @@ enum vartype_t Compiler::compileExpression()
 {
 	BasicObject *bobj4;
 	BasicObject *bobj3;
-	bool cparen;
 	enum vartype_t vtype;
 	BasicObject *bobj2;
 	BasicObject *bobj1;
@@ -1454,8 +1450,7 @@ enum vartype_t Compiler::compileExpression()
 				} else {
 					vtype = compileExpression();
 					expr.addOperand(vtype);
-					cparen = parser->requireRop(ROP_CPAREN);
-					if (!cparen)
+					if (!parser->requireRop(ROP_CPAREN))
 						GLB_error(ERR_NOTOKEN, ")");
 				}
 				break;
@@ -1789,7 +1784,6 @@ LoopStack::LoopStack()
 
 bool LoopStack::addEntry(enum cmd_t cmd, int line_no)
 {
-	bool ret;
 	int stackp;
 
 	stackp = stack_ptr;
@@ -1797,11 +1791,9 @@ bool LoopStack::addEntry(enum cmd_t cmd, int line_no)
 	if (stack_ptr < 16) {
 		stack[stackp].line_no = line_no;
 		stack[stackp].cmd = cmd;
-		ret = true;
-	} else {
-		ret = false;
-	}
-	return ret;
+		return true;
+	} else
+		return false;
 }
 
 char LoopStack::popEntry(enum cmd_t *cmd_p, int *line_no_p)
@@ -2613,40 +2605,32 @@ bool Parser::checkNextBasicObjType(enum obj_t otype)
 
 bool Parser::requireRop(enum rop_t rop)
 {
-	bool result;
 	BasicObject *bobj;
 
 	bobj = retrieveNextBasicObject();
 	if (bobj && bobj->otype == OBJ_ROP) {
 		if (bobj->val.numeric == rop) {
 			cur_basic_obj = bobj;
-			result = true;
-		} else {
-			result = false;
-		}
-	} else {
-		result = false;
-	}
-	return result;
+			return true;
+		} else
+			return false;
+	} else
+		return false;
 }
 
 bool Parser::getNextCmd(enum cmd_t expected)
 {
-	bool result;
 	BasicObject *bobj;
 
 	bobj = retrieveNextBasicObject();
 	if (bobj->otype == OBJ_CMD) {
 		if (bobj->val.numeric == expected) {
 			cur_basic_obj = bobj;
-			result = true;
-		} else {
-			result = false;
-		}
-	} else {
-		result = false;
-	}
-	return result;
+			return true;
+		} else
+			return false;
+	} else
+		return false;
 }
 
 void Parser::insertBasicObjectList(BasicObject *bobj)
