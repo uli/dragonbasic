@@ -1036,9 +1036,11 @@ void Compiler::doCmdLocal()
 	// Locals can only be declared at the start of a subroutine.
 	checkNotSegment(SEG_INTR | SEG_SUB, "LOCAL");
 
-	bobj = parser->getObjectWithType(OBJ_IDENT, "Identifier");
-	sub_head->addLocal(bobj->val.symbolic, bobj->vtype);
-	addSubLocal(bobj->val.symbolic, bobj->vtype);
+	do {
+		bobj = parser->getObjectWithType(OBJ_IDENT, "Identifier");
+		sub_head->addLocal(bobj->val.symbolic, bobj->vtype);
+		addSubLocal(bobj->val.symbolic, bobj->vtype);
+	} while (parser->requireRop(ROP_COMMA));
 }
 
 void Compiler::doCmdReturn()
