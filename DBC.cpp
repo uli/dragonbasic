@@ -2103,7 +2103,7 @@ Parser::~Parser()
 	Symbol *sym;
 	BasicObject *bobj;
 
-	delete text;
+	delete[] text;
 
 	if (basic_obj_head) {
 		bobj = basic_obj_head;
