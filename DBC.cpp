@@ -28,6 +28,7 @@
 #include <windows.h>
 #endif
 
+#include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -59,6 +60,7 @@ Subroutine::Subroutine(const char *ident, bool is_function,
 	this->is_function = is_function;
 	ret_vtype = rtype;
 	num_args = 0;
+	num_locals = 0;
 	next = 0;
 }
 
@@ -102,10 +104,40 @@ void Subroutine::addArgument(const char *name, enum vartype_t vtype)
 		arg_name[idx][0] = 0;
 }
 
+// This is a copy of Subroutine::addArgument(), with the difference that it
+// acts on locals and does not allow anonymous variables.
+void Subroutine::addLocal(const char *name, enum vartype_t vtype)
+{
+	int idx;
+
+	idx = num_locals;
+	++num_locals;
+	if (num_locals > 15)
+		GLB_error(ERR_TOO_MANY_PROTO_ARGS, name);
+	local_vtype[idx] = vtype;
+	if (name)
+		strcpy(local_name[idx], name);
+	else
+		GLB_error(ERR_SYNTAX);
+}
+
 TIN *Subroutine::declareTinLocals(TIN *tin)
 {
 	char buf[256];
 	int argc;
+
+	// MF assigns addresses incrementally from 0.  The arguments are
+	// already on the stack and must therefore have higher addresses
+	// than the BASIC local variables, so the latter must be declared
+	// first.
+	argc = num_locals;
+	while (true) {
+		--argc;
+		if (argc < 0)
+			break;
+		sprintf(buf, "LOCAL: %s::%s\n", ident, local_name[argc]);
+		tin = tin->addCode(buf);
+	}
 
 	argc = num_args;
 	while (true) {
@@ -115,6 +147,7 @@ TIN *Subroutine::declareTinLocals(TIN *tin)
 		sprintf(buf, "LOCAL: %s::%s\n", ident, arg_name[argc]);
 		tin = tin->addCode(buf);
 	}
+
 	return tin;
 }
 
@@ -313,6 +346,7 @@ Compiler::Compiler()
 	sub_head = NULL;
 	var_head = NULL;
 	sub_args_head = NULL;
+	sub_locals_head = NULL;
 	parser = NULL;
 
 	cur_seg = SEG_TOP;
@@ -374,14 +408,30 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 	addNewSub(bobj->val.symbolic, is_function, bobj->vtype);
 	if (bobj->otype == OBJ_SUB)
 		doArgs(emit_code);
+
+	// Manually check if there are locals declared at the start of the
+	// function.  We need to do this here because the local declarations
+	// have to be emitted before the actual function body.
+	while (parser->checkNextBasicObjType(OBJ_EOL)) {
+		BasicObject *loc = parser->retrieveNextBasicObject()->next;
+		assert(loc);
+		if (loc->otype == OBJ_CMD && loc->val.numeric == CMD_LOCAL) {
+			parser->consumeNextBasicObj();	// EOL
+			parser->consumeNextBasicObj();	// LOCAL
+			compileBasicObject(loc);
+		} else
+			break;
+	}
+
 	if (emit_code) {
+		tin_tail = sub_head->declareTinLocals(tin_tail);
 		emitTin(": %s ", bobj->val.symbolic);
-		if (sub_head->num_args > 0) {
+		if (sub_head->num_args > 0 || sub_head->num_locals > 0) {
 			// Code the local variable prolog.  Arguments
 			// are assumed to have been placed on the stack
-			// already, so until we implement non-argument
-			// local variables, we reserve 0 bytes.
-			emitTin("%d LPROLOG", 0);
+			// already, so we only have to reserve space for
+			// local variables.
+			emitTin("%d LPROLOG", 4 * sub_head->num_locals);
 		}
 	}
 }
@@ -402,16 +452,25 @@ void Compiler::doArgs(bool emit_code)
 		} while (parser->requireRop(ROP_COMMA));
 		if (!parser->requireRop(ROP_CPAREN))
 			GLB_error(ERR_NOTOKEN, ")");
-		if (emit_code)
-			tin_tail = sub_head->declareTinLocals(tin_tail);
 	}
 }
 
 void Compiler::addSubArgument(const char *ident, enum vartype_t vtype)
 {
-	if (sub_args_head->findByIdent(ident))
+	if (sub_locals_head->findByIdent(ident) ||
+	    sub_args_head->findByIdent(ident))
 		GLB_error(ERR_DUP_IDENT, ident);
+
 	sub_args_head = sub_args_head->prependNew(ident, vtype);
+}
+
+void Compiler::addSubLocal(const char *ident, enum vartype_t vtype)
+{
+	if (sub_locals_head->findByIdent(ident) ||
+	    sub_args_head->findByIdent(ident))
+		GLB_error(ERR_DUP_IDENT, ident);
+
+	sub_locals_head = sub_locals_head->prependNew(ident, vtype);
 }
 
 void Compiler::addVariable(const char *ident, enum vartype_t vtype)
@@ -436,6 +495,10 @@ void Compiler::addNewSub(const char *ident, bool is_function,
 	if (sub_args_head) {
 		delete sub_args_head;
 		sub_args_head = 0;
+	}
+	if (sub_locals_head) {
+		delete sub_locals_head;
+		sub_locals_head = 0;
 	}
 }
 
@@ -718,6 +781,9 @@ void Compiler::doCommand(BasicObject *bobj)
 	case CMD_DIM:
 		doCmdDim();
 		break;
+	case CMD_LOCAL:
+		doCmdLocal();
+		break;
 	case CMD_RETURN:
 		doCmdReturn();
 		break;
@@ -963,18 +1029,30 @@ void Compiler::doCmdDim()
 	} while (parser->requireRop(ROP_COMMA));
 }
 
+void Compiler::doCmdLocal()
+{
+	BasicObject *bobj;
+
+	// Locals can only be declared at the start of a subroutine.
+	checkNotSegment(SEG_INTR | SEG_SUB, "LOCAL");
+
+	bobj = parser->getObjectWithType(OBJ_IDENT, "Identifier");
+	sub_head->addLocal(bobj->val.symbolic, bobj->vtype);
+	addSubLocal(bobj->val.symbolic, bobj->vtype);
+}
+
 void Compiler::doCmdReturn()
 {
 	checkNotSegment(SEG_INTR | SEG_TOP, "RETURN");
 	if (sub_head->is_function && compileExpression() != sub_head->ret_vtype)
 		GLB_error(ERR_TYPE_MISMATCH);
-	if (sub_head->num_args > 0) {
+	if (sub_head->num_args > 0 || sub_head->num_locals > 0) {
 		// Local variable epilog.  Cleans locals off the stack,
 		// including parameters.  The argument is the number of
 		// bytes to drop off the stack.
 		// A different word ("FLEPILOG") is emitted for functions
 		// because the return value at TOS must be preserved.
-		emitTin("%d %sEPILOG ", 4 * sub_head->num_args,
+		emitTin("%d %sEPILOG ", 4 * (sub_head->num_args + sub_head->num_locals),
 			sub_head->is_function ? "FL" : "L");
 	}
 	emitTin("; ");
@@ -1397,6 +1475,9 @@ void Compiler::doRval(BasicObject *bobj)
 		if (sub_args_head->findByIdent(bobj->val.symbolic)) {
 			emitTin("%s::%s # +R ", sub_head->ident,
 				bobj->val.symbolic);
+		} else if (sub_locals_head->findByIdent(bobj->val.symbolic)) {
+			emitTin("%s::%s # +R ", sub_head->ident,
+				bobj->val.symbolic);
 		} else {
 			global = var_head->findByIdent(bobj->val.symbolic);
 			if (!global)
@@ -1486,6 +1567,8 @@ void Compiler::doOperand(BasicObject *bobj)
 	Variable *var;
 
 	if (sub_args_head->findByIdent(bobj->val.symbolic)) {
+		emitTin("%s::%s # +R @ ", sub_head->ident, bobj->val.symbolic);
+	} else if (sub_locals_head->findByIdent(bobj->val.symbolic)) {
 		emitTin("%s::%s # +R @ ", sub_head->ident, bobj->val.symbolic);
 	} else {
 		var = var_head->findByIdent(bobj->val.symbolic);
@@ -2276,6 +2359,8 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_PROTOTYPE, cur_line);
 	} else if (!strcasecmp(token_name, "dim")) {
 		bobj = new BasicObject(CMD_DIM, cur_line);
+	} else if (!strcasecmp(token_name, "local")) {
+		bobj = new BasicObject(CMD_LOCAL, cur_line);
 	} else if (!strcasecmp(token_name, "as")) {
 		bobj = new BasicObject(CMD_AS, cur_line);
 	} else if (!strcasecmp(token_name, "type")) {

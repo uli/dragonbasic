@@ -108,6 +108,7 @@ public:
 	~Subroutine();
 	Subroutine *findByIdent(const char *ident);
 	void addArgument(const char *name, enum vartype_t vtype);
+	void addLocal(const char *name, enum vartype_t vtype);
 	TIN *declareTinLocals(TIN *tin);
 
 	char ident[168];
@@ -117,6 +118,9 @@ public:
 	int arg_vtype[16];
 	Subroutine *next;
 	char arg_name[16][168];
+	int num_locals;
+	int local_vtype[16];
+	char local_name[16][168];
 };
 
 enum segment_t {
@@ -159,6 +163,7 @@ enum cmd_t {
 	CMD_EXIT = 30,
 	CMD_INC = 31,
 	CMD_DEC = 32,
+	CMD_LOCAL = 33,
 };
 
 struct LoopStackEntry {
@@ -353,6 +358,7 @@ public:
 	void doSubroutine(BasicObject *bobj, bool is_function, bool emit_code);
 	void doArgs(bool emit_code);
 	void addSubArgument(const char *ident, enum vartype_t vtype);
+	void addSubLocal(const char *ident, enum vartype_t vtype);
 	void addVariable(const char *ident, enum vartype_t vtype);
 	void addNewSub(const char *ident, bool is_function,
 		       enum vartype_t vtype);
@@ -380,6 +386,7 @@ public:
 	void doCmdFor();
 	void doCmdNext();
 	void doCmdDim();
+	void doCmdLocal();
 	void doCmdReturn();
 	void doCmdMap();
 	void doCmdData();
@@ -419,6 +426,7 @@ private:
 	Subroutine *sub_head;
 	Variable *var_head;
 	Variable *sub_args_head;
+	Variable *sub_locals_head;
 	enum segment_t cur_seg;
 	LoopStack loop_stack;
 	bool is_top_level;
