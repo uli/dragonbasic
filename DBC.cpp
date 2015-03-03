@@ -37,7 +37,7 @@
 #include "DBC.h"
 #include "os.h"
 
-char dir_stack[198][260];
+char dir_stack[200][256];
 char err_buf[256];
 int dir_stack_idx;
 int my_errno;
@@ -104,7 +104,7 @@ void Subroutine::addArgument(const char *name, enum vartype_t vtype)
 
 TIN *Subroutine::declareTinLocals(TIN *tin)
 {
-	char buf[260];
+	char buf[256];
 	int argc;
 
 	argc = num_args;
@@ -190,7 +190,7 @@ void GLB_failWithMbox(const char *msg, const char *func, int line)
 
 void GLB_exitWithMbox(const char *msg, ...)
 {
-	char Text[276];
+	char Text[256];
 	va_list va;
 
 	va_start(va, msg);
@@ -210,8 +210,8 @@ void GLB_getAppDir(char *lpFilename)
 
 void GLB_checkFileInAppdir(const char *filename)
 {
-	char appdir[264];
-	char buf[268];
+	char appdir[256];
+	char buf[256];
 	FILE *fp;
 
 	GLB_getAppDir(appdir);
@@ -225,8 +225,8 @@ void GLB_checkFileInAppdir(const char *filename)
 void GLB_runProgram(const char *lpApplicationName, const char *args,
 		    bool show_window)
 {
-	char Dirname[264];
-	char CommandLine[1032];
+	char Dirname[256];
+	char CommandLine[1024];
 
 #ifdef __WIN32__
 	struct _STARTUPINFOA StartupInfo;
@@ -272,10 +272,10 @@ void GLB_runProgramWithArgs(const char *lpApplicationName, const char *options,
 			    const char *lpFileName, const char *outfile,
 			    char del_output)
 {
-	char buf[264];
-	char args[272];
+	char buf[256];
+	char args[256];
 
-	getcwd(buf, 260);
+	getcwd(buf, 256);
 	sprintf(args, "%s\"%s" PATHSEP "%s\" \"%s" PATHSEP "%s\"", options, buf,
 		lpFileName, buf, outfile);
 	GLB_runProgram(lpApplicationName, args, del_output == 0);
@@ -288,7 +288,7 @@ void GLB_pushDir(const char *lpPathName)
 	char *dir_buf;
 
 	dir_buf = dir_stack[dir_stack_idx++];
-	getcwd(dir_buf, 260);
+	getcwd(dir_buf, 256);
 	if (chdir(lpPathName))
 		GLB_error(ERR_SET_FOLDER, lpPathName);
 }
@@ -355,7 +355,7 @@ int Compiler::writeOutput(const char *filename)
 TIN *Compiler::emitTin(const char *fmt, ...)
 {
 	TIN *result;
-	char buf[280];
+	char buf[256];
 	va_list va;
 
 	va_start(va, fmt);
@@ -911,7 +911,7 @@ void Compiler::doCmdDim()
 	char accessor_ident[168];
 	BasicObject *bobj;
 	int i;
-	char buf[176];
+	char buf[168];
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "DIM");
 	do {
@@ -1358,7 +1358,7 @@ bool Compiler::doRvalArray(BasicObject *bobj)
 {
 	bool result;
 	Subroutine *sub;
-	char buf[264];
+	char buf[256];
 
 	sprintf(buf, "%s[]", bobj->val.symbolic);
 	sub = sub_head->findByIdent(buf);
@@ -1995,7 +1995,7 @@ void GLB_runMF(const char *lpFileName, const char *outfile)
 void GLB_main(int argc, char **argv)
 {
 	Compiler compiler;
-	char FileName[260];
+	char FileName[256];
 	int num_opts;
 	int binary_idx;
 
@@ -2210,7 +2210,7 @@ BasicObject *Parser::parseToken()
 {
 	int tmp;
 	BasicObject *bobj;
-	char token_name[260];
+	char token_name[256];
 	char *tp;
 
 	tp = token_name;
