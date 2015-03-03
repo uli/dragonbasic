@@ -118,7 +118,7 @@ TIN *Subroutine::declareTinLocals(TIN *tin)
 	return tin;
 }
 
-static const char *error_strings[34] = {
+static const char *error_strings[] = {
 	[ERR_NONE] = "",
 	[ERR_WOT] = "%s?",
 	[ERR_UNKNOWN_CFLAG] = "Unknown compiler flag? %s",
