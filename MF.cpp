@@ -1710,6 +1710,8 @@ bool Parser::parseThumb(const char *word)
 void Parser::parseAsm(const char *word)
 {
 	Symbol *sym;
+	int old_asp = asp;
+	unsigned int old_addr = out->addr;
 
 	if (W("r0") || W("tos"))
 		PUSH_ASM(ASM_REG, REG_TOS);
@@ -1813,7 +1815,23 @@ void Parser::parseAsm(const char *word)
 
 	else if (parseThumb(word) || parseArm(word)) {
 		assert(asp == 0);
-
+#ifndef NDEBUG
+		unsigned int addr;
+		if (cur_icode)
+			addr = cur_icode->cp - cur_icode->code;
+		else
+			addr = old_addr;
+		DEBUG("%07X  ", addr);
+		if (thumb)
+			DEBUGN("    %04x", last_insn);
+		else
+			DEBUGN("%08x", last_insn);
+		DEBUGN("  %s", word);
+		for (int i = old_asp - 1; i >= 0; i--) {
+			DEBUGN(" %s", asm_text[i]);
+		}
+		DEBUGN("\n");
+#endif
 	} else if (W("l:")) {
 		asm_labels[lsp].label = strdup(getNextWord());
 		asm_labels[lsp++].addr = out->addr;
