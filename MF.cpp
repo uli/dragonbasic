@@ -1037,42 +1037,36 @@ unsigned int Parser::arm5CodeOp2()
 	unsigned int insn = 0;
 	int err;
 
-	if (asm_stack[asp - 1][0] == ASM_AMODE) {
-		switch (asm_stack[--asp][1]) {
+	if (NOS_TYPE == ASM_AMODE) {
+		switch (POP_VAL) {
 		case AMODE_IMM:
 			insn |= AMODE_IMM; /* immediate */
-			insn |= immrot(asm_stack[--asp][1], &err);
+			insn |= immrot(POP_VAL_TYPE(ASM_IMM), &err);
 			assert(!err);
-			ASSERT_IMM;
 			break;
 		case AMODE_LSL:
 		case AMODE_LSR:
 		case AMODE_ASR:
 		case AMODE_ROR:
-			insn |= asm_stack[asp][1];
-			insn |= 1 << 4;                         /* register shift */
-			insn |= asm_stack[--asp][1] << 8;       /* Rs */
-			ASSERT_REG;
-			insn |= asm_stack[--asp][1];            /* Rm */
-			ASSERT_REG;
+			insn |= TOS_VAL;
+			insn |= 1 << 4;             /* register shift */
+			insn |= POP_REG << 8;       /* Rs */
+			insn |= POP_REG;            /* Rm */
 			break;
 		case AMODE_LSLI:
 		case AMODE_LSRI:
 		case AMODE_ASRI:
 		case AMODE_RORI:
-			insn |= asm_stack[asp][1];
-			insn |= asm_stack[--asp][1] << 7;       /* shift_imm */
-			ASSERT_IMM;
-			insn |= asm_stack[--asp][1];            /* Rm */
-			ASSERT_REG;
+			insn |= TOS_VAL;
+			insn |= POP_IMM << 7;       /* shift_imm */
+			insn |= POP_REG;            /* Rm */
 			break;
 		default:
 			GLB_error("unimp alu3 amode\n");
 		}
 	} else {
 		/* no addressing mode specified -> RRR */
-		insn |= asm_stack[--asp][1]; /* Rm */
-		ASSERT_REG;
+		insn |= POP_REG; /* Rm */
 	}
 	return insn;
 }
@@ -1081,8 +1075,8 @@ unsigned int Parser::arm5CodeS()
 {
 	unsigned insn = 0;
 
-	if (asm_stack[asp - 1][0] == ASM_AMODE &&
-	    asm_stack[asp - 1][1] == AMODE_FLAGS) {
+	if (NOS_TYPE == ASM_AMODE &&
+	    NOS_VAL == AMODE_FLAGS) {
 		insn |= AMODE_FLAGS;    /* S */
 		asp--;
 	}
@@ -1096,10 +1090,8 @@ unsigned int Parser::arm5Code3Ops()
 	insn |= armCodeCond();
 	insn |= arm5CodeS();
 
-	insn |= asm_stack[--asp][1] << 12;      /* Rd */
-	ASSERT_REG;
-	insn |= asm_stack[--asp][1] << 16;      /* Rn */
-	ASSERT_REG;
+	insn |= POP_REG << 12;      /* Rd */
+	insn |= POP_REG << 16;      /* Rn */
 
 	insn |= arm5CodeOp2();
 	return insn;
@@ -1113,8 +1105,7 @@ unsigned int Parser::arm5Code2Ops(unsigned int regbit)
 	insn |= armCodeCond();
 	insn |= arm5CodeS();
 
-	unsigned int rd = asm_stack[--asp][1];
-	ASSERT_REG;
+	unsigned int rd = POP_REG;
 
 	insn |= rd << (regbit);
 	insn |= arm5CodeOp2();
@@ -1135,42 +1126,38 @@ unsigned int Parser::arm9CodeAddr()
 	unsigned int imm;
 	unsigned int insn = 0;
 
-	if (asm_stack[--asp][0] == ASM_AMODE) {
-		switch (asm_stack[asp][1]) {
+	if (POP_TYPE == ASM_AMODE) {
+		switch (TOS_VAL) {
 		case AMODE_IND:
 			break;
 
 		case AMODE_PREIND:
 		case AMODE_POSTIND:
-			insn |= asm_stack[asp][1];
-			imm = asm_stack[--asp][1];
+			insn |= TOS_VAL;
+			imm = POP_IMM;
 			if (imm < 0x80000000)
 				insn |= 0x00800000; /* upwards */
 			else
 				imm = -imm;
-			ASSERT_IMM;
 			insn |= imm;
 			break;
 
 		case AMODE_PREINDR:
 		case AMODE_POSTINDR:
-			insn |= asm_stack[asp][1];
-			if (asm_stack[asp - 1][0] == ASM_AMODE &&
-			    asm_stack[asp - 1][1] == AMODE_LSLI) {
+			insn |= TOS_VAL;
+			if (NOS_TYPE == ASM_AMODE &&
+			    NOS_VAL == AMODE_LSLI) {
 				--asp;
-				insn |= asm_stack[--asp][1] << 7;
-				ASSERT_IMM;
+				insn |= POP_IMM << 7;
 				insn |= 0x00800000; /* upwards */
 			}
-			insn |= asm_stack[--asp][1];
-			ASSERT_REG;
+			insn |= POP_REG;
 			break;
 
 		default:
 			GLB_error("unimp ARM.1x addressing mode\n");
 		}
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_REG;
+		insn |= POP_REG << 16;
 	}
 
 	return insn;
@@ -1181,19 +1168,18 @@ unsigned int Parser::arm10CodeAddr()
 	unsigned int imm;
 	unsigned int insn = 0;
 
-	assert(asm_stack[asp - 1][0] == ASM_AMODE);
-	switch (asm_stack[--asp][1]) {
+	assert(NOS_TYPE == ASM_AMODE);
+	switch (POP_VAL) {
 	case AMODE_PREIND:
 		/* Unfortunately the encoding in ARM.10 differs from ARM.9, so we cannot
 		 * use the enum directly. */
 		insn |= 0x01400000;
 do_imm_ind:
-		imm = asm_stack[--asp][1];
+		imm = POP_IMM;
 		if (imm < 0x80000000)
 			insn |= 1 << 23; /* upwards */
 		else
 			imm = -imm;
-		ASSERT_IMM;
 		insn |= (imm & 0xf);
 		insn |= (imm & 0xf0) << 4;
 		break;
@@ -1205,23 +1191,22 @@ do_imm_ind:
 	case AMODE_PREINDR:
 		insn |= 0x01800000;
 do_reg_ind:
-		if (asm_stack[asp - 1][0] == ASM_AMODE &&
-		    asm_stack[asp - 1][1] == AMODE_LSLI) {
+		if (NOS_TYPE == ASM_AMODE &&
+		    NOS_VAL == AMODE_LSLI) {
 #ifdef BUG_FOR_BUG
 			/* Bogus! There is no shifted indexing with halfword memory
 			 * accesses, and the specs state bits 8-11 as SBZ and bit
 			 * 7 as 1. */
 			insn &= ~(1 << 7);
 			--asp;
-			insn |= asm_stack[--asp][1] << 8;
+			insn |= POP_VAL << 8;
 #else
 			asp -= 2;
 			/* XXX: Issue a warning. */
 #endif
 			ASSERT_IMM;
 		}
-		insn |= asm_stack[--asp][1];
-		ASSERT_REG;
+		insn |= POP_REG;
 		break;
 	case AMODE_POSTINDR:
 		insn |= 0x00a00000;
@@ -1233,8 +1218,7 @@ do_reg_ind:
 	default:
 		GLB_error("internal error\n");
 	}
-	insn |= asm_stack[--asp][1] << 16;
-	ASSERT_REG;
+	insn |= POP_REG << 16;
 	return insn;
 }
 
@@ -1242,8 +1226,8 @@ unsigned int Parser::armCodeCond()
 {
 	unsigned int insn = 0;
 
-	if (asm_stack[asp - 1][0] == ASM_COND)
-		insn |= asm_stack[--asp][1];
+	if (NOS_TYPE == ASM_COND)
+		insn |= POP_VAL;
 	else
 		insn |= COND_AL;
 
@@ -1253,16 +1237,15 @@ unsigned int Parser::armCodeCond()
 #define CODE_TCOND do { insn |= armCodeCond() >> 20; } while (0)
 
 #define CODE_FLAGS do { \
-		if (asm_stack[asp - 1][0] == ASM_AMODE && \
-		    asm_stack[asp - 1][1] == AMODE_FLAGS) { \
+		if (NOS_TYPE == ASM_AMODE && \
+		    NOS_VAL == AMODE_FLAGS) { \
 			insn |= 1 << 20; \
 			--asp; \
 		} \
 } while (0)
 
 #define CODE_RD do { \
-		insn |= asm_stack[--asp][1] << 12;  \
-		ASSERT_REG; \
+		insn |= POP_REG << 12;  \
 } while (0)
 
 #ifndef NDEBUG
@@ -1313,33 +1296,30 @@ bool Parser::parseArm(const char *word)
 		if (word[1] == 'l')
 			insn |= 0x01000000;
 		CODE_COND;
-		unsigned int dest = asm_stack[--asp][1];
-		assert(asm_stack[asp][0] == ASM_OFF);
+		unsigned int dest = POP_VAL_TYPE(ASM_OFF);
 		DEBUG("asm branch from 0x%x to 0x%x\n", out->addr, dest);
 		assert(can_branch(out->addr, dest));
 		code(insn | (((dest - out->addr - 8) >> 2) & 0x00ffffff));
 	} else if (W("bx,")) {
 		unsigned insn = 0x012fff10;
 		CODE_COND;
-		code(insn | asm_stack[--asp][1]);
-		ASSERT_REG;
+		code(insn | POP_REG);
 	} else if (W("ldm,") || W("stm,")) {
 		/* format ARM.11 */
 		unsigned int insn = 0;
 		CODE_COND;
-		while (asm_stack[--asp][0] == ASM_REG)
-			//printf("reg %d\n", asm_stack[asp][1]);
-			insn |= 1 << asm_stack[asp][1];
+		while (POP_TYPE == ASM_REG)
+			//printf("reg %d\n", TOS_VAL);
+			insn |= 1 << TOS_VAL;
 		if (word[0] == 'l')
 			insn |= OP_LDM;
 		else
 			insn |= OP_STM;
 
-		insn |= asm_stack[asp][1];
-		assert(asm_stack[asp][0] == ASM_DIR);
+		insn |= TOS_VAL;
+		assert(TOS_TYPE == ASM_DIR);
 
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_REG;
+		insn |= POP_REG << 16;
 		code(insn);
 	} else if (W("ldr,") || W("str,") || W("ldrb,") || W("strb,")) {
 		unsigned insn;
@@ -1371,8 +1351,7 @@ bool Parser::parseArm(const char *word)
 	// XXX: mrs, msr, cdp, stc, ldc, mcr, mrc
 	} else if (W("link")) {
 		unsigned int insn = 0xe9270000;
-		insn |= 1 << (asm_stack[--asp][1]);
-		ASSERT_REG;
+		insn |= 1 << POP_REG;
 		code(insn);
 	} else if (W("mov,")) {
 		unsigned int insn = 0x01a00000;
@@ -1384,12 +1363,9 @@ bool Parser::parseArm(const char *word)
 	} else if (W("mul,")) {
 		unsigned int insn = 0x00000090;
 		CODE_COND;
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_REG;
-		insn |= asm_stack[--asp][1];
-		ASSERT_REG;
-		insn |= asm_stack[--asp][1] << 8;
-		ASSERT_REG;
+		insn |= POP_REG << 16;
+		insn |= POP_REG;
+		insn |= POP_REG << 8;
 		code(insn);
 	} else if (W("ret")) {
 		unsigned int insn = 0x012fff1e;
@@ -1399,10 +1375,8 @@ bool Parser::parseArm(const char *word)
 		unsigned int insn = 0x01000090;
 		CODE_COND;
 		CODE_RD;
-		insn |= asm_stack[--asp][1];
-		ASSERT_REG;
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_REG;
+		insn |= POP_REG;
+		insn |= POP_REG << 16;
 		code(insn);
 	} else if (W("pop")) {
 		unsigned int insn = 0x04bd0004;
@@ -1412,13 +1386,12 @@ bool Parser::parseArm(const char *word)
 	} else if (W("push")) {
 		unsigned int insn = 0x092d0000;
 		CODE_COND;
-		insn |= 1 << asm_stack[--asp][1];
+		insn |= 1 << POP_VAL;
 		code(insn);
 	} else if (W("swi,")) {
 		unsigned int insn = 0x0f000000;
 		CODE_COND;
-		insn |= asm_stack[--asp][1] << 16;
-		ASSERT_IMM;
+		insn |= POP_IMM << 16;
 		code(insn);
 	} else if (W("unlink")) {
 		unsigned int insn = 0xe4b70004;
@@ -1428,9 +1401,9 @@ bool Parser::parseArm(const char *word)
 		unsigned int insn = 0x051f0000;
 		CODE_COND;
 		CODE_RD;
-		literals.prependNew(asm_stack[--asp][1], out->addr);
-		assert(asm_stack[asp][0] == ASM_IMM ||
-		       asm_stack[asp][0] == ASM_OFF);
+		literals.prependNew(POP_VAL, out->addr);
+		assert(TOS_TYPE == ASM_IMM ||
+		       TOS_TYPE == ASM_OFF);
 		code(insn);
 	} else
 		return false;
@@ -1442,19 +1415,17 @@ bool Parser::parseThumb(const char *word)
 {
 	if (!thumb)
 		return false;
+
 #define THUMBSHIFT(str, op) \
 	else if (W(#str ",") && asp > 3 && \
 		 asm_stack[asp - 3][0] == ASM_AMODE && \
 		 asm_stack[asp - 3][1] == AMODE_IMM) { \
 		unsigned short insn = op << 11; \
-		insn |= asm_stack[--asp][1] << 0; \
-		ASSERT_TREG; \
-		insn |= asm_stack[--asp][1] << 3; \
-		ASSERT_TREG; \
+		insn |= POP_TREG << 0; \
+		insn |= POP_TREG << 3; \
 		--asp; \
-		insn |= asm_stack[--asp][1] << 6; \
-		ASSERT_IMM; \
-		assert(asm_stack[asp][1] < 32); \
+		insn |= POP_IMM << 6; \
+		assert(TOS_VAL < 32); \
 		code16(insn); \
 	}
 
@@ -1465,10 +1436,8 @@ bool Parser::parseThumb(const char *word)
 #define THUMB4(str, op) \
 	else if (W(#str ",")) { \
 		unsigned short insn = 0x4000 | TOP_ ## op; \
-		insn |= asm_stack[--asp][1] << 0; \
-		ASSERT_TREG; \
-		insn |= asm_stack[--asp][1] << 3; \
-		ASSERT_TREG; \
+		insn |= POP_TREG << 0; \
+		insn |= POP_TREG << 3; \
 		code16(insn); \
 	}
 
