@@ -985,9 +985,25 @@ Icode *Parser::getIcode(const char *word)
 	asm_stack[asp][0] = (x); asm_stack[asp++][1] = (y); \
 } while (0)
 
-#define ASSERT_REG do { assert(asm_stack[asp][0] == ASM_REG); } while (0)
-#define ASSERT_TREG do { assert(asm_stack[asp][0] == ASM_REG && asm_stack[asp][1] < 8); } while (0)
-#define ASSERT_IMM do { assert(asm_stack[asp][0] == ASM_IMM); } while (0)
+// next-of-stack type/value macros
+#define NOS_TYPE (asm_stack[asp - 1][0])
+#define NOS_VAL (asm_stack[asp - 1][1])
+// top-of-stack type/value macros
+#define TOS_TYPE (asm_stack[asp][0])
+#define TOS_VAL (asm_stack[asp][1])
+// popped type/value macros
+#define POP_TYPE (asm_stack[--asp][0])
+#define POP_VAL (asm_stack[--asp][1])
+
+// pop with type checking
+#define POP_VAL_TYPE(x) (--asp, assert(TOS_TYPE == (x)), TOS_VAL)
+#define POP_REG POP_VAL_TYPE(ASM_REG)
+#define POP_TREG (--asp, assert(TOS_TYPE == ASM_REG && TOS_VAL < 8), TOS_VAL)
+#define POP_IMM POP_VAL_TYPE(ASM_IMM)
+
+#define ASSERT_REG do { assert(TOS_TYPE == ASM_REG); } while (0)
+#define ASSERT_TREG do { assert(TOS_TYPE == ASM_REG && TOS_VAL < 8); } while (0)
+#define ASSERT_IMM do { assert(TOS_TYPE == ASM_IMM); } while (0)
 
 static unsigned int immrot(unsigned int val, int *err)
 {
