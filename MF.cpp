@@ -1187,31 +1187,14 @@ do_imm_ind:
 		insn |= 0x00600000;
 		goto do_imm_ind;
 		break;
-
 	case AMODE_PREINDR:
 		insn |= 0x01800000;
-do_reg_ind:
-		if (NOS_TYPE == ASM_AMODE &&
-		    NOS_VAL == AMODE_LSLI) {
-#ifdef BUG_FOR_BUG
-			/* Bogus! There is no shifted indexing with halfword memory
-			 * accesses, and the specs state bits 8-11 as SBZ and bit
-			 * 7 as 1. */
-			insn &= ~(1 << 7);
-			--asp;
-			insn |= POP_VAL << 8;
-#else
-			asp -= 2;
-			/* XXX: Issue a warning. */
-#endif
-			ASSERT_IMM;
-		}
 		insn |= POP_REG;
 		break;
 	case AMODE_POSTINDR:
 		insn |= 0x00a00000;
-		goto do_reg_ind;
-
+		insn |= POP_REG;
+		break;
 	case AMODE_IND:
 		insn |= 0x00400000;
 		break;
