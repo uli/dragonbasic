@@ -1834,9 +1834,9 @@ void Parser::parseAsm(const char *word)
 		unsigned int imm = TIN_parseNum(word);
 		PUSH_ASM(ASM_IMM, imm);
 	} else if (W("#offset")) {
-		assert(asm_stack[asp - 1][0] == ASM_IMM);
-		asm_stack[asp - 1][0] = ASM_OFF;
-		asm_stack[asp - 1][1] += out->addr;
+		assert(NOS_TYPE == ASM_IMM);
+		NOS_TYPE = ASM_OFF;
+		NOS_VAL += out->addr;
 
 	// XXX: there should be a list of constants
 	} else if (W("backbuffer")) {
