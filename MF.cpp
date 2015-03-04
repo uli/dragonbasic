@@ -2099,6 +2099,7 @@ parse_next:
 		//printf("==\n");
 	} else if (W("icode") || W("icode-thumb")) {
 		cur_icode = icodes.appendNew(getNextWord());
+		DEBUG("===start icode %s\n", cur_icode->word);
 		asm_mode = true;
 		if (word[6] == 't') {
 			thumb = true;
@@ -2115,6 +2116,7 @@ parse_next:
 		else
 			thumb = false;
 		sym = symbols.appendNew(out->addr, getNextWord());
+		DEBUG("===start code %s at 0x%x\n", sym->word, sym->addr);
 		sym->thumb = thumb;
 		asm_mode = true;
 		r5_const = false;
