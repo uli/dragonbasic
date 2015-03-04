@@ -11,7 +11,7 @@ icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 
 \ divide and modula
 :n / ( n1 n2 -- n3 ) swap a! 7 swi ;
-: mod ( n1 n2 -- n3 ) / drop a ;
+:n mod ( n1 n2 -- n3 ) swap a! 7 swi drop a ;
 
 \ conditionals
 :n = ( n1 n2 -- flag ) - 0= ;
