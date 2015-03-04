@@ -207,7 +207,7 @@ void Parser::setOutput(Output *out)
 	this->out = out;
 }
 
-const char *Parser::getNextWord()
+const char *Parser::_getNextWord()
 {
 	static int text_mode = 0;
 	static char buf[256];
@@ -239,13 +239,20 @@ const char *Parser::getNextWord()
 	return buf;
 }
 
+const char *Parser::getNextWord()
+{
+	const char *word = _getNextWord();
+	DEBUG("\"%s\"\n", word);
+	return word;
+}
+
 const char *Parser::peekWordN(int n)
 {
 	char *save_tptr = tptr;
 	const char *pw;
 
 	do {
-		pw = getNextWord();
+		pw = _getNextWord();
 		n--;
 	} while (n >= 0);
 	tptr = save_tptr;
@@ -2054,7 +2061,6 @@ parse_next:
 		}
 	}
 
-	//DEBUG("word -%s- at 0x%x\n", word, out->addr);
 	if (W("requires\"")) {
 		pushText(getNextWord());
 	} else if (W("import\"")) {

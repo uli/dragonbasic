@@ -108,6 +108,7 @@ class Parser {
 public:
 	Parser();
 	void setOutput(Output *out);
+	const char *_getNextWord();
 	const char *getNextWord();
 	const char *peekWordN(int n);
 	bool isWordN(int n, const char *word);
