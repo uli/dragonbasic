@@ -806,6 +806,7 @@ void Parser::code(unsigned int insn)
 	} else {
 		out->emitDword(insn);
 	}
+	last_insn = insn;
 }
 
 void Parser::code16(unsigned short insn)
@@ -821,6 +822,7 @@ void Parser::code16(unsigned short insn)
 	} else {
 		out->emitWord(insn);
 	}
+	last_insn = insn;
 }
 
 #define W(x) !strcmp((x), word)

@@ -177,6 +177,7 @@ public:
 	unsigned int loop_stack[32];
 	int lpsp;
 	bool thumb;
+	unsigned int last_insn;
 };
 
 #define GLB_error(x ...) do { fprintf(stderr, "ERROR: " x); exit(1); } while (0)
