@@ -2154,7 +2154,9 @@ parse_next:
 			sym->has_prolog = true;
 			codeAsm("4", "##", "r7", "r7", "sub,");
 			codeAsm("r7", "0@", "r6", "str,");
-			codeAsm("lr", "r6", "mov,");
+			// LPROLOG overwrites R6, no need to set it.
+			if (!isWordN(1, "lprolog"))
+				codeAsm("lr", "r6", "mov,");
 		}
 		word_start = out->addr;
 		local_idx = 0;
