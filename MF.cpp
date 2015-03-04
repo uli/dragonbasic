@@ -1459,58 +1459,55 @@ bool Parser::parseThumb(const char *word)
 
 	else if (W("cmp,")) {
 		unsigned short insn;
-		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_TREG;
-		if (asm_stack[--asp][0] == ASM_AMODE &&
-		    asm_stack[asp][1] == AMODE_IMM) {
+		unsigned int rd = POP_TREG;
+		if (POP_TYPE == ASM_AMODE &&
+		    TOS_VAL == AMODE_IMM) {
 			insn = 0x2800;
-			insn |= asm_stack[--asp][1] << 0;
-			assert(asm_stack[asp][1] < 256);
+			insn |= POP_VAL << 0;
+			assert(TOS_VAL < 256);
 			insn |= rd << 8;
 			DEBUG("tcmpimm\n");
 		} else {
 			insn = 0x4000 | TOP_CMP;
 			insn |= rd << 0;
-			insn |= asm_stack[asp][1] << 3;
+			insn |= TOS_VAL << 3;
 			ASSERT_TREG;
 		}
 		code16(insn);
 	} else if ((W("sub,") || W("add,"))) {
 		unsigned short insn;
-		unsigned int rd = asm_stack[--asp][1];
+		unsigned int rd = POP_VAL;
 		assert(rd < 8 || rd == REG_SP);
-		if (asm_stack[--asp][0] == ASM_AMODE &&
-		    asm_stack[asp][1] == AMODE_IMM) {
+		if (POP_TYPE == ASM_AMODE &&
+		    TOS_VAL == AMODE_IMM) {
 			if (rd == REG_SP) {
 				insn = 0xb000;
 				if (word[0] == 's')
 					insn |= 0x80;
-				insn |= asm_stack[--asp][1] >> 2;
-				ASSERT_IMM;
-				assert(asm_stack[asp][1] < 512);
+				insn |= POP_IMM >> 2;
+				assert(TOS_VAL < 512);
 			} else {
 				insn = 0x3000;
 				if (word[0] == 's')
 					insn |= 0x800;
 				insn |= rd << 8;
-				insn |= asm_stack[--asp][1];
-				ASSERT_IMM;
-				assert(asm_stack[asp][1] < 256);
+				insn |= POP_IMM;
+				assert(TOS_VAL < 256);
 			}
 		} else {
 			insn = 0x1800 | (rd << 0);
 			if (word[0] == 's')
 				insn |= 1 << 9;
-			insn |= asm_stack[asp][1] << 3;
+			insn |= TOS_VAL << 3;
 			ASSERT_TREG;
-			if (asm_stack[--asp][0] == ASM_AMODE) {
-				assert(asm_stack[asp][1] == AMODE_IMM);
+			if (POP_TYPE == ASM_AMODE) {
+				assert(TOS_VAL == AMODE_IMM);
 				insn |= 1 << 10;
-				insn |= asm_stack[--asp][1] << 6;
-				assert(asm_stack[asp][1] < 8);
+				insn |= POP_VAL << 6;
+				assert(TOS_VAL < 8);
 				DEBUG("tsub at 0x%x\n", out->addr);
 			} else {
-				insn |= asm_stack[asp][1] << 6;
+				insn |= TOS_VAL << 6;
 				ASSERT_TREG;
 			}
 		}
@@ -1519,15 +1516,14 @@ bool Parser::parseThumb(const char *word)
 		DEBUG("thumbldr @ 0x%x\n", out->addr);
 		unsigned short insn;
 		unsigned int offset;
-		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_TREG;
+		unsigned int rd = POP_TREG;
 		--asp;
-		assert(asm_stack[asp][0] == ASM_AMODE);
-		switch (asm_stack[asp][1]) {
+		assert(TOS_TYPE == ASM_AMODE);
+		switch (TOS_VAL) {
 			case AMODE_IND:
 				--asp;
 				ASSERT_REG;
-				if (asm_stack[asp][1] == REG_SP) {
+				if (TOS_VAL == REG_SP) {
 					assert(word[3] != 'b');
 					// XXX: This is rarely used and pretty much untested.
 					insn = 0x9000;
@@ -1542,16 +1538,16 @@ bool Parser::parseThumb(const char *word)
 					if (word[3] == 'b')
 						insn |= 0x1000;
 					insn |= rd << 0;
-					insn |= asm_stack[asp][1] << 3;
+					insn |= TOS_VAL << 3;
 				}
 				break;
 
 			case AMODE_PREIND:
 				--asp;
 				ASSERT_IMM;
-				assert(word[3] == 'b' || !(asm_stack[asp][1] & 3));
-				offset = asm_stack[asp][1] >> 2;
-				if (asm_stack[--asp][1] == REG_SP) {
+				assert(word[3] == 'b' || !(TOS_VAL & 3));
+				offset = TOS_VAL >> 2;
+				if (POP_VAL == REG_SP) {
 					assert(word[3] != 'b');
 					assert(offset < 256);
 					insn = 0x9000;
@@ -1559,7 +1555,7 @@ bool Parser::parseThumb(const char *word)
 						insn |= 1 << 11;
 					insn |= rd << 8;
 					insn |= offset;
-				} else if (asm_stack[asp][1] == REG_PC) {
+				} else if (TOS_VAL == REG_PC) {
 					assert(word[3] != 'b');
 					assert(offset < 256);
 					insn = 0x4800;
@@ -1574,7 +1570,7 @@ bool Parser::parseThumb(const char *word)
 						insn |= 0x800;
 					if (word[3] == 'b')
 						insn |= 0x1000;
-					insn |= asm_stack[asp][1] << 3;
+					insn |= TOS_VAL << 3;
 					ASSERT_TREG;
 					insn |= rd << 0;
 					insn |= offset << 6;
@@ -1587,29 +1583,25 @@ bool Parser::parseThumb(const char *word)
 		code16(insn);
 	} else if (W("ldrh,") || W("strh,")) {
 		unsigned short insn;
-		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_TREG;
+		unsigned int rd = POP_TREG;
 		--asp;
-		assert(asm_stack[asp][0] == ASM_AMODE);
-		if (asm_stack[asp][1] == AMODE_PREIND ||
-		    asm_stack[asp][1] == AMODE_IND) {
+		assert(TOS_TYPE == ASM_AMODE);
+		if (TOS_VAL == AMODE_PREIND ||
+		    TOS_VAL == AMODE_IND) {
 			insn = 0x8000;
 			if (word[0] == 'l')
 				insn |= 0x800;
-			if (asm_stack[asp][1] == AMODE_PREIND) {
-				insn |= (asm_stack[--asp][1] >> 1) << 6;
-				assert(asm_stack[asp][1] < 64);
+			if (TOS_VAL == AMODE_PREIND) {
+				insn |= (POP_VAL >> 1) << 6;
+				assert(TOS_VAL < 64);
 			}
-			insn |= asm_stack[--asp][1] << 3;
-			ASSERT_TREG;
-		} else if (asm_stack[asp][1] == AMODE_PREINDR) {
+			insn |= POP_TREG << 3;
+		} else if (TOS_VAL == AMODE_PREINDR) {
 			insn = 0x5200;
 			if (word[0] == 'l')
 				insn |= 0x800;
-			insn |= asm_stack[--asp][1] << 6;	// offset
-			ASSERT_TREG;
-			insn |= asm_stack[--asp][1] << 3;	// base
-			ASSERT_TREG;
+			insn |= POP_TREG << 6;	// offset
+			insn |= POP_TREG << 3;	// base
 		} else
 			GLB_error("invalid addressing mode on %s\n", word);
 		insn |= rd << 0;
@@ -1617,27 +1609,26 @@ bool Parser::parseThumb(const char *word)
 	} else if ((W("ldm,") || W("stm,"))) {
 		// XXX: unused and thus entirely untested
 		unsigned short insn = 0xc000;
-		while (asm_stack[--asp][0] == ASM_REG) {
-			//printf("reg %d\n", asm_stack[asp][1]);
-			insn |= 1 << asm_stack[asp][1];
+		while (POP_TYPE == ASM_REG) {
+			//printf("reg %d\n", TOS_VAL);
+			insn |= 1 << TOS_VAL;
 			ASSERT_TREG;
 		}
 
 		if (word[0] == 'l')
 			insn |= 1 << 11;
 
-		insn |= asm_stack[asp][1];
-		assert(asm_stack[asp][0] == ASM_DIR &&
-		       asm_stack[asp][1] == DIR_IAW);
+		insn |= TOS_VAL;
+		assert(TOS_TYPE == ASM_DIR &&
+		       TOS_VAL == DIR_IAW);
 
-		insn |= asm_stack[--asp][1] << 8;
-		ASSERT_TREG;
+		insn |= POP_TREG << 8;
 		code16(insn);
 	} else if (W("bl,")) {
 		unsigned short insn1 = 0xf000;
 		unsigned short insn2 = 0xf800;
-		unsigned int dest = asm_stack[--asp][1];
-		assert(asm_stack[asp][0] == ASM_OFF);
+		unsigned int dest = POP_VAL;
+		assert(TOS_TYPE == ASM_OFF);
 		DEBUG("asm thumb branch from 0x%x to 0x%x\n", out->addr, dest);
 		assert(can_branch_thumb(out->addr, dest));
 		int soff = (dest - out->addr - 4) >> 1;
@@ -1648,19 +1639,18 @@ bool Parser::parseThumb(const char *word)
 		code16(insn2 | off2);
 	} else if (W("b,")) {
 		unsigned short insn;
-		if (asm_stack[asp-1][0] == ASM_COND) {
+		if (NOS_TYPE == ASM_COND) {
 			insn = 0xd000;
 			CODE_TCOND;
-			unsigned int dest = asm_stack[--asp][1];
-			assert(asm_stack[asp][0] == ASM_OFF);
+			unsigned int dest = POP_VAL_TYPE(ASM_OFF);
+			assert(TOS_TYPE == ASM_OFF);
 			DEBUG("asm thumb cond branch from 0x%x to 0x%x\n", out->addr, dest);
 			int soff = dest - out->addr - 4;
 			assert(soff >= -256 && soff < 256);
 			insn |= (soff >> 1) & 0xff;
 		} else {
 			insn = 0xe000;
-			unsigned int dest = asm_stack[--asp][1];
-			assert(asm_stack[asp][0] == ASM_OFF);
+			unsigned int dest = POP_VAL_TYPE(ASM_OFF);
 			DEBUG("asm thumb uncond branch from 0x%x to 0x%x\n", out->addr, dest);
 			int soff = dest - out->addr - 4;
 			assert(soff >= -2048 && soff < 2048);
@@ -1669,23 +1659,21 @@ bool Parser::parseThumb(const char *word)
 		code16(insn);
 	} else if (W("bx,")) {
 		unsigned short insn = 0x4700;
-		code16(insn | (asm_stack[--asp][1] << 3));
-		ASSERT_REG;
+		code16(insn | (POP_REG << 3));
 	} else if (W("mov,")) {
 		unsigned short insn;
-		unsigned int rd = asm_stack[--asp][1];
-		ASSERT_REG;
-		if (asm_stack[--asp][0] == ASM_REG) {
+		unsigned int rd = POP_REG;
+		if (POP_TYPE == ASM_REG) {
 			insn = 0x4600;
-			unsigned int rs = asm_stack[asp][1];
+			unsigned int rs = TOS_VAL;
 			insn |= rs << 3;
 			insn |= rd & 7;
 			insn |= (!!(rd & 8)) << 7;
-		} else if (asm_stack[asp][0] == ASM_AMODE &&
-			   asm_stack[--asp][0] == ASM_IMM) {
+		} else if (TOS_TYPE == ASM_AMODE &&
+			   POP_TYPE == ASM_IMM) {
 			assert(rd < REG_R8);
 			insn = 0x2000;
-			unsigned int imm = asm_stack[asp][1];
+			unsigned int imm = TOS_VAL;
 			assert(imm < 256);
 			insn |= rd << 8;
 			insn |= imm;
@@ -1695,37 +1683,34 @@ bool Parser::parseThumb(const char *word)
 	} else if (W("pop")) {
 		unsigned short insn = 0xbc00;
 		while (asp) {
-			insn |= 1 << asm_stack[--asp][1];
-			ASSERT_TREG;
+			insn |= 1 << POP_TREG;
 		}
 		code16(insn);
 	} else if (W("push")) {
 		unsigned short insn = 0xb400;
 		while (asp) {
-			if (asm_stack[--asp][1] == REG_LR) {
+			if (POP_VAL_TYPE(ASM_REG) == REG_LR)
 				insn |= 0x100;
-				ASSERT_REG;
-			} else {
-				insn |= 1 << asm_stack[asp][1];
+			else {
+				insn |= 1 << TOS_VAL;
 				ASSERT_TREG;
 			}
 		}
 		code16(insn);
 	} else if (W("swi,")) {
 		unsigned short insn = 0xdf00;
-		insn |= asm_stack[--asp][1];
-		ASSERT_IMM;
-		assert(asm_stack[asp][1] < 256);
+		insn |= POP_IMM;
+		assert(TOS_VAL < 256);
 		code16(insn);
 	} else if (W("literal")) {
 		unsigned short insn = 0x4800;
-		insn |= asm_stack[--asp][1] << 8;
-		ASSERT_TREG;
-		literals.prependNew(asm_stack[--asp][1], out->addr, true);
-		assert(asm_stack[asp][0] == ASM_IMM ||
-		       asm_stack[asp][0] == ASM_OFF);
+		insn |= POP_TREG << 8;
+		literals.prependNew(POP_VAL, out->addr, true);
+		assert(TOS_TYPE == ASM_IMM ||
+		       TOS_TYPE == ASM_OFF);
 		code16(insn);
 	} else if (W("ret")) {
+		/* BX LR */
 		code16(0x4700 | (REG_LR << 3));
 	} else
 		return false;
