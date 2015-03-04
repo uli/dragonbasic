@@ -2430,8 +2430,17 @@ emit_num:
 					}
 				} else {
 					DEBUG("small num 0x%x\n", num);
-					codeAsm("r0", "push");
-					codeAsm(num, "##", "r0", "mov,");
+					if (isWordN(0, "over") && isWordN(1, "!")) {
+						getNextWord();
+						getNextWord();
+						r5_const = true;
+						r5 = num;
+						codeAsm(num, "##", "r5", "mov,");
+						codeAsm("r0", "0@", "r5", "str,");
+					} else {
+						codeAsm("r0", "push");
+						codeAsm(num, "##", "r0", "mov,");
+					}
 				}
 			}
 		} else if (getNextWordIf(",")) {
