@@ -1494,7 +1494,6 @@ bool Parser::parseThumb(const char *word)
 				insn |= 1 << 10;
 				insn |= POP_VAL << 6;
 				assert(TOS_VAL < 8);
-				DEBUG("tsub at 0x%x\n", out->addr);
 			} else {
 				insn |= TOS_VAL << 6;
 				ASSERT_TREG;
@@ -1502,7 +1501,6 @@ bool Parser::parseThumb(const char *word)
 		}
 		code16(insn);
 	} else if (W("ldr,") || W("str,") || W("ldrb,") || W("strb,")) {
-		DEBUG("thumbldr @ 0x%x\n", out->addr);
 		unsigned short insn;
 		unsigned int offset;
 		unsigned int rd = POP_TREG;
@@ -2056,7 +2054,7 @@ parse_next:
 		}
 	}
 
-	DEBUG("word -%s- at 0x%x\n", word, out->addr);
+	//DEBUG("word -%s- at 0x%x\n", word, out->addr);
 	if (W("requires\"")) {
 		pushText(getNextWord());
 	} else if (W("import\"")) {
