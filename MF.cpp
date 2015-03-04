@@ -2033,6 +2033,7 @@ void Parser::parseAll()
 	unsigned int word_start = out->addr;
 	unsigned int local_idx = 0;
 	unsigned int num;
+	bool skip_push = false;
 
 parse_next:
 	if (r5_const)
@@ -2399,11 +2400,22 @@ emit_num:
 				    (isWordN(1, "@") || isWordN(1, "!"))) {
 					getNextWord();
 					if (getNextWordIf("@")) {
-						codeAsm("r0", "push");
+						// If a local store precedes,
+						// we don't have to push R0.
+						if (!skip_push)
+							codeAsm("r0", "push");
+						skip_push = false;
 						codeAsm("r6", num, "#(", "r0", "ldr,");
 					} else if (getNextWordIf("!")) {
 						codeAsm("r6", num, "#(", "r0", "str,");
-						codeAsm("r0", "pop");
+						// If a local load follows, we
+						// don't have to pop R0.
+						if (isWordN(1, "#") &&
+						    isWordN(2, "+r") &&
+						    isWordN(3, "@"))
+							skip_push = true;
+						else
+							codeAsm("r0", "pop");
 					} else
 						GLB_error("internal error\n");
 				} else if (num > 0xff) {
