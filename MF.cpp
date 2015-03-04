@@ -2133,6 +2133,7 @@ parse_next:
 		r5_const = false;
 		currently_naked = word[1] == 'n';
 		sym = symbols.appendNew(out->addr, getNextWord());
+		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 		if (!strcmp(word, "start")) {
 			// Runtime assumes that "start" is an ARM word, so we
 			// have to code a switch to Thumb.
@@ -2149,7 +2150,6 @@ parse_next:
 			codeAsm("r7", "0@", "r6", "str,");
 			codeAsm("lr", "r6", "mov,");
 		}
-		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 		word_start = out->addr;
 		local_idx = 0;
 	} else if (W("label")) {
