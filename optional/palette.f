@@ -61,10 +61,12 @@ code makepalette ( pal -- )
 	ret
 end-code
 
-code getpalentry ( pal index entry -- color )
-	sp ia! v1 v2 ldm,
-	v1 5 #lsl v2 v2 add,
-	v2 tos 1 #lsl +( tos ldrh,
+code-thumb getpalentry ( pal index entry -- color )
+	v1 v2 pop
+	5 ## v1 v1 lsl,
+	v1 v2 v2 add,
+	2 ## tos tos lsl,
+	tos v2 +( tos ldrh,
 	ret
 end-code
 
