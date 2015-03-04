@@ -173,6 +173,7 @@ public:
 	} asm_labels[32];
 	int lsp;
 	unsigned int asm_stack[32][2];
+	char asm_text[32][64];
 	int asp;
 	unsigned int loop_stack[32];
 	int lpsp;

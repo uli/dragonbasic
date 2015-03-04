@@ -987,6 +987,7 @@ Icode *Parser::getIcode(const char *word)
 }
 
 #define PUSH_ASM(x, y) do { \
+	strcpy(asm_text[asp], word); \
 	asm_stack[asp][0] = (x); asm_stack[asp++][1] = (y); \
 } while (0)
 
@@ -1905,6 +1906,8 @@ void Parser::codeAsm(
 	const char *w3,
 	const char *w4)
 {
+	char word[64];
+	sprintf(word, "0x%x", w0);
 	PUSH_ASM(ASM_IMM, w0);
 	codeAsm(w1, w2, w3, w4);
 }
@@ -1917,18 +1920,24 @@ void Parser::codeAsm(
 	const char *w4)
 {
 	codeAsm(w0);
+	char word[64];
+	sprintf(word, "0x%x", w1);
 	PUSH_ASM(ASM_IMM, w1);
 	codeAsm(w2, w3, w4);
 }
 
 void Parser::codeBranch(unsigned int dest, const char *mnem)
 {
+	char word[64];
+	sprintf(word, "0x%x", dest);
 	PUSH_ASM(ASM_OFF, dest);
 	codeAsm(mnem);
 }
 
 void Parser::codeBranch(unsigned int dest, const char *cond, const char *mnem)
 {
+	char word[64];
+	sprintf(word, "0x%x", dest);
 	PUSH_ASM(ASM_OFF, dest);
 	codeAsm(cond, mnem);
 }
