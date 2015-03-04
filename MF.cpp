@@ -45,8 +45,11 @@ bool option_debug = false;
 #ifndef NDEBUG
 #define DEBUG(x ...) do { if (option_debug) fprintf(stderr, "DEBUG " x); \
 } while (0)
+#define DEBUGN(x ...) do { if (option_debug) fprintf(stderr, x); \
+} while (0)
 #else
 #define DEBUG(x ...) do {} while(0)
+#define DEBUGN(x ...) do {} while(0)
 #endif
 
 Icode::Icode()
