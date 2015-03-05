@@ -2121,7 +2121,7 @@ parse_next:
 		r5_const = false;
 	} else if (W("code") || W("code-thumb")) {
 		out->alignDword();
-		if (word[5] == 't')
+		if (word[4] == '-' && word[5] == 't')
 			thumb = true;
 		else
 			thumb = false;
