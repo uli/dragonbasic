@@ -2619,12 +2619,17 @@ emit_num:
 	} else if (W(">=") && getNextWordIf("if")) {
 		cond = thumb ? "ge?" : "lt?";
 		goto do_if;
+	} else if (W("0=") && getNextWordIf("if")) {
+		cond = thumb ? "eq?" : "ne?";
+		codeAsm("r0", "r0", "tst,");
+		goto do_if2;
 	} else if (W("=") && getNextWordIf("if")) {
 		cond = thumb ? "eq?" : "ne?";
 do_if:
 		r5_const = false;
 		codeAsm("r5", "pop");
 		codeAsm("r0", "r5", "cmp,");
+do_if2:
 		codeAsm("r0", "pop");
 		if (thumb) {
 			codeBranch(out->addr + 4, cond, "b,");
