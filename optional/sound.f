@@ -2,21 +2,25 @@
   -- Original code by Jeff Massung, 2003 }
 
 \ turn all sounds on
-code turnsoundon ( -- )
-	REGISTERS ## v2 mov,
+code-thumb turnsoundon ( -- )
+	$40 ## v2 mov,
+	20 ## v2 v2 lsl,
+	$80 ## v2 add,
 	
 	\ $80 -> REG_SOUNDCNT_X
 	$80 ## v1 mov,
-	v2 $84 #( v1 strh,
+	v2 $4 #( v1 strh,
 	
 	\ $FF77 -> REG_SOUNDCNT_L
-	$ff00 ## v1 mov,
-	$77 ## v1 v1 orr,
-	v2 $80 #( v1 strh,
+	$ff ## v1 mov,
+	8 ## v1 v1 lsl,
+	$77 ## v0 mov,
+	v0 v1 orr,
+	v2 0@ v1 strh,
 	
 	\ 2 -> REG_SOUNDCNT_H
 	2 ## v1 mov,
-	v2 $82 #( v1 strh,
+	v2 $2 #( v1 strh,
 	
 	\ done
 	ret
