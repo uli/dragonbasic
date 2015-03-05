@@ -395,6 +395,23 @@ bool isNum(const char *word)
 	       (isdigit(last_digit) || ishex(last_digit));
 }
 
+bool isPow2(unsigned int num)
+{
+	while (num && !(num & 1))
+		num >>= 1;
+	return num == 1;
+}
+
+unsigned int log2(unsigned int num)
+{
+	unsigned int pow = 0;
+	while (num && !(num & 1)) {
+		num >>= 1;
+		pow++;
+	}
+	return pow;
+}
+
 void Output::emitByte(const unsigned char byte)
 {
 	fputc(byte, fp);
