@@ -2540,6 +2540,8 @@ handle_const:
 	} else if (W("drop")) {
 		if (getNextWordIf("a")) {
 			codeAsm("r1", "r0", "mov,");
+		} else if (getNextWordIf("over")) {
+			codeAsm("sp", "4", "#(", "r0", "ldr,");
 		} else {
 			codeAsm("r0", "pop");
 		}
