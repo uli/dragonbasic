@@ -2255,12 +2255,6 @@ parse_next:
 		}
 		codeAsm("r0", "r6", "mov,");
 		codeAsm("r0", "pop");
-	} else if (W("0=")) {
-		codeAsm("1", "##", "r0", "sub,");
-		// If there is a borrow (ie. carry clear), we had 0 and are
-		// now at 0xffffffff -> mission accomplished.
-		codeBranch(out->addr + 4, "cc?", "b,");
-		codeAsm("0", "##", "r0", "mov,");
 	} else if (W("0<")) {
 		if (!thumb)
 			codeAsm("r0", "31", "#asr", "r0", "mov,");
@@ -2683,6 +2677,12 @@ do_while:
 			codeBranch(loop_stack[--lpsp] - 2, "b,");
 		else
 			codeBranch(loop_stack[--lpsp], "b,");
+	} else if (W("0=")) {
+		codeAsm("1", "##", "r0", "sub,");
+		// If there is a borrow (ie. carry clear), we had 0 and are
+		// now at 0xffffffff -> mission accomplished.
+		codeBranch(out->addr + 4, "cc?", "b,");
+		codeAsm("0", "##", "r0", "mov,");
 	} else if (W("interrupt")) {
 		out->alignDword();
 		r5_const = false;
