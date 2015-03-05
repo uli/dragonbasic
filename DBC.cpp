@@ -928,7 +928,7 @@ void Compiler::doCmdFor()
 	if (!loop_stack.addEntry(CMD_FOR, line_no))
 		GLB_error(ERR_STACK_OVER, "FOR");
 	bobj = parser->consumeNextBasicObj();
-	if (bobj->vtype)
+	if (bobj->vtype != VAR_SCALAR)
 		GLB_error(ERR_TYPE_MISMATCH);
 	doAssign(bobj);
 	emitTin("OVER ! ");
