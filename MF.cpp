@@ -2286,7 +2286,6 @@ handle_const:
 			codeAsm(num, "swi,");
 		} else if (getNextWordIf("#")) {
 			//printf("got imm 0x%x\n", num);
-			int have_num = 0;
 			for (;;) {
 				if (isNum(peekNextWord()) &&
 				    isWordN(1, "#")) {
@@ -2300,13 +2299,11 @@ handle_const:
 						break;
 					getNextWord();
 					getNextWord();
-					have_num = 1;
 				} else {
 					break;
 				}
 			}
-			if (have_num)
-				goto emit_num;
+
 			if (getNextWordIf("n/")) {
 				if (!thumb) {
 					codeAsm("r0");
@@ -2407,7 +2404,6 @@ handle_const:
 				codeAsm(num, "##", "r0", "r0", "and,");
 			} else {
 				//printf("misc num\n");
-emit_num:
 				if (isWordN(0, "+r") &&
 				    (isWordN(1, "@") || isWordN(1, "!"))) {
 					getNextWord();
