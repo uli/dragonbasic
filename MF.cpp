@@ -2610,6 +2610,30 @@ emit_num:
 			loop_stack[lpsp++] = out->addr;
 			codeBranch(out->addr, "eq?", "b,");
 		}
+	} else if (W(">") && getNextWordIf("if")) {
+		cond = thumb ? "gt?" : "le?";
+		goto do_if;
+	} else if (W("<") && getNextWordIf("if")) {
+		cond = thumb ? "lt?" : "ge?";
+		goto do_if;
+	} else if (W(">=") && getNextWordIf("if")) {
+		cond = thumb ? "ge?" : "lt?";
+		goto do_if;
+	} else if (W("=") && getNextWordIf("if")) {
+		cond = thumb ? "eq?" : "ne?";
+do_if:
+		r5_const = false;
+		codeAsm("r5", "pop");
+		codeAsm("r0", "r5", "cmp,");
+		codeAsm("r0", "pop");
+		if (thumb) {
+			codeBranch(out->addr + 4, cond, "b,");
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, "b,");
+		} else {
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, cond, "b,");
+		}
 	} else if (W("else")) {
 		r5_const = false;
 		codeBranch(out->addr, "b,");
