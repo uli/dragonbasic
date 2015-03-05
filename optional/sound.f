@@ -27,12 +27,14 @@ code-thumb turnsoundon ( -- )
 end-code
 
 \ turn all sounds off
-code turnsoundoff ( -- )
-	REGISTERS ## v2 mov,
+code-thumb turnsoundoff ( -- )
+	$40 ## v2 mov,
+	20 ## v2 v2 lsl,
+	$80 ## v2 add,
 	
 	\ 0 -> REG_SOUNDCNT_X
 	0 ## v1 mov,
-	v2 $84 #( v1 strh,
+	v2 $4 #( v1 strh,
 	
 	\ done
 	ret
