@@ -1734,6 +1734,14 @@ bool Parser::parseThumb(const char *word)
 		assert(TOS_TYPE == ASM_IMM ||
 		       TOS_TYPE == ASM_OFF);
 		code16(insn);
+	} else if (W("tothumb")) {
+		// We have been called as ARM, but want to be Thumb.
+		// Used by assembly language interrupt handlers.
+		assert(!(out->addr & 3));
+		thumb = false;
+		codeAsm("1", "##", "pc", "r0", "add,");
+		codeAsm("r0", "bx,");
+		thumb = true;
 	} else if (W("ret")) {
 		/* BX LR */
 		code16(0x4700 | (REG_LR << 3));
