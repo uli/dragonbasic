@@ -276,55 +276,68 @@ code /playmusic ( -- )
 end-code
 
 \ start playing looping wav sounds
-code playmusic ( a -- )
-	\ 0x4000000 -> R8, 0x4000200 -> R9
-	REGISTERS ## r8 mov,
-	$200 ## r8 r9 add,
+code-thumb playmusic ( a -- )
+	REGISTERS r3 LITERAL
+	$4000200 r4 LITERAL
 	
 	\ enable interrupts
-	0 ## r10 mvn,
-	r9 8 #( r10 strh,
+	0 ## r5 mov,
+	1 ## r5 sub,
+	r4 8 #( r5 strh,	\ $4000208
 
 	\ stop dma transfer of any currently playing music
 	0 ## r1 mov,
-	r8 $c4 #( r1 str,
+	$c4 ## r3 add,		\ $40000c4
+	r3 0@ r1 str,
 
-	\ 0x3000000 -> R10, 0x3006F00 -> R11
-	IWRAM ## r10 mov,
-	GLOBALS ## r10 r11 add,
+	\ 0x3006F00 -> R5
+	IWRAM r5 LITERAL
+	GLOBALS r3 LITERAL
+	r3 r5 r5 add,
 
 	\ reg_sndcnt_h |= 0xB04 (fifo a)
-	r8 $82 #( r1 ldrh,
-	$b00 ## r1 r1 orr,
-	$4 ## r1 r1 orr,
-	r8 $82 #( r1 strh,
+	$4000082 r3 LITERAL
+	r3 0@ r1 ldrh,
+	$b00 r2 LITERAL
+	r2 r1 orr,
+	4 ## r2 mov,
+	r2 r1 orr,
+	r3 0@ r1 strh,
 	
 	\ skip and load address
 	r0 ia! r1 r2 ldm,
-	r11 ia r0 r2 stm,
+	r5 0@ r0 str,
+	r5 4 #( r2 str,
 
 	\ write dma 1 source and destination
-	r8 $bc #( r0 str,
-	$a0 ## r8 r0 orr,
-	r8 $c0 #( r0 str,
+	$40000a0 r3 LITERAL
+	r3 $1c #( r0 str,	\ $40000bc
+	r3 r0 mov,		\ $40000a0
+	$20 ## r3 add,		\ $40000c0
+	r3 0@ r0 str,
 
 	\ enable and start dma 1 on fifo emty
-	$b600 ## r0 mov,
-	r8 $c6 #( r0 strh,
+	$b6 ## r0 mov,
+	8 ## r0 r0 lsl,		\ $b600
+	$6 ## r3 add,		\ $40000c6
+	r3 0@ r0 strh,
 
 	\ set interrupt vector
 	(playmusic-handler) r0 literal
-	r11 INT_T0 #( r0 str,
+	r5 INT_T0 #( r0 str,
 
 	\ enable timer 0 interrupt
-	r9 0@ r0 ldrh,
-	$8 ## r0 r0 orr,
-	r9 0@ r0 strh,
+	r4 0@ r0 ldrh,
+	$8 ## r3 mov,
+	r3 r0 orr,
+	r4 0@ r0 strh,
 
 	\ set timer 0 to interrupt and enable
-	$100 ## r8 r8 orr,
-	$c00000 ## r1 r0 orr,
-	r8 0@ r0 str,
+	$4000100 r3 LITERAL
+	$c0 ## r0 mov,
+	16 ## r0 r0 lsl,	\ $c00000
+	r1 r0 orr,
+	r3 0@ r0 str,
 
 	\ done
 	tos pop
