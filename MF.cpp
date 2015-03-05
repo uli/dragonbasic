@@ -379,11 +379,20 @@ unsigned int TIN_parseNum(const char *word)
 		GLB_error("unknown number format %s\n", word);
 }
 
+static bool ishex(char c)
+{
+	return (c >= 'a' && c <= 'f') ||
+	       (c >= 'A' && c <= 'F');
+}
+
 bool isNum(const char *word)
 {
-	return isdigit(word[0]) ||
+	char last_digit = word[strlen(word) - 1];
+	return (isdigit(word[0]) ||
 	       word[0] == '$' ||
-	       (word[0] == '-' && (isdigit(word[1]) || word[1] == '$'));
+	       (word[0] == '-' && (isdigit(word[1]) || word[1] == '$')))
+	       &&
+	       (isdigit(last_digit) || ishex(last_digit));
 }
 
 void Output::emitByte(const unsigned char byte)
