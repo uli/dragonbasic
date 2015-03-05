@@ -2039,6 +2039,7 @@ void Parser::parseAll()
 	unsigned int local_idx = 0;
 	unsigned int num;
 	bool skip_push = false;
+	const char *cond;
 
 parse_next:
 	if (r5_const)
@@ -2637,6 +2638,24 @@ emit_num:
 		} else {
 			loop_stack[lpsp++] = out->addr;
 			codeBranch(out->addr, "eq?", "b,");
+		}
+	} else if (W("<") && getNextWordIf("while")) {
+		cond = thumb ? "lt?" : "ge?";
+		goto do_while;
+	} else if (W("<=") && getNextWordIf("while")) {
+		cond = thumb ? "le?" : "gt?";
+do_while:
+		r5_const = false;
+		codeAsm("r5", "pop");
+		codeAsm("r0", "r5", "cmp,");
+		codeAsm("r0", "pop");
+		if (thumb) {
+			codeBranch(out->addr + 4, cond, "b,");
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, "b,");
+		} else {
+			loop_stack[lpsp++] = out->addr;
+			codeBranch(out->addr, cond, "b,");
 		}
 	} else if (W("repeat")) {
 		r5_const = false;
