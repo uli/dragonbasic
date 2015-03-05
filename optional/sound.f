@@ -149,31 +149,34 @@ end-code
 label (playsound-handler)
 
 \ interrupt handler for playsound
-code /playsound ( -- )
-	sp db! r8 r9 stm,
+code-thumb /playsound ( -- )
+	tothumb
 
-	\ 0x4000000 -> R8, 0x4000100 -> R9	
-	REGISTERS ## r8 mov,
-	$100 ## r8 r9 add,
+	\ 0x40000a0 -> R1, 0x4000100 -> R3
+	$40 ## r1 mov,
+	20 ## r1 r1 lsl,
+	$a0 ## r1 add,		\ $40000a0
+	r1 r3 mov,
+	$60 ## r3 add,		\ $4000100
 
-	\ address of sound data -> R11
-	IWRAM ## r11 mov,
-	GLOBALS ## r11 r11 add,
-	8 ## r11 r11 add,
+	\ address of sound data -> R4
+	$3000608 r4 LITERAL
 
 	\ load sound samples and process
-	r11 ia r0 r2 ldm,
-	1 ## r2 r2 s! sub,
-	0 ## r0 mi? mov,
+	r4 0@ r0 ldr,
+	r4 4 #( r2 ldr,
+	1 ## r2 r2 sub,		\ subs, actually
+	10 #offset pl? b,	\ XXX: adjust offset when changing anything!
+	0 ## r0 mov,
 	
 	\ stop dma 2 transfer and timer 1 if done
-	r8 $d0 #( r0 mi? str,
-	r9 4 #( r0 mi? str,
-	r8 $a4 #( r0 mi? str,
+	r1 $30 #( r0 str,	\ $40000d0
+	r3 $4 #( r0 str,	\ $4000104
+	r1 $4 #( r0 str,	\ $40000a4
 	
 	\ write address and samples back
-	r11 ia r0 r2 stm,
-	sp ia! r8 r9 ldm,
+	\ bpl jumps here
+	r4 ia! r0 r2 stm,
 	
 	\ done
 	ret
