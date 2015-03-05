@@ -240,37 +240,39 @@ end-code
 \ address of playmusic handler
 label (playmusic-handler)
 
-\ interrupt handler for playsound
-code /playmusic ( -- )
-	\ save registers
-	sp db! r8 r9 stm,
-	REGISTERS ## r8 mov,
+\ interrupt handler for playmusic
+code-thumb /playmusic ( -- )
+	tothumb			\ interrupt handlers are always called as ARM
+	$40 ## r4 mov,
+	20 ## r4 r4 lsl,
+	$80 ## r4 add,		\ $4000080
 
-	\ address of sound data -> R9
-	IWRAM ## r9 mov,
-	GLOBALS ## r9 r9 add,
+	\ address of sound data -> R5
+	$3000600 r5 LITERAL
 
 	\ load sound samples left
-	r9 4 #( r2 ldr,
-	1 ## r2 r2 s! sub,
-	0 ## r3 mi? mov,
+	r5 4 #( r2 ldr,
+	1 ## r2 sub,
+	20 #offset pl? b,	\ XXX: Adjust offset when changing anything!
+	0 ## r3 mov,
 
 	\ stop dma tranfer to reset source address
-	r8 $c4 #( r1 mi? ldr,
-	r8 $c4 #( r3 mi? str,
-	r8 $a0 #( r3 mi? str, \ clear fifo a
+	r4 $44 #( r1 ldr,
+	r4 $44 #( r3 str,
+	r4 $20 #( r3 str, \ clear fifo a
 
 	\ loop music by resetting address and samples
-	r9 0@ r0 mi? ldr,
-	r8 $bc #( r0 mi? str,
+	r5 0@ r0 ldr,
+	r4 $3c #( r0 str,
 
 	\ restart the dma transfer
-	r0 -4 #( r2 mi? ldr,
-	r8 $c4 #( r1 mi? str,
+	4 ## r0 sub,
+	r0 0@ r2 ldr,
+	r4 $44 #( r1 str,
 
+	\ bpl jumps here
 	\ write address and samples back
-	r9 4 #( r2 str,
-	sp ia! r8 r9 ldm,
+	r5 4 #( r2 str,
 	
 	\ done
 	ret
