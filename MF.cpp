@@ -2823,6 +2823,12 @@ int main(int argc, char **argv)
 	Output out(0x8000000, 0x2000000);
 	char hdr[131072];
 
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s [-debug|-mod] <sourcefile> <binary>\n",
+			argv[0]);
+		exit(1);
+	}
+
 	for (;;) {
 		if (!strcmp(argv[1], "-debug")) {
 			option_debug = true;
