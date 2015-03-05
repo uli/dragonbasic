@@ -2434,12 +2434,18 @@ handle_const:
 				    (isWordN(1, "@") || isWordN(1, "!"))) {
 					getNextWord();
 					if (getNextWordIf("@")) {
-						// If a local store precedes,
-						// we don't have to push R0.
-						if (!skip_push)
-							codeAsm("r0", "push");
-						skip_push = false;
-						codeAsm("r6", num, "#(", "r0", "ldr,");
+						if (!skip_push && getNextWordIf("+")) {
+							codeAsm("r0", "r5", "mov,");
+							codeAsm("r6", num, "#(", "r0", "ldr,");
+							codeAsm("r5", "r0", "r0", "add,");
+						} else {
+							// If a local store precedes,
+							// we don't have to push R0.
+							if (!skip_push)
+								codeAsm("r0", "push");
+							skip_push = false;
+							codeAsm("r6", num, "#(", "r0", "ldr,");
+						}
 					} else if (getNextWordIf("!")) {
 						codeAsm("r6", num, "#(", "r0", "str,");
 						// If a local load follows, we
