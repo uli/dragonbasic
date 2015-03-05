@@ -2497,96 +2497,6 @@ emit_num:
 			out->reloc10(skip, out->addr);
 		else
 			out->reloc24(skip, out->addr);
-	} else if ((sym = getSymbol(word))) {
-		DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x\n", sym->word, sym->addr,
-		      out->addr, sym->is_addr, sym->lit_addr);
-		// Can it be addressed by an _ARM_ PC-relative load?
-		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
-		if (sym->is_addr) {
-			if (getNextWordIf("@")) {
-				DEBUG("litload\n");
-				codeAsm("r0", "push");
-				if (!thumb && small_offset) {
-					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
-						r5 = sym->lit_addr & 0xff000000;
-						r5_const = true;
-						codeAsm(r5, "##", "r5", "mov,");
-					} else
-						DEBUG("ll1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
-					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
-				} else {
-					if (!r5_const || r5 != sym->lit_addr) {
-						literals.prependNew(sym->lit_addr, out->addr, thumb);
-						r5 = sym->lit_addr;
-						r5_const = true;
-						codeAsm("pc", "0", "#(", "r5", "ldr,");
-					} else
-						DEBUG("ll2 skip r5 load of 0x%x\n", sym->lit_addr);
-					codeAsm("r5", "0@", "r0", "ldr,");
-				}
-			} else if (getNextWordIf("!")) {
-				DEBUG("litstore\n");
-				if (!thumb && small_offset) {
-					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
-						r5 = sym->lit_addr & 0xff000000;
-						r5_const = true;
-						codeAsm(r5, "##", "r5", "mov,");
-					} else
-						DEBUG("ls1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
-					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
-				} else {
-					if (!r5_const || r5 != sym->lit_addr) {
-						r5 = sym->lit_addr;
-						r5_const = true;
-						literals.prependNew(sym->lit_addr, out->addr, thumb);
-						codeAsm("pc", "0", "#(", "r5", "ldr,");
-					} else
-						DEBUG("ls2 skip r5 load of 0x%x\n", sym->lit_addr);
-					codeAsm("r5", "0@", "r0", "str,");
-				}
-				codeAsm("r0", "pop");
-			} else {
-				// load from literal pool
-				codeAsm("r0", "push");
-				literals.prependNew(sym->lit_addr, out->addr, thumb);
-				codeAsm("pc", "0", "#(", "r0", "ldr,");
-			}
-		} else {
-			assert(!currently_naked);
-			assert(sym->addr != 0);
-			r5_const = false;
-			if (sym->thumb)
-				codeCallThumb(sym->addr);
-			else {
-				DEBUG("ARM call to %s\n", sym->word);
-				codeCallArm(sym->addr);
-			}
-			if (sym->has_prolog) {
-				if (!thumb)
-					codeAsm("r7", "4", "(#", "r6", "ldr,");
-				else
-					codeAsm("r7", "ia!", "r6", "ldm,");
-			}
-		}
-	} else if ((icode = getIcode(word))) {
-		DEBUG("emit icode %s len %d\n", icode->word,
-		      icode->len);
-		bool change = false;
-		if (thumb != icode->thumb) {
-			change = true;
-			if (thumb)
-				codeToArm();
-			else
-				codeToThumb();
-		}
-		out->emitString(icode->code, icode->len);
-		if (change) {
-			if (icode->thumb)
-				codeToArm();
-			else
-				codeToThumb();
-		}
-		r5_const = false;
 	} else if (W("drop")) {
 		if (getNextWordIf("a")) {
 			codeAsm("r1", "r0", "mov,");
@@ -2771,6 +2681,96 @@ emit_num:
 		r5_const = false;
 		codeCallThumb(RT_pimp_init);
 		codeAsm("r0", "pop");
+	} else if ((sym = getSymbol(word))) {
+		DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x thumb %d\n", sym->word, sym->addr,
+		      out->addr, sym->is_addr, sym->lit_addr, sym->thumb);
+		// Can it be addressed by an _ARM_ PC-relative load?
+		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
+		if (sym->is_addr) {
+			if (getNextWordIf("@")) {
+				DEBUG("litload\n");
+				codeAsm("r0", "push");
+				if (!thumb && small_offset) {
+					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
+						r5 = sym->lit_addr & 0xff000000;
+						r5_const = true;
+						codeAsm(r5, "##", "r5", "mov,");
+					} else
+						DEBUG("ll1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
+					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
+				} else {
+					if (!r5_const || r5 != sym->lit_addr) {
+						literals.prependNew(sym->lit_addr, out->addr, thumb);
+						r5 = sym->lit_addr;
+						r5_const = true;
+						codeAsm("pc", "0", "#(", "r5", "ldr,");
+					} else
+						DEBUG("ll2 skip r5 load of 0x%x\n", sym->lit_addr);
+					codeAsm("r5", "0@", "r0", "ldr,");
+				}
+			} else if (getNextWordIf("!")) {
+				DEBUG("litstore\n");
+				if (!thumb && small_offset) {
+					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
+						r5 = sym->lit_addr & 0xff000000;
+						r5_const = true;
+						codeAsm(r5, "##", "r5", "mov,");
+					} else
+						DEBUG("ls1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
+					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
+				} else {
+					if (!r5_const || r5 != sym->lit_addr) {
+						r5 = sym->lit_addr;
+						r5_const = true;
+						literals.prependNew(sym->lit_addr, out->addr, thumb);
+						codeAsm("pc", "0", "#(", "r5", "ldr,");
+					} else
+						DEBUG("ls2 skip r5 load of 0x%x\n", sym->lit_addr);
+					codeAsm("r5", "0@", "r0", "str,");
+				}
+				codeAsm("r0", "pop");
+			} else {
+				// load from literal pool
+				codeAsm("r0", "push");
+				literals.prependNew(sym->lit_addr, out->addr, thumb);
+				codeAsm("pc", "0", "#(", "r0", "ldr,");
+			}
+		} else {
+			assert(!currently_naked);
+			assert(sym->addr != 0);
+			r5_const = false;
+			if (sym->thumb)
+				codeCallThumb(sym->addr);
+			else {
+				DEBUG("ARM call to %s\n", sym->word);
+				codeCallArm(sym->addr);
+			}
+			if (sym->has_prolog) {
+				if (!thumb)
+					codeAsm("r7", "4", "(#", "r6", "ldr,");
+				else
+					codeAsm("r7", "ia!", "r6", "ldm,");
+			}
+		}
+	} else if ((icode = getIcode(word))) {
+		DEBUG("emit icode %s len %d\n", icode->word,
+		      icode->len);
+		bool change = false;
+		if (thumb != icode->thumb) {
+			change = true;
+			if (thumb)
+				codeToArm();
+			else
+				codeToThumb();
+		}
+		out->emitString(icode->code, icode->len);
+		if (change) {
+			if (icode->thumb)
+				codeToArm();
+			else
+				codeToThumb();
+		}
+		r5_const = false;
 	} else {
 		GLB_error("unknown word %s at %d\n", word,
 			  (int)(tptr - text));
