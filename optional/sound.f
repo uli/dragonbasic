@@ -41,19 +41,19 @@ code-thumb turnsoundoff ( -- )
 end-code
 
 \ stop all background WAV sound from playing
-code stopsound ( -- )
-	REGISTERS ## v0 mov,
-	$100 ## v0 v1 add,		\ timers
+code-thumb stopsound ( -- )
+	$40000d0 v0 LITERAL
 	
 	\ turn off timer 1 overflow interrupt
-	v1 6 #( w ldrh,
-	$c0 ## w w bic,
-	v1 6 #( w strh,
+	v0 $36 #( w ldrh,		\ $4000106
+	$c0 ## v2 mov,
+	v2 w bic,
+	v0 $36 #( w strh,		\ $4000106
 	
 	\ stop dma 2 and timer 1
 	0 ## w mov,
-	v0 $d0 #( w str,
-	v1 4 #( w str,
+	v0 0@ w str,
+	v0 $34 #( w str,		\ $4000104
 	
 	\ done
 	ret
