@@ -2139,9 +2139,10 @@ parse_next:
 		out->alignDword();
 		r5_const = false;
 		currently_naked = word[1] == 'n';
-		sym = symbols.appendNew(out->addr, getNextWord());
+		const char *ident = getNextWord();
+		sym = symbols.appendNew(out->addr, ident);
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
-		if (!strcmp(word, "start")) {
+		if (!strcmp(ident, "start")) {
 			// Runtime assumes that "start" is an ARM word, so we
 			// have to code a switch to Thumb.
 			sym->thumb = false;
