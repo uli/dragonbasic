@@ -210,8 +210,13 @@ void Parser::setOutput(Output *out)
 const char *Parser::_getNextWord()
 {
 	static int text_mode = 0;
-	static char buf[256];
+	static char bufs[8][256];
+	static int buf_ptr = 0;
+	char *buf;
 	int idx = 0;
+
+	buf = bufs[buf_ptr];
+	buf_ptr = (buf_ptr + 1) % 8;
 
 	prev_tptr = tptr;
 
