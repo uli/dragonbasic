@@ -2,10 +2,10 @@
   -- Original code by Jeff Massung, 2003 }
 
 \ word aligned address
-icode aligned ( a1 -- a2 )
-	3 ## tos tst,
-	3 ## tos tos bic,
-	4 ## tos tos ne? add,
+icode-thumb aligned ( a1 -- a2 )
+	3 ## tos add,
+	3 ## v0 mov,
+	v0 tos bic,
 end-code
 
 \ dynamically allocate memory on return stack
