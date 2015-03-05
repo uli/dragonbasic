@@ -2126,7 +2126,7 @@ parse_next:
 		else
 			thumb = false;
 		sym = symbols.appendNew(out->addr, getNextWord());
-		DEBUG("===start code %s at 0x%x\n", sym->word, sym->addr);
+		DEBUG("===start %s %s at 0x%x\n", word, sym->word, sym->addr);
 		sym->thumb = thumb;
 		asm_mode = true;
 		r5_const = false;
