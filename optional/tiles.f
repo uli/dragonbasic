@@ -44,12 +44,14 @@ icode gettile ( a -- u )
 end-code
 
 \ sets the index of a tile
-code settile ( a u -- )
+code-thumb settile ( a u -- )
 	w pop
 	
 	\ get mask and set data
 	w 0@ v0 ldrh,
-	$f000 ## v0 v0 and,
+	$f ## v1 mov,
+	12 ## v1 v1 lsl,
+	v1 v0 and,
 	tos v0 v0 add,
 	w 0@ v0 strh,
 	
