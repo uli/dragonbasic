@@ -185,20 +185,21 @@ code cleartiles ( a w h -- )
 end-code
 
 \ scroll a background
-code scroll ( bg dx dy -- )
-	sp ia! v1 v2 ldm,
+code-thumb scroll ( bg dx dy -- )
+	v1 v2 pop
 	
 	\ address of background globals
-	IWRAM ## v5  mov,
-	BG_REGS ## v5 v5 add,
-	v2 5 #lsl v5 v5 add,
-	BG0_SX ## v5 v5 add,
+	$3000400 w LITERAL	\ IWRAM + BG_REGS
+	5 ## v2 v2 lsl,
+	v2 w w add,
+	\ BG0_SX ## w add,	\ nop...
 	
 	\ load current scroll values, add and write
-	v5 ia v3 v4 ldm,
-	v3 v1 v3 add,
-	v4 tos v4 add,
-	v5 ia v3 v4 stm,
+	w ia! v0 v2 ldm,
+	v0 v1 v0 add,
+	v2 tos v2 add,
+	8 ## w sub,
+	w ia! v0 v2 stm,
 	
 	\ done
 	tos pop
