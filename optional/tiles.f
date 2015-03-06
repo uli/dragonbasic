@@ -307,15 +307,17 @@ code mapimage ( a base w h -- )
 end-code
 
 \ updates the scrolling of a background
-code /scroll ( bg -- )
-	\ v7 = 0x4000000 + BG * 4
-	v7 2 #lsl v3 v7 add,
-	$10 ## v7 v7 add,
+code-thumb /scroll ( bg -- )
+	\ v1 = 0x4000000 + BG * 4
+	v7 v1 mov,
+	2 ## v1 v1 lsl,
+	w v1 v1 add,
+	$10 ## v1 add,
 
 	\ set offsets REG_BGxOFS
-	tos ia v1 v2 ldm,
-	v7 0@ v1 strh,
-	v7 2 #( v2 strh,
+	tos ia! a v2 ldm,
+	v1 0@ a strh,
+	v1 2 #( v2 strh,
 	
 	\ done
 	tos pop
@@ -323,34 +325,40 @@ code /scroll ( bg -- )
 end-code
 
 \ updates background registers (scroll and rotation)
-code updatetiles ( bg -- )
+code-thumb updatetiles ( bg -- )
 	tos v7 mov, \ store bg
 	
 	\ offset to virtual BG registers
-	IWRAM ## v2 mov,
-	BG_REGS ## v2 v2 add,
+	$3000400 v2 LITERAL	\ IWRAM + BG_REGS
 	
 	\ get REG_DISPCNT for current mode
-	tos 5 #lsl v2 tos add,
-	REGISTERS ## v3 mov,
-	v3 0@ v2 ldrh,
-	7 ## v2 v2 and,
+	5 ## tos tos lsl,
+	v2 tos tos add,
+	$40 ## w mov,
+	20 ## w w lsl,		\ REGISTERS
+	w 0@ v2 ldrh,
+	7 ## v1 mov,
+	v1 v2 and,
 	
 	\ check graphics mode - mode 0 all bg's are text
 	0 ## v2 cmp,
 	/scroll eq? b,
 
 	\ bg's 0 & 1 are always text
-	1 ## v7 cmp,
+	v7 v1 mov,
+	1 ## v1 cmp,
 	/scroll le? b,
 	
 	\ backgrounds 2 and 3 are rotated backgrounds
-	v7 4 #lsl v3 v7 add, \ +0x20 = bg 2, +0x30 = bg 3
-	8 ## tos tos add,
+	4 ## v1 v1 lsl,
+	w v1 v1 add,		\ +0x20 = bg 2, +0x30 = bg 3
+	8 ## tos add,
 	
 	\ copy dx, dy, pa, pb, pc & pd to registers
-	tos ia v1 v2 v3 v4 v5 v6 ldm,
-	v7 ia v1 v2 v3 v4 v5 v6 stm,
+	tos ia! v2 w a ldm,
+	v1 ia! v2 w a stm,
+	tos ia! v2 w a ldm,
+	v1 ia! v2 w a stm,
 	
 	\ done
 	tos pop
