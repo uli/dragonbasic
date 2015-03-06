@@ -24,14 +24,18 @@ end-code
 : loadfont256 ( charblock a -- ) 64 # swap 190 # loadtiles ;
 
 \ return address of tile on screenblock
-code tile ( screen x y -- a )
-	sp ia! v2 v3 ldm,
+code-thumb tile ( screen x y -- a )
+	v1 v2 pop
 	
 	\ get address of tile
-	tos 5 #lsl v2 w add,
-	w 1 #lsl w mov,
-	v3 11 #lsl w w add,
-	VRAM ## w tos add,
+	5 ## tos tos lsl,
+	tos v1 w add,
+	1 ## w w lsl,
+	11 ## v2 v2 lsl,
+	v2 w w add,
+	$60 ## v1 mov,
+	20 ## v1 v1 lsl,	\ VRAM
+	v1 w tos add,
 	
 	\ done
 	ret
