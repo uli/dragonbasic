@@ -78,28 +78,30 @@ code copy ( to from u -- )
 end-code
 
 \ erase bytes at an address
-code erase ( a u -- )
+code-thumb erase ( a u -- )
 	v0 pop
-	w w w eor,
+	w w eor,
 	tos tos tst,
 	
 	\ loop
 	l: __erase
 	
 	\ if <= 0 then return
-	tos le? pop
-	le? ret
+	8 #offset gt? b,
+	tos pop
+	ret
 	
 	\ erase
-	v0 2 (# w strh,
+	v0 0@ w strh,
+	2 ## v0 add,
 	
 	\ decrement and loop
-	2 ## tos tos s! sub,
+	2 ## tos sub,	\ subs, actually
 	__erase b,
 end-code
 
 \ set the graphics mode
-code graphics ( mode sprites -- )
+code-thumb graphics ( mode sprites -- )
 	v1 pop
 	
 	\ ready r2
@@ -107,20 +109,25 @@ code graphics ( mode sprites -- )
 	0 ## tos cmp,
 	
 	\ set the sprite bit
-	$1040 tos ne? literal
+	4 #offset eq? b,
+	$1040 tos literal
 	
 	\ bitmapped modes enable bg 2
 	3 ## v1 cmp,
-	$400 ## v2 ge? mov,
+	8 #offset lt? b,
+	$4 ## v2 mov,
+	8 ## v2 v2 lsl,
 	
 	\ write mode to REG_DISPCNT
-	v2 v1 v2 orr,
-	v2 tos v2 orr,
-	$4000000 ## tos mov,
+	v1 v2 orr,
+	tos v2 orr,
+	$40 ## tos mov,
+	20 ## tos tos lsl,	\ REGISTERS
 	tos 0@ v2 strh,
 
 	\ store VRAM address
-	VRAM ## tos mov,
+	$60 ## tos mov,
+	20 ## tos tos lsl,	\ VRAM
 	tos push
 	
 	\ erase VRAM
