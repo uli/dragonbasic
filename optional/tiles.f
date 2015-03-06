@@ -2,9 +2,11 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ return the VRAM address of tile data (inlined)
-icode charblock ( n -- a )
-	tos 14 #lsl tos mov,
-	VRAM ## tos tos add,
+icode-thumb charblock ( n -- a )
+	$60 ## v2 mov,
+	20 ## v2 v2 lsl,
+	14 ## tos tos lsl,
+	v2 tos tos add,
 end-code
 
 \ return the VRAM address of map data (inlined)
