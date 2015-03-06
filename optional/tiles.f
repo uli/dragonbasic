@@ -59,24 +59,27 @@ code settile ( a u -- )
 end-code
 
 \ enable a background layer
-code enabletiles ( bg screen char flags -- )
-	sp ia! v0 v1 v2 ldm,
-	REGISTERS ## v4 mov,
+code-thumb enabletiles ( bg screen char flags -- )
+	v0 v1 v2 pop
+	$40 ## w mov,
+	20 ## w w lsl,	\ REGISTERS
 	
 	\ construct REG_BGxCNT
-	v0 2 #lsl tos tos add,	\ charblock
-	v1 8 #lsl tos tos add,	\ screenblock
-	v2 1 #lsl v3 mov,
-	8 ## v3 v3 add,
-	v4 v3 +( tos strh,		\ write
+	2 ## v0 v0 lsl,
+	v0 tos tos add,		\ charblock
+	8 ## v1 v1 lsl,
+	v1 tos tos add,		\ screenblock
+	1 ## v2 a lsl,
+	8 ## a add,
+	w a +( tos strh,		\ write
 	
 	\ enable bg in REG_DISPCNT
 	1 ## v1 mov,
-	8 ## v2 v2 add,
-	v1 v2 lsl v1 mov,
-	v4 0@ v2 ldrh,
+	8 ## v2 add,
+	v2 v1 lsl,
+	w 0@ v2 ldrh,
 	v2 v1 v2 add,
-	v4 0@ v2 strh,
+	w 0@ v2 strh,
 	
 	\ done
 	tos pop
