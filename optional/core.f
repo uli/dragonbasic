@@ -143,9 +143,10 @@ code-thumb vblank ( -- )
 end-code
 
 \ return the current scanline
-code scanline ( -- n )
+code-thumb scanline ( -- n )
 	tos push
-	REGISTERS ## tos mov,
+	$40 ## tos mov,
+	20 ## tos tos lsl,	\ REGISTERS
 	tos 6 #( tos ldrh,
 	ret
 end-code
