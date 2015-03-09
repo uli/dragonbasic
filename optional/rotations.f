@@ -80,11 +80,13 @@ $FFCB00FA , $FFD000FB , $FFD400FC , $FFD800FC , $FFDD00FD , $FFE100FE ,
 $FFE600FE , $FFEA00FF , $FFEF00FF , $FFF300FF , $FFF800FF , $FFFC00FF , 
 
 \ lookup a 16.16 fixed point cosine
-code cos# ( degrees -- f )
+code-thumb cos# ( degrees -- f )
 	__sincos w literal
-	w tos 2 #lsl +( tos ldr,
-	tos 16 #ror tos mov,
-	tos 16 #asr tos mov,
+	2 ## tos tos lsl,
+	w tos +( tos ldr,
+	16 ## w mov,
+	w tos ror,
+	16 ## tos tos asr,
 	ret
 end-code
 
