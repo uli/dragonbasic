@@ -1417,9 +1417,10 @@ bool Parser::parseArm(const char *word)
 		insn |= POP_REG << 16;
 		code(insn);
 	} else if (W("pop")) {
-		unsigned int insn = 0x04bd0004;
+		unsigned int insn = 0x08bd0000;
 		CODE_COND;
-		CODE_RD;
+		while (asp)
+			insn |= 1 << POP_REG;
 		code(insn);
 	} else if (W("push")) {
 		unsigned int insn = 0x092d0000;
