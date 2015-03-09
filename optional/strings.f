@@ -34,48 +34,59 @@ code resize ( a u -- )
 end-code
 
 \ map a string to a screenblock
-code print ( tile a -- )
+code-thumb print ( tile a -- )
 	v1 pop
-	tos v6 mov,
+	tos w mov,
 	tos pop
 	
 	\ get length and quit if zero
-	v6 2 (# v0 ldrh,
-	$ff ## v0 v7 s! and,
-	eq? ret
+	w 0@ v0 ldrh,
+	2 ## w w add,
+	$ff ## a mov,
+	v0 a and,	\ ands, actually
+	4 #offset ne? b,
+	ret
 	
 	\ loop, writing 2 bytes at a time
 	l: __print
 	
 	\ get upper byte
-	v0 8 #lsr v4 mov,
+	8 ## v0 tos lsr,
 	
 	\ load tile and mask
 	v1 0@ v2 ldrh,
-	$fc00 ## v2 v2 and,
+	$fc ## v0 mov,
+	8 ## v0 v0 lsl,
+	v0 v2 and,
 	
 	\ add upper byte and write
-	v4 v2 v2 add,
-	v1 2 (# v2 strh,
+	tos v2 v2 add,
+	v1 0@ v2 strh,
+	2 ## v1 add,
 	
 	\ decrement
-	1 ## v7 v7 s! sub,
-	eq? ret
+	1 ## a sub,	\ subs, actually
+	4 #offset ne? b,
+	ret
 	
 	\ lower byte
-	v6 2 (# v0 ldrh,
-	$ff ## v0 v4 and,
+	w 0@ v0 ldrh,
+	2 ## w add,
 	
 	\ load tile and mask
 	v1 0@ v2 ldrh,
-	$fc00 ## v2 v2 and,
+	$fc ## tos mov,
+	8 ## tos tos lsl,
+	tos v2 and,
 	
 	\ add upper byte and write
-	v4 v2 v2 add,
-	v1 2 (# v2 strh,
-	
+	$ff ## tos mov,
+	v0 tos and,
+	tos v2 v2 add,
+	v1 0@ v2 strh,
+	2 ## v1 add,
 	\ decrement
-	1 ## v7 v7 s! sub,
+	1 ## a sub,	\ subs, actually
 	__print gt? b,
 	
 	\ done
