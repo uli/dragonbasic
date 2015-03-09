@@ -71,12 +71,11 @@ code stoptimer ( -- )
 end-code
 
 \ count the timer fires
-code clocktimer ( -- u )
+code-thumb clocktimer ( -- u )
 	tos push
 	
 	\ offset to timer registers
-	REGISTERS ## tos mov,
-	$100 ## tos tos add,
+	$4000100 tos LITERAL	\ REGISTERS + $100
 	
 	\ load number of overflows into timer 3
 	tos $c #( tos ldrh,
