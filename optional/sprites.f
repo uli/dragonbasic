@@ -39,24 +39,30 @@ code makesprite ( sprite n -- )
 end-code
 
 \ set the shape and size of a sprite
-code sizesprite ( sprite shape size -- )
-	sp ia! v1 v2 ldm,
-	IWRAM ## v3 mov,
+code-thumb sizesprite ( sprite shape size -- )
+	v1 v2 pop
+	$30 ## v0 mov,
+	20 ## v0 v0 lsl,	\ IWRAM
 	
 	\ get sprite address
-	v2 3 #lsl v3 v2 add,
+	3 ## v2 v2 lsl,
+	v0 v2 v2 add,
 	
 	\ load shape bit and clear
-	v2 0@ v4 ldrh,
-	$c200 ## v4 v4 bic,
-	v4 v1 v4 orr,
-	v2 0@ v4 strh,
+	v2 0@ v0 ldrh,
+	$c2 ## w mov,
+	8 ## w w lsl,
+	w v0 bic,
+	v1 v0 orr,
+	v2 0@ v0 strh,
 	
 	\ load size and bit clear
-	v2 2 #( v4 ldrh,
-	$c000 ## v4 v4 bic,
-	v4 tos v4 orr,
-	v2 2 #( v4 strh,
+	v2 2 #( v0 ldrh,
+	$c0 ## w mov,
+	8 ## w w lsl,
+	w v0 bic,
+	tos v0 orr,
+	v2 2 #( v0 strh,
 	
 	\ done
 	tos pop
