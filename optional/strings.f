@@ -2,9 +2,8 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ return the length of a string (inlined)
-icode len ( a -- u )
-	tos 0@ tos ldrh,
-	$ff ## tos tos and,
+icode-thumb len ( a -- u )
+	tos 0@ tos ldrb,
 end-code
 
 \ return the address and length of a string (inlined)
