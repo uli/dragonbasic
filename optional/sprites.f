@@ -421,18 +421,23 @@ code bumpsprites ( sprite1 sprite2 -- flag )
 end-code
 
 \ copy all updated sprite data from IWRAM to OAM
-code updatesprites ( -- )
-	IWRAM ## v3 mov,
-	$7000000 ## v1 mov,
-	$400 ## v2 mov,
-	
-	\ loop until r2 = 0
-	l: __update
-	16 ## v2 v2 s! sub,
-	v3 ia! v4 v5 v6 v7 ldm,
-	v1 ia! v4 v5 v6 v7 stm,
-	__update gt? b,
-	
+code-thumb updatesprites ( -- )
+	$30 ## v1 mov,
+	20 ## v1 v1 lsl,	\ IWRAM
+	$70 ## v2 mov,
+	20 ## v2 v2 lsl,	\ OAM
+	$40 ## v0 mov,
+	20 ## v0 v0 lsl,	\ REGISTERS
+	$d0 ## v0 add,		\ REGISTERS + $d0
+
+	\ setup dma3 transfer addresses
+	v0 $4 #( v1 str,
+	v0 $8 #( v2 str,
+
+	\ set control to 32-bit, increment both, 128 words
+	$84000080 v1 LITERAL
+	v0 $c #( v1 str,
+
 	\ done
 	ret
 end-code
