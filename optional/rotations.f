@@ -91,10 +91,11 @@ code-thumb cos# ( degrees -- f )
 end-code
 
 \ lookup a 16.16 fixed point sine
-code sin# ( degrees -- f )
+code-thumb sin# ( degrees -- f )
 	__sincos w literal
-	w tos 2 #lsl +( tos ldr,
-	tos 16 #asr tos mov,
+	2 ## tos tos lsl,
+	w tos +( tos ldr,
+	16 ## tos tos asr,
 	ret
 end-code
 
