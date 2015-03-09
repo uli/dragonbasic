@@ -1613,6 +1613,19 @@ bool Parser::parseThumb(const char *word)
 				}
 				break;
 
+			case AMODE_PREINDR:
+				--asp;
+				ASSERT_TREG;
+				insn = 0x5000;
+				if (word[0] == 'l')
+					insn |= 0x800;
+				if (word[3] == 'b')
+					insn |= 0x400;
+				insn |= TOS_VAL << 6;	// Ro
+				insn |= POP_TREG << 3;	// Rb
+				insn |= rd << 0;
+				break;
+
 			default:
 				GLB_error("internal error thumb ldst\n");
 		}
