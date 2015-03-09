@@ -19,22 +19,27 @@
 	sprite 2 # + peek $fc00 # com and ;
 
 \ create a new sprite
-code makesprite ( sprite n -- )
-	sp ia! v1 v3 ldm,
-	IWRAM ## v2 mov,
-	v1 3 #lsl v2 v1 add,
+code-thumb makesprite ( sprite n -- )
+	v0 v1 pop
+	$30 ## v2 mov,
+	20 ## v2 v2 lsl,	\ IWRAM
+	3 ## v0 v0 lsl,
+	v2 v0 v0 add,
 	
 	\ clear sprite attribute 0 and set 256 color bit
-	$2000 ## v2 mov,
-	v1 2 (# v2 strh,
+	$20 ## v2 mov,
+	8 ## v2 v2 lsl,		\ $2000
+	v0 0@ v2 strh,
+	2 ## v0 add,
 	
 	\ clear attribute 1
 	0 ## v2 mov,
-	v1 2 (# v2 strh,
+	v0 0@ v2 strh,
+	2 ## v0 add,
 	
 	\ set name bits of attribute 2
-	v1 0@ tos strh,
-	v3 tos mov,
+	v0 0@ tos strh,
+	v1 tos mov,
 	ret
 end-code
 
