@@ -41,12 +41,19 @@
 #include "MF.h"
 
 bool option_debug = false;
+bool debug_words = false;
 
 #ifndef NDEBUG
-#define DEBUG(x ...) do { if (option_debug) fprintf(stderr, "DEBUG " x); \
-} while (0)
 #define DEBUGN(x ...) do { if (option_debug) fprintf(stderr, x); \
 } while (0)
+#define DEBUG(x ...) do { \
+	if (debug_words) { \
+		DEBUGN("\"\n"); \
+		debug_words = false; \
+	} \
+	DEBUGN("DEBUG " x); \
+} while (0)
+
 #else
 #define DEBUG(x ...) do {} while(0)
 #define DEBUGN(x ...) do {} while(0)
@@ -247,7 +254,11 @@ const char *Parser::_getNextWord()
 const char *Parser::getNextWord()
 {
 	const char *word = _getNextWord();
-	DEBUG("\"%s\"\n", word);
+	if (!debug_words)
+		DEBUG("\"%s", word);
+	else
+		DEBUGN(" %s", word);
+	debug_words = true;
 	return word;
 }
 
@@ -2785,8 +2796,8 @@ do_while:
 		codeCallThumb(RT_pimp_init);
 		codeAsm("r0", "pop");
 	} else if ((sym = getSymbol(word))) {
-		DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x thumb %d\n", sym->word, sym->addr,
-		      out->addr, sym->is_addr, sym->lit_addr, sym->thumb);
+		//DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x thumb %d\n", sym->word, sym->addr,
+		//      out->addr, sym->is_addr, sym->lit_addr, sym->thumb);
 		// Can it be addressed by an _ARM_ PC-relative load?
 		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
 		if (sym->is_addr) {
