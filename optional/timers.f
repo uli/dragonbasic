@@ -101,10 +101,9 @@ code waittimer ( u -- )
 end-code
 
 \ reset the number of fires
-code resettimer ( -- )
+code-thumb resettimer ( -- )
 	\ offset to timer registers
-	REGISTERS ## v2 mov,
-	$100 ## v2 v2 add,
+	$4000100 v2 LITERAL	\ REGISTERS + $100
 	
 	\ turn off timers before resetting
 	0 ## v1 mov,
