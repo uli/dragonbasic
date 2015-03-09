@@ -82,8 +82,8 @@ icode fix# ( n -- f )
 end-code
 
 \ convert a fixed-point value to an integer (inline)
-icode int ( f -- n )
-	tos 8 #asr tos mov,
+icode-thumb int ( f -- n )
+	8 ## tos tos asr,
 end-code
 
 \ round a fixed-point value to an integer
