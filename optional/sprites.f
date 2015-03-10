@@ -241,49 +241,59 @@ code-thumb positionsprite ( sprite x y -- )
 end-code
 
 \ relative movement of a sprite
-code movesprite ( sprite dx dy -- )
-	sp ia! v1 v2 ldm,
+code-thumb movesprite ( sprite dx dy -- )
+	v1 v2 pop
+	u push
 
 	\ get address
-	IWRAM ## w mov,
-	v2 3 #lsl w v2 add,
+	$30 ## w mov,
+	20 ## w w lsl,	\ IWRAM
+	3 ## v2 v2 lsl,
+	w v2 v2 add,
 	
 	\ setup registers for speed
-	$100 ## v4 mov,
-	$ff ## v5 mov,
+	$ff ## a mov,
+	a v0 mov,
+	1 ## v0 add,
 	
 	\ load y and mask out
-	v2 0@ v3 ldrh,
-	v5 v3 v6 bic,
-	v3 v5 v3 and,
+	v2 0@ u ldrh,
+	u w mov,
+	a w bic,
+	a u and,
 	
 	\ add dy to y position
-	tos v3 v3 s! add,
-	v4 v3 v3 lt? add,
+	tos u u add,	\ adds, actually
+	4 #offset ge? b,
+	v0 u u add,
 	
 	\ write new y position
-	v5 v3 v3 and,
-	v6 v3 v3 orr,
-	v2 0@ v3 strh,
+	a u and,
+	w u orr,
+	v2 0@ u strh,
 	
 	\ x position is 9-bit
-	$100 ## v5 v5 add,
+	v0 a a add,
 	
 	\ load x and mask out
-	v2 2 #( v3 ldrh,
-	v5 v3 v6 bic,
-	v5 v3 v3 and,
+	v2 2 #( u ldrh,
+	u w mov,
+	a w bic,
+	a u and,
 	
 	\ add dx to x position
-	v1 v3 v3 s! add,
-	v4 1 #lsl v3 v3 lt? add,
+	v1 u u add,	\ adds, actually
+	6 #offset ge? b,
+	1 ## v0 v0 lsl,
+	v0 u u add,
 	
 	\ write new x position
-	v5 v3 v3 and,
-	v6 v3 v3 orr,
-	v2 2 #( v3 strh,
+	a u and,
+	w u orr,
+	v2 2 #( u strh,
 	
 	\ done
+	u pop
 	tos pop
 	ret
 end-code
