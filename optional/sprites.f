@@ -180,23 +180,33 @@ code hidesprite ( sprite -- )
 end-code
 
 \ returns -1 if sprite is offscreen or 0 if onscreen
-code spritehidden ( sprite -- flag )
-	IWRAM ## w mov,
-	r0 3 #lsl w r0 add,
+code-thumb spritehidden ( sprite -- flag )
+	$30 ## w mov,
+	20 ## w w lsl,	\ IWRAM
+	3 ## tos tos lsl,
+	w tos tos add,
 	
 	\ check y >= 160
-	r0 0@ w ldrh,
-	$ff00 ## w w bic,
+	tos 0@ w ldrh,
+	$ff ## r1 mov,
+	8 ## r1 r1 lsl,	\ $ff00
+	r1 w bic,
 	$a0 ## w cmp,
-	0 ## tos ge? mvn, \ tos = -1
-	ge? ret
+	8 #offset lt? b,
+	0 ## tos mov,
+	tos tos mvn,	\ tos = -1
+	ret
 	
 	\ check x >= 240
-	r0 2 #( w ldrh,
-	$fe00 ## w w bic,
+	tos 2 #( w ldrh,
+	$fe ## r1 mov,
+	8 ## r1 r1 lsl,
+	r1 w bic,
 	$f0 ## w cmp,
-	0 ## tos ge? mvn, \ tos = -1
-	ge? ret
+	8 #offset lt? b,
+	0 ## tos mov,
+	tos tos mvn,	\ tos = -1
+	ret
 	
 	\ done
 	0 ## tos mov, \ tos = 0
