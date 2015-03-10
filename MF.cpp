@@ -1925,6 +1925,8 @@ void Parser::parseAsm(const char *word)
 		PUSH_ASM(ASM_IMM, 0);
 	} else if (W("globals")) {
 		PUSH_ASM(ASM_IMM, 0x600);
+	} else if (W("iwram_globals")) {
+		PUSH_ASM(ASM_IMM, 0x3000600);
 	} else if (W("int_t0")) {
 		PUSH_ASM(ASM_IMM, 0x10);
 	} else if (W("int_t1")) {
