@@ -41,33 +41,37 @@ code onkey ( addr n1 n2 -- )
 end-code
 
 \ setup an interrupt event handler (user timer)
-code ontimer ( a -- )
+code-thumb ontimer ( a -- )
 	\ offset for timer registers
-	REGISTERS ## v0 mov,
-	$100 ## v0 v0 add,
-	
-	\ test for no interrupt
-	0 ## tos cmp,
+	$4000100 v0 LITERAL	\ REGISTERS + $100
 	
 	\ clear IRQ bit or set it for timer 2
 	v0 $a #( v1 ldrh,
-	$40 ## v1 v1 eq? bic,
-	$40 ## v1 v1 ne? orr,
+	$40 ## v2 mov,
+	v2 v1 bic,
+	\ test for no interrupt
+	0 ## tos cmp,
+	4 #offset eq? b,
+	v2 v1 orr,
 	v0 $a #( v1 strh,
 	
 	\ offset to interrupt registers
-	$100 ## v0 v0 add,
+	$80 ## v0 add,
+	$80 ## v0 add,
 	
 	\ write address of interrupt handler
-	IWRAM ## v2 mov,
-	GLOBALS ## v2 v2 add,
+	IWRAM_GLOBALS v2 LITERAL
 	v2 INT_T2 #( tos str,
 	
 	\ set timer interrupt flag (or clear)
-	v0 0@ tos ldrh,
-	$20 ## tos tos eq? bic,
-	$20 ## tos tos ne? orr,
-	v0 0@ tos strh,
+	$20 ## v2 mov,
+	v0 0@ v1 ldrh,
+	v2 v1 bic,
+	\ test for no interrupt
+	0 ## tos cmp,
+	4 #offset eq? b,
+	v2 v1 orr,
+	v0 0@ v1 strh,
 	
 	\ done
 	tos pop
