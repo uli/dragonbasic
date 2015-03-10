@@ -128,15 +128,22 @@ code flipsprite ( sprite x y -- )
 end-code
 
 \ return the x coordinate of a sprite
-code spritex ( sprite -- x )
-	IWRAM ## w mov,
-	tos 3 #lsl w tos add,
+code-thumb spritex ( sprite -- x )
+	$30 ## w mov,
+	20 ## w w lsl,	\ IWRAM
+	3 ## tos tos lsl,
+	w tos tos add,
 	tos 2 #( tos ldrh,
 	
 	\ x >= 240 then negate
-	$FE00 ## tos tos bic,
+	$fe ## v0 mov,
+	8 ## v0 v0 lsl,	\ $fe00
+	v0 tos bic,
 	$f0 ## tos cmp,
-	$200 ## tos tos ge? sub,
+	8 #offset lt? b,
+	$2 ## v0 mov,
+	8 ## v0 v0 lsl,
+	v0 tos tos sub,
 	
 	\ done
 	ret
