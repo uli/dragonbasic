@@ -2,7 +2,7 @@
   -- Original code by Jeff Massung, 2003 }
 
 \ create a new timer
-code maketimer ( frequency -- )
+code-thumb maketimer ( frequency -- )
 	$ffff v0 literal
 	
 	\ divide for real frequency
@@ -12,11 +12,10 @@ code maketimer ( frequency -- )
 	
 	\ subtract and clear remainder
 	tos v0 tos sub,
-	a a a eor,
+	a a eor,
 	
 	\ offset to timer registers
-	REGISTERS ## v0 mov,
-	$100 ## v0 v0 add,
+	$4000100 v0 LITERAL
 	
 	\ set frequency and clear
 	v0 $8 #( tos strh,
