@@ -30,23 +30,21 @@ code maketimer ( frequency -- )
 end-code
 
 \ start the user timer
-code starttimer ( -- )
-	\ addresses
-	REGISTERS ## v2 mov,
-	IWRAM ## v3 mov,
-	
+code-thumb starttimer ( -- )
 	\ offset to timer registers and interrupts
-	$100 ## v2 v2 add,
-	GLOBALS ## v3 v3 add,
+	$4000100 v2 LITERAL	\ REGISTERS + $100
+	IWRAM_GLOBALS v0 LITERAL
 	
 	\ test to see if an interrupt is running
-	v3 INT_T2 #( v1 ldr,
-	0 ## v1 cmp,
+	v0 INT_T2 #( v1 ldr,
+	$82 ## v0 mov, 
 	
 	\ ENABLE + FREQ_64 + IRQ (if running)
-	$82 ## v3 mov, 
-	$40 ## v3 v3 ne? add,
-	v2 $a #( v3 strh,
+	0 ## v1 cmp,
+	4 #offset eq? b,
+	$40 ## v0 add,
+
+	v2 $a #( v0 strh,
 	
 	\ set timer 3 to overflow (ENABLE + COUNT_UP)
 	$84 ## v1 mov,
