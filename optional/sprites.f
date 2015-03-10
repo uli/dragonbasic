@@ -150,15 +150,20 @@ code-thumb spritex ( sprite -- x )
 end-code
 
 \ return the y coordinate of a sprite
-code spritey ( sprite -- y )
-	IWRAM ## w mov,
-	tos 3 #lsl w tos add,
+code-thumb spritey ( sprite -- y )
+	$30 ## w mov,
+	20 ## w w lsl,	\ IWRAM
+	3 ## tos tos lsl,
+	w tos tos add,
 	tos 0@ tos ldrh,
 	
 	\ y >= 160 then negate
-	$ff ## tos tos and,
+	$ff ## v0 mov,
+	v0 tos and,
 	$a0 ## tos cmp,
-	$100 ## tos tos ge? sub,
+	6 #offset lt? b,
+	$80 ## tos sub,
+	$80 ## tos sub,
 	
 	\ done
 	ret
