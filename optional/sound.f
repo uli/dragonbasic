@@ -212,59 +212,69 @@ code-thumb /playsound ( -- )
 end-code
 
 \ play a wav sample 1 time on DirectSound channel 1
-code playsound ( a -- )
-	\ 0x4000000 -> R8, 0x4000200 -> R9
-	REGISTERS ## r8 mov,
-	$200 ## r8 r9 add,
+code-thumb playsound ( a -- )
+	r6 push
+	$4000080 r3 LITERAL	\ REGISTERS + $80
+	$4000200 r4 LITERAL	\ REGISTERS + $200
 	
 	\ enable interrupts
-	0 ## r10 mvn,
-	r9 8 #( r10 strh,
+	0 ## r5 mov,
+	1 ## r5 r5 sub,
+	r4 8 #( r5 strh,
 
 	\ turn off timer 1 overflow interrupt flag
 	0 ## r1 mov,
-	r8 $d0 #( r1 str,
+	r3 $50 #( r1 str,
 	
-	\ 0x3000000 -> R10, 0x3006F00 -> R11
-	IWRAM ## r10 mov,
-	GLOBALS ## r10 r11 add,
-	r11 r10 mov,
+	IWRAM_GLOBALS r5 LITERAL
 
 	\ reg_sndcnt_h |= 0xF008 (fifo b)
-	r8 $82 #( r1 ldrh,
-	$f000 ## r1 r1 orr,
-	$8 ## r1 r1 orr,
-	r8 $82 #( r1 strh,
+	r3 $2 #( r1 ldrh,
+	$f0 ## r6 mov,
+	8 ## r6 r6 lsl,	\ $f000
+	r6 r1 orr,
+	8 ## r6 mov,
+	r6 r1 orr,
+	r3 $2 #( r1 strh,
 
 	\ skip and load address
-	8 ## r11 r11 add,
+	r5 r6 mov,
+	8 ## r6 add,
 	r0 ia! r1 r2 ldm,
-	r11 ia r0 r2 stm,
+	r6 ia! r0 r2 stm,
 
 	\ write dma 2 source and destination
-	r8 $c8 #( r0 str,
-	$a4 ## r8 r0 orr,
-	r8 $cc #( r0 str,
+	r3 $48 #( r0 str,
+	r3 r0 mov,
+	$24 ## r0 add,
+	r3 $4c #( r0 str,
 	
 	\ enable and start dma 2 on fifo empty
-	$b600 ## r0 mov,
-	r8 $d2 #( r0 strh,
+	$b6 ## r0 mov,
+	8 ## r0 r0 lsl,	\ $b600
+	r3 r6 mov,
+	$52 ## r6 add,
+	r6 0@ r0 strh,
 
 	\ set interrupt vector
 	(playsound-handler) r0 literal
-	r10 INT_T1 #( r0 str,
+	r5 INT_T1 #( r0 str,
 
 	\ enable timer 1 interrupt
-	r9 0@ r0 ldrh,
-	$10 ## r0 r0 orr,
-	r9 0@ r0 strh,
+	r4 0@ r0 ldrh,
+	$10 ## r6 mov,
+	r6 r0 orr,
+	r4 0@ r0 strh,
 
 	\ set timer 1 to interrupt and enable
-	$100 ## r8 r8 orr,
-	$c00000 ## r1 r0 orr,
-	r8 4 #( r0 str,
+	$80 ## r3 add,
+	$c0 ## r6 mov,
+	16 ## r6 r6 lsl,	\ $c00000
+	r6 r1 orr,
+	r3 4 #( r1 str,
 
 	\ done
+	r6 pop
 	tos pop
 	ret
 end-code
