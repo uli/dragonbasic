@@ -37,21 +37,24 @@ variable .idata
 :n a> ( -- ) a .idata ! ;
 
 \ allocate bytes of data on the return stack
-code r-alloc ( u -- a )
+code-thumb r-alloc ( u -- a )
 	rsp w mov,
 	
 	\ allocate space
 	tos rsp rsp sub,
 	rsp tos mov,
-	w link \ save old rsp
+	4 ## rsp sub,
+	rsp 0@ w str,	\ save old rsp
 	
 	\ save new returning adress
-	u link
+	4 ## rsp sub,
+	rsp 0@ u str,
 	pc u mov,
+	3 ## u add,	\ 2 to skip this insn and 1 for Thumb
 	ret
 	
 	\ this is called on next return
-	u unlink
+	rsp ia! u ldm,
 	rsp 0@ rsp ldr,
 	u bx,
 end-code
