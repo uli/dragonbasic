@@ -7,10 +7,10 @@ icode-thumb len ( a -- u )
 end-code
 
 \ return the address and length of a string (inlined)
-icode count ( a -- a+1 u )
+icode-thumb count ( a -- a+1 u )
 	tos w mov,
-	w 1 (# tos ldrh,
-	$ff ## tos tos and,
+	w 0@ tos ldrb,
+	1 ## w w add,
 	w push
 end-code
 
