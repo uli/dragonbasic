@@ -75,11 +75,7 @@ end-code
 \ write the length of a string and return
 code #str ( x -- )
 	\ note: w contains adress of string and v7 is length
-	w 0@ v0 ldrh,
-	$ff00 ## v0 v0 and,
-	v0 v7 v0 orr,
-	w 0@ v0 strh,
-	
+	w 0@ v7 strb,
 	\ done
 	tos pop
 	ret
