@@ -1425,7 +1425,8 @@ bool Parser::parseArm(const char *word)
 	} else if (W("push")) {
 		unsigned int insn = 0x092d0000;
 		CODE_COND;
-		insn |= 1 << POP_VAL;
+		while (asp)
+			insn |= 1 << POP_REG;
 		code(insn);
 	} else if (W("swi,")) {
 		unsigned int insn = 0x0f000000;
