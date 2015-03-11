@@ -87,10 +87,7 @@ code pop-string ( x -- )
 	\ tos contains the first byte to pop onto string
 	
 	\ load tos into first byte
-	w 0@ v0 ldrh,
-	$ff ## v0 v0 and,
-	tos 8 #lsl v0 v0 add,
-	w 0@ v0 strh,
+	w 1 #( tos strb,
 	
 	\ begin at index 1
 	2 ## v6 mov,
@@ -99,17 +96,9 @@ code pop-string ( x -- )
 	l: __pop
 	v7 v6 cmp,
 	#str gt? b,
-	1 ## v6 tst,
-	1 ## v6 v5 bic,
+
 	a pop
-	
-	\ odd index = upper byte
-	w v5 +( v0 ldrh,
-	$00ff ## v0 v0 ne? and,
-	a 8 #lsl v0 v0 ne? add,
-	$ff00 ## v0 v0 eq? and,
-	a v0 v0 eq? add,
-	w v5 +( v0 strh,
+	w v6 +( a strb,
 	
 	\ loop until all characters popped
 	1 ## v6 v6 add,
