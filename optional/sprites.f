@@ -103,26 +103,36 @@ code-thumb colorsprite ( sprite index -- )
 end-code
 
 \ flips a sprite or mirrors it
-code flipsprite ( sprite x y -- )
-	sp ia! v1 v2 ldm,
-	IWRAM ## v3 mov,
+code-thumb flipsprite ( sprite x y -- )
+	v1 v2 pop
+	$30 ## v0 mov,
+	20 ## v0 v0 lsl,	\ IWRAM
 	
-	v2 3 #lsl v3 v2 add,
+	3 ## v2 v2 lsl,
+	v0 v2 v2 add,
 	
 	\ clear flip bits
-	v2 2 #( v3 ldrh,
-	$3000 ## v3 v3 bic,
+	v2 2 #( v0 ldrh,
+	$30 ## a mov,
+	8 ## a a lsl,	\ $3000
+	a v0 bic,
 	
 	\ set x flip bit
 	0 ## v1 cmp,
-	$1000 ## v3 v3 ne? orr,
+	8 #offset eq? b,
+	$10 ## a mov,
+	8 ## a a lsl,	\ $1000
+	a v0 orr,
 	
 	\ set y flip bit
 	0 ## tos cmp,
-	$2000 ## v3 v3 ne? orr,
+	8 #offset eq? b,
+	$20 ## a mov,
+	8 ## a a lsl,	\ $2000
+	a v0 orr,
 	
 	\ done
-	v2 2 #( v3 strh,
+	v2 2 #( v0 strh,
 	tos pop
 	ret
 end-code
