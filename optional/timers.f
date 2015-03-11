@@ -80,10 +80,9 @@ code-thumb clocktimer ( -- u )
 end-code
 
 \ wait for so many fires of the timer
-code waittimer ( u -- )
+code-thumb waittimer ( u -- )
 	\ offset to timer registers
-	REGISTERS ## v2 mov,
-	$100 ## v2 v2 add,
+	$4000100 v2 LITERAL	\ REGISTERS + $100
 	
 	\ loop
 	l: __wait
