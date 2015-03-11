@@ -1584,7 +1584,9 @@ bool Parser::parseThumb(const char *word)
 				--asp;
 				ASSERT_IMM;
 				assert(word[3] == 'b' || !(TOS_VAL & 3));
-				offset = TOS_VAL >> 2;
+				offset = TOS_VAL;
+				if (word[3] != 'b')
+					offset >>= 2;
 				if (POP_VAL == REG_SP) {
 					assert(word[3] != 'b');
 					assert(offset < 256);
