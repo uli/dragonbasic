@@ -109,13 +109,16 @@ code disabletiles ( bg -- )
 end-code
 
 \ set the color of a tile
-code colortile ( a pal -- )
+code-thumb colortile ( a pal -- )
 	v0 pop
 	v0 0@ v1 ldrh,
 	
 	\ mask and set new palette
-	$f000 ## v1 v1 bic,
-	tos 12 #lsl v1 v1 orr,
+	$f0 ## v2 mov,
+	8 ## v2 v2 lsl,	\ $f000
+	v2 v1 bic,
+	12 ## tos tos lsl,
+	tos v1 orr,
 	
 	\ done
 	v0 0@ v1 strh,
