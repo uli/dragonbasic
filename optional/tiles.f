@@ -293,30 +293,36 @@ code maptiles ( tile-addr a w h -- )
 end-code
 
 \ map an image of tiles to a background
-code mapimage ( a base w h -- )
-	sp ia! v1 v2 v3 ldm,
+code-thumb mapimage ( a base w h -- )
+	v1 v2 w pop
+	r6 push
+	$f0 ## r6 mov,
+	8 ## r6 r6 lsl,	\ $f000
 	
 	\ loop until mapped
 	l: __loop
-	v1 v4 mov,
+	v1 v0 mov,
 	
 	\ loop through each row
 	l: __row
-	v3 0@ v6 ldrh,
-	$f000 ## v6 v6 and,
-	v6 v2 v6 orr,
-	v3 2 (# v6 strh,
-	1 ## v2 v2 add,
-	1 ## v4 v4 s! sub,
+	w 0@ a ldrh,
+	r6 a and,
+	v2 a orr,
+	w 0@ a strh,
+	2 ## w add,
+	1 ## v2 add,
+	1 ## v0 sub,	\ subs, actually
 	__row gt? b,
 	
 	\ advance to the next row
-	64 ## v3 v3 add,
-	v1 1 #lsl v3 v3 sub,
-	1 ## tos tos s! sub,
+	64 ## w add,
+	v1 w w sub,
+	v1 w w sub,
+	1 ## tos sub,	\ subs, actually
 	__loop gt? b,
 	
 	\ done
+	r6 pop
 	tos pop
 	ret
 end-code
