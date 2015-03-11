@@ -149,19 +149,21 @@ code fliptile ( a x y -- )
 end-code
 
 \ set the priority of a bg
-code ordertiles ( bg priority -- )
+code-thumb ordertiles ( bg priority -- )
 	v1 pop
 	
 	\ setup
-	REGISTERS ## v2 mov,
-	v1 1 #lsl v1 mov,
-	8 ## v1 v1 add,
+	$40 ## v2 mov,
+	20 ## v2 v2 lsl,	\ REGISTERS
+	1 ## v1 v1 lsl,
+	8 ## v1 add,
 	
 	\ load, mask and set
-	v2 v1 +( v3 ldrh,
-	3 ## v3 v3 bic,
-	tos v3 v3 orr,
-	v2 v1 +( v3 strh,
+	v2 v1 +( v0 ldrh,
+	3 ## a mov,
+	a v0 bic,
+	tos v0 orr,
+	v2 v1 +( v0 strh,
 	
 	\ done
 	tos pop
