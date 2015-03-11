@@ -347,34 +347,45 @@ code ordersprite ( sprite priority -- )
 end-code
 
 \ update the frame of a sprite
-code animsprite ( sprite start end blocks -- )
-	sp ia! v1 v2 v3 ldm,
-	
+code-thumb animsprite ( sprite start end blocks -- )
+	v0 v1 v2 pop
+	r6 push
+
 	\ sprite address
-	IWRAM ## v0 mov,
-	v3 3 #lsl v0 v0 add,
-	
+	$30 ## r6 mov,
+	20 ## r6 r6 lsl,	\ IWRAM
+	3 ## v2 v2 lsl,
+	v2 r6 r6 add,
+
 	\ load current frame
-	v0 4 #( w ldrh,
-	$fc00 ## w v4 bic,
-	$fc00 ## w w and,
-	
-	\ if v4 < start || v4 > end then v4 = start - blocks
-	v2 v4 cmp,
-	tos v2 v4 lt? sub,
-	v1 v4 gt? cmp,
-	tos v2 v4 gt? sub,
-	
-	\ add blocks to v4 and reset if > end
-	tos v4 v4 add,
-	v1 v4 cmp,
-	v2 v4 gt? mov,
-	
+	r6 4 #( w ldrh,
+	$fc ## v2 mov,
+	8 ## v2 v2 lsl,		\ $fc00
+	w a mov,
+	v2 a bic,
+	v2 w and,
+
+	\ if a < start || a > end then a = start - blocks
+	v1 a cmp,
+	6 #offset ge? b,
+	tos v1 a sub,
+	6 #offset b,
+	v0 a cmp,
+	4 #offset le? b,
+	tos v1 a sub,
+
+	\ add blocks to a and reset if > end
+	tos a a add,
+	v0 a cmp,
+	4 #offset le? b,
+	v1 a mov,
+
 	\ write back
-	v4 w w orr,
-	v0 4 #( w strh,
+	a w orr,
+	r6 4 #( w strh,
 	
 	\ done
+	r6 pop
 	tos pop
 	ret
 end-code
