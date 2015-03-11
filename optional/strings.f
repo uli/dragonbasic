@@ -36,14 +36,15 @@ end-code
 code-thumb print ( tile a -- )
 	v1 pop
 	tos w mov,
-	tos pop
 	
 	\ get length and quit if zero
 	w 0@ v0 ldrh,
 	2 ## w w add,
 	$ff ## a mov,
 	v0 a and,	\ ands, actually
-	4 #offset ne? b,
+	6 #offset ne? b,
+	l: __return
+	tos pop
 	ret
 	
 	\ loop, writing 2 bytes at a time
@@ -65,8 +66,7 @@ code-thumb print ( tile a -- )
 	
 	\ decrement
 	1 ## a sub,	\ subs, actually
-	4 #offset ne? b,
-	ret
+	__return eq? b,
 	
 	\ lower byte
 	w 0@ v0 ldrh,
@@ -89,6 +89,7 @@ code-thumb print ( tile a -- )
 	__print gt? b,
 	
 	\ done
+	tos pop
 	ret
 end-code
 
