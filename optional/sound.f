@@ -136,26 +136,38 @@ code-thumb playnote ( channel length freq duty -- )
 end-code
 
 \ use channel 4 to produce white noise
-code playdrum ( length freq step -- )
+code-thumb playdrum ( length freq step -- )
 	\ setup
-	REGISTERS ## v2 mov,
-	$f700 ## v1 mov,
+	$40 ## v2 mov,
+	20 ## v2 v2 lsl,	\ REGISTERS
+	$78 ## v2 add,
+	$f7 ## v1 mov,
+	8 ## v1 v1 lsl,		\ $f700
 
 	\ load arguments
-	sp ia! v3 v4 ldm,
-	0 ## v4 cmp,
+	a w pop
+	w v0 mov,
+	0 ## w cmp,
+	8 #offset le? b,
 
 	\ set envelope step and length (REG_SOUND4CNT_L)
-	64 ## v4 v4 gt? rsb,
-	v4 v1 v1 gt? add,
-	v2 $78 #( v1 strh,
+	64 ## w add,
+	w w neg,
+	w v1 v1 add,
+	v2 0@ v1 strh,
 
 	\ set loop mode (REG_SOUND4CNT_H)
-	$8000 ## v1 mov,		\ reset
-	$4000 ## v1 v1 gt? orr,	\ timed
-	tos 4 #lsl v1 v1 orr,	\ step
-	v3 v1 v1 orr,			\ frequency
-	v2 $7c #( v1 strh,
+	$80 ## v1 mov,
+	8 ## v1 v1 lsl,		\ $8000, reset
+	0 ## v0 cmp,
+	8 #offset le? b,
+	$40 ## v0 mov,
+	8 ## v0 v0 lsl,		\ $4000, timed
+	v0 v1 orr,
+	4 ## tos tos lsl,
+	tos v1 orr,		\ step
+	a v1 orr,		\ frequency
+	v2 4 #( v1 strh,
 
 	\ done
 	tos pop
