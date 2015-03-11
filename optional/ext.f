@@ -78,8 +78,8 @@ icode sqrt ( n1 -- n2 )
 end-code
 
 \ convert an integer to a fixed-point number (inline)
-icode fix# ( n -- f )
-	tos 8 #lsl tos mov,
+icode-thumb fix# ( n -- f )
+	8 ## tos tos lsl,
 end-code
 
 \ convert a fixed-point value to an integer (inline)
