@@ -1200,11 +1200,11 @@ unsigned int Parser::arm9CodeAddr()
 		case AMODE_PREINDR:
 		case AMODE_POSTINDR:
 			insn |= TOS_VAL;
+			insn |= 0x00800000;	/* upwards */
 			if (NOS_TYPE == ASM_AMODE &&
 			    NOS_VAL == AMODE_LSLI) {
 				--asp;
 				insn |= POP_IMM << 7;
-				insn |= 0x00800000; /* upwards */
 			}
 			insn |= POP_REG;
 			break;
