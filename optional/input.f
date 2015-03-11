@@ -21,12 +21,11 @@ code input ( n -- )
 end-code
 
 \ return the status of a button (0=released)
-code key ( n1 -- n2 )
-	REGISTERS ## v1 mov,
-	$130 ## v1 v1 add,
+code-thumb key ( n1 -- n2 )
+	$4000130 v1 LITERAL	\ REGISTERS + $130
 	v1 0@ v2 ldrh,
-	v2 tos v2 and,
-	v2 tos tos eor,
+	tos v2 and,
+	v2 tos eor,
 	ret
 end-code
 
