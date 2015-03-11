@@ -44,16 +44,17 @@ code dmawait ( -- )
 end-code
 
 \ return the number of blocks from a image size
-code blocks ( w h d -- u )
-	sp ia! v0 v1 ldm,
+code-thumb blocks ( w h d -- u )
+	v0 v1 pop
 	
 	\ multiply WxH div 64
-	v0 v1 v0 mul,
-	v0 6 #lsr v0 mov,
+	v1 v0 mul,
+	6 ## v0 v0 lsr,
 	
 	\ multiply by bit depth
-	tos 3 #lsr tos mov,
-	v0 tos lsl tos mov,
+	3 ## tos tos lsr,
+	tos v0 lsl,
+	v0 tos mov,
 	
 	\ done
 	ret
