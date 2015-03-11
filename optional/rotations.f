@@ -115,38 +115,50 @@ code tan# ( degrees -- f )
 end-code
 
 \ create a sprite rotation matrix
-code makerotation ( matrix sx sy degrees -- )
-	sp ia! v1 v2 v3 ldm,
-	v3 5 #lsl v3 mov,
-	IWRAM ## v3 v3 add,
+code-thumb makerotation ( matrix sx sy degrees -- )
+	v0 v1 v2 pop
+
+	5 ## v2 v2 lsl,
+	$30 ## a mov,
+	20 ## a a lsl,	\ IWRAM
+	a v2 v2 add,
+	v2 r6 r7 push
+
 	
 	\ set the table address
-	__sincos v4 literal 
-	v4 tos 2 #lsl +( v5 ldr, 
-	v5 16 #asr v4 mov, 	\ sin
-	v5 16 #ror v5 mov, 
-	v5 16 #asr v5 mov, 	\ cos
+	__sincos a literal 
+	2 ## tos tos lsl,
+	a tos +( r6 ldr, 
+	16 ## r6 a asr,		\ sin
+	16 ## r6 r6 lsl,
+	16 ## r6 r6 asr,	\ cos
 
 	\ calculate rotation parameters
-	v5 v2 v6 mul,		\ pa = (x*cos)
-	v4 v1 v7 mul,		\ pb = (y*sin)
-	0 ## v4 v4 rsb,		\ -sin
-	v4 v2 v0 mul,		\ pc = (x*-sin)
-	v5 v1 w mul,		\ pd = (y*cos)
+	v1 r7 mov,
+	r6 r7 mul,		\ pa = (x*cos)
+	v0 v2 mov,
+	a v2 mul,		\ pb = (y*sin)
+	a a neg,		\ -sin
+	v1 tos mov,
+	a tos mul,		\ pc = (x*-sin)
+	v0 w mov,
+	r6 w mul,		\ pd = (y*cos)
 	
 	\ shift back down
-	v6 8 #asr v6 mov,
-	v7 8 #asr v7 mov,
-	v0 8 #asr v0 mov,
-	w 8 #asr w mov,
+	8 ## r7 r7 asr,
+	8 ## v2 v0 asr,
+	8 ## tos tos asr,
+	8 ## w w asr,
 
 	\ write
-	v3 $06 #( v6 strh,
-	v3 $0e #( v7 strh,
-	v3 $16 #( v0 strh,
-	v3 $1e #( w strh,
+	v2 pop
+	v2 $06 #( r7 strh,
+	v2 $0e #( v0 strh,
+	v2 $16 #( tos strh,
+	v2 $1e #( w strh,
 
 	\ done
+	r6 r7 pop
 	tos pop
 	ret
 end-code
