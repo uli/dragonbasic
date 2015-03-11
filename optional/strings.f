@@ -170,7 +170,7 @@ end-code
 : hex$ ( n -- a ) a! 256 # r-alloc dup a /hex ;
 
 \ transfer bytes from one address to address in A
-code -> ( from count -- a ) ( A: to -- to+count )
+code-thumb -> ( from count -- a ) ( A: to -- to+count )
 	w pop
 	
 	\ save count and destination address
@@ -178,27 +178,18 @@ code -> ( from count -- a ) ( A: to -- to+count )
 	a tos mov,
 	
 	l: __copy
-	
 	\ decrement count
-	1 ## v0 v0 s! sub,
-	mi? ret
+	1 ## v0 sub,		\ subs, actually
+	12 #offset mi? b,
 	
 	\ load byte to transfer
-	w 1 (# v3 ldrh,
-	$ff ## v3 v3 and,
-	1 ## a tst,
-	
-	\ just write the low byte
-	a 1 (# v3 eq? strh,
-	v3 v4 eq? mov, \ save
-	__copy eq? b,
-	
-	\ mask and write the upper byte
-	v3 8 #lsl v4 v3 add,
-	1 ## a v1 bic,
-	v1 0@ v3 strh,
+	w 0@ v2 ldrb,
+	1 ## w w add,
+	a 0@ v2 strb,
 	1 ## a a add,
 	__copy b,
+
+	ret
 end-code
 
 \ copy from one string into another
