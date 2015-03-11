@@ -63,103 +63,114 @@ code-thumb print ( tile a -- )
 end-code
 
 \ write the length of a string and return
-code #str ( x -- )
-	\ note: w contains adress of string and v7 is length
-	w 0@ v7 strb,
-	\ done
+code-thumb #str ( x -- )
+	\ note: w contains adress of string and v0 is length
+	w 0@ v0 strb,
 	tos pop
 	ret
 end-code
 
 \ pop characters off the stack into RAM
-code pop-string ( x -- )
-	\ note: w contains address of string and v7 is length
+code-thumb pop-string ( x -- )
+	\ note: w contains address of string and v0 is length
 	\ tos contains the first byte to pop onto string
 	
 	\ load tos into first byte
 	w 1 #( tos strb,
 	
 	\ begin at index 1
-	2 ## v6 mov,
+	2 ## v2 mov,
 	
 	\ loop through all other characters
 	l: __pop
-	v7 v6 cmp,
+	v0 v2 cmp,
 	#str gt? b,
 
 	a pop
-	w v6 +( a strb,
+	w v2 +( a strb,
 	
 	\ loop until all characters popped
-	1 ## v6 v6 add,
+	1 ## v2 add,
 	__pop b,
 end-code
 
 \ convert an unsigned integer to a base 10 string
-code /str ( a u -- )
+code-thumb /str ( a u -- )
 	w pop
-	1 ## v7 mov, \ length
+	1 ## v0 mov, \ length
 	
 	\ force absolute value
 	0 ## tos cmp,
-	0 ## tos tos mi? rsb,
+	4 #offset pl? b,
+	tos tos neg,
 	
 	\ test for 0
 	0 ## tos cmp,
-	$30 ## tos eq? mov,
-	\ tos eq? push
-	pop-string eq? b,
+	6 #offset ne? b,
+	$30 ## tos mov,
+	pop-string b,
 	
 	l: __loop
 	10 ## tos cmp,
-	$30 ## tos tos lt? add,
-	pop-string lt? b,
-	1 ## v7 v7 add,
+	6 #offset ge? b,
+	$30 ## tos add,
+	pop-string b,
+	1 ## v0 add,
 	10 ## a mov,
 	6 swi, 			\ divide by 10
-	$30 ## a a add, \ store remainder
+	$30 ## a add, \ store remainder
 	a push 			\ as a decimal character
 	__loop b,
 end-code
 
 \ convert an unsigned integer to a base 16 string
-code /hex ( a u -- )
+code-thumb /hex ( a u -- )
 	w pop
-	1 ## v7 mov, \ length
+	1 ## v0 mov, \ length
 	
 	\ test for 0
 	0 ## tos cmp,
-	48 #offset eq? b,
+	32 #offset eq? b,	\ A
 	
 	l: __loop
 	16 ## tos cmp,
-	40 #offset lt? b,
+	28 #offset lt? b,	\ A
 	
-	1 ## v7 v7 add,		\ 1 more digit
-	$f ## tos a and,	\ divide by 16
-	tos 4 #lsr tos mov,	\ store remainder
+	1 ## v0 add,		\ 1 more digit
+	$f ## v1 mov,
+	tos a mov,
+	v1 a and,		\ divide by 16
+	4 ## tos tos lsr,	\ store remainder
 	
 	\ 0-9 or A-F?
 	$a ## a cmp,
+	8 #offset lt? b,	\ C
 	
 	\ A-F
-	$a ## a a ge? sub,
-	$41 ## a a ge? add,
+	$a ## a sub,
+	$41 ## a add,
+	4 #offset b,		\ B
 	
 	\ 0-9
-	$30 ## a a lt? add,	
+\ C
+	$30 ## a add,
+\ B
 	a push 				\ as a hex character
 	__loop b,
 	
+\ A
 	\ 0-9 or A-F?
 	$a ## tos cmp,
+	8 #offset lt? b,	\ D
 	
 	\ A-F
-	$a ## tos tos ge? sub,
-	$41 ## tos tos ge? add,
+	$a ## tos sub,
+	$41 ## tos add,
+	pop-string b,
 	
 	\ 0-9
-	$30 ## tos tos lt? add,
+\ D
+	$30 ## tos add,
 	
 	\ finish
 	pop-string b,
