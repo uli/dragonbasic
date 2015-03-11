@@ -164,26 +164,37 @@ code-thumb makerotation ( matrix sx sy degrees -- )
 end-code
 
 \ set the rotation matrix and bit for a sprite
-code rotatesprite ( sprite matrix -- )
+code-thumb rotatesprite ( sprite matrix -- )
 	v2 pop
 	
 	\ offset to sprite address
-	v2 3 #lsl v2 mov,
-	IWRAM ## v2 v2 add,
+	3 ## v2 v2 lsl,
+	$30 ## a mov,
+	20 ## a a lsl,	\ IWRAM
+	a v2 v2 add,
 	
 	\ set rotation bit
 	v2 0@ v1 ldrh,
-	$100 ## v1 v1 orr,
+	1 ## a mov,
+	8 ## a a lsl,	\ $100
+	a v1 orr,
 	
 	\ check turn off and store
 	0 ## tos cmp,
-	$100 ## v1 v1 mi? eor,
-	v2 2 (# v1 strh,
+	4 #offset pl? b,
+	a v1 eor,
+	v2 0@ v1 strh,
+	2 ## v2 add,
 	
 	\ set matrix index
 	v2 0@ v1 ldrh,
-	$e00 ## v1 v1 bic,
-	tos 9 #lsl v1 v1 pl? orr,
+	$e ## a mov,
+	8 ## a a lsl,	\ $e00
+	a v1 bic,
+	0 ## tos cmp,
+	6 #offset mi? b,
+	9 ## tos tos lsl,
+	tos v1 orr,
 	v2 0@ v1 strh,
 	
 	\ done
