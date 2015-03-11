@@ -15,19 +15,9 @@ icode count ( a -- a+1 u )
 end-code
 
 \ resize the length of a string
-code resize ( a u -- )
+code-thumb resize ( a u -- )
 	w pop
-	w 0@ v0 ldrh,
-	
-	\ mask
-	$ff00 ## v0 v0 and,
-	$ff ## tos tos and,
-	
-	\ set
-	tos v0 tos add,
-	w 0@ tos strh,
-	
-	\ done
+	w 0@ tos strb,
 	tos pop
 	ret
 end-code
