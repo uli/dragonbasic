@@ -38,10 +38,9 @@ code-thumb print ( tile a -- )
 	tos w mov,
 	
 	\ get length and quit if zero
-	w 0@ v0 ldrh,
-	2 ## w w add,
-	$ff ## a mov,
-	v0 a and,	\ ands, actually
+	w 0@ a ldrb,
+	1 ## w w add,
+	0 ## a cmp,
 	6 #offset ne? b,
 	l: __return
 	tos pop
@@ -50,40 +49,20 @@ code-thumb print ( tile a -- )
 	\ loop, writing 2 bytes at a time
 	l: __print
 	
-	\ get upper byte
-	8 ## v0 tos lsr,
-	
+	w 0@ tos ldrb,
+	1 ## w w add,
+
 	\ load tile and mask
 	v1 0@ v2 ldrh,
 	$fc ## v0 mov,
 	8 ## v0 v0 lsl,
 	v0 v2 and,
 	
-	\ add upper byte and write
+	\ add byte and write
 	tos v2 v2 add,
 	v1 0@ v2 strh,
 	2 ## v1 add,
 	
-	\ decrement
-	1 ## a sub,	\ subs, actually
-	__return eq? b,
-	
-	\ lower byte
-	w 0@ v0 ldrh,
-	2 ## w add,
-	
-	\ load tile and mask
-	v1 0@ v2 ldrh,
-	$fc ## tos mov,
-	8 ## tos tos lsl,
-	tos v2 and,
-	
-	\ add upper byte and write
-	$ff ## tos mov,
-	v0 tos and,
-	tos v2 v2 add,
-	v1 0@ v2 strh,
-	2 ## v1 add,
 	\ decrement
 	1 ## a sub,	\ subs, actually
 	__print gt? b,
