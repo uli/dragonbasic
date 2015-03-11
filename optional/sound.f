@@ -81,37 +81,54 @@ code-thumb stopmusic ( -- )
 end-code
 
 \ play a single note out channel 1 or 2
-code playnote ( channel length freq duty -- )
+code-thumb playnote ( channel length freq duty -- )
 	\ load arguments
-	REGISTERS ## r12 mov,
-	sp ia! r8 r9 r10 ldm,
-	0 ## r9 cmp,
+	r4 r5 pop
 
 	\ set values to write to registers (R2=L, R3=H)
-	$f000 ## r3 mov,
-	$700 ## r3 r3 gt? add,
+	$f0 ## r3 mov,
+	8 ## r3 r3 lsl,	\ $f000
+
+	0 ## r5 cmp,
+	14 #offset le? b,
+	$7 ## r0 mov,
+	8 ## r0 r0 lsl,	\ $700
+	r0 r3 r3 add,
 
 	\ set the length of the tone
-	64 ## r9 r9 gt? rsb,
-	r9 r3 r3 gt? add,
+	r5 r5 neg,
+	64 ## r5 add,
+	r5 r3 r3 add,
 
 	\ set the wave duty cycle
-	r0 r3 r3 orr,
+	r0 r3 orr,
 
 	\ reset and timed bits
-	$8000 ## r8 r2 orr,
-	$4000 ## r2 r2 gt? orr,
+	$8 ## r2 mov,
+	12 ## r2 r2 lsl,	\ $8000
+	r4 r2 orr,
+	0 ## r5 cmp,
+	8 #offset le? b,
+	$4 ## r0 mov,
+	12 ## r0 r0 lsl,	\ $4000
+	r0 r2 orr,
 
 	\ compute offsets to sound registers
-	1 ## r10 r10 s! sub,
-	$62 ## r1 eq? mov,	\ r1 = $62 (channel 1)
-	$68 ## r1 ne? mov,	\ r1 = $68 (channel 2)
+	$62 ## r1 mov,	\ r1 = $62 (channel 1)
+	r5 pop
+	1 ## r5 sub,	\ subs, actually
+	8 #offset eq? b,
+	$68 ## r1 mov,	\ r1 = $68 (channel 2)
 
 	\ set default values for notes
-	r12 r1 +( r3 strh,
-	2 ## r1 r1 eq? add,
-	4 ## r1 r1 ne? add,
-	r12 r1 +( r2 strh,
+	$40 ## r4 mov,
+	20 ## r4 r4 lsl,	\ REGISTERS
+	r4 r1 +( r3 strh,
+	2 ## r1 r1 add,
+	0 ## r5 cmp,
+	8 #offset eq? b,
+	2 ## r1 add,
+	r4 r1 +( r2 strh,
 
 	\ done
 	tos pop
