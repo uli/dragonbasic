@@ -170,20 +170,27 @@ code-thumb spritey ( sprite -- y )
 end-code
 
 \ move the sprite offscreen so it is hidden
-code hidesprite ( sprite -- )
-	IWRAM ## w mov,
-	tos 3 #lsl w tos add,
+code-thumb hidesprite ( sprite -- )
+	$30 ## w mov,
+	20 ## w w lsl,	\ IWRAM
+	3 ## tos tos lsl,
+	w tos tos add,
 	
 	\ y = 160
 	tos 0@ w ldrh,
-	$ff ## w w bic,
-	$a0 ## w w orr,
+	$ff ## v0 mov,
+	v0 w bic,
+	$a0 ## v0 mov,
+	v0 w orr,
 	tos 0@ w strh,
 	
 	\ x = 240
 	tos 2 #( w ldrh,
-	$FE00 ## w w and,
-	$f0 ## w w orr,
+	$fe ## v0 mov,
+	8 ## v0 v0 lsl,	\ $fe00
+	v0 w and,
+	$f0 ## v0 mov,
+	v0 w orr,
 	tos 2 #( w strh,
 	
 	\ done
