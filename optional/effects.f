@@ -75,12 +75,12 @@ code-thumb mosaic ( bgx bgy objx objy -- )
 end-code
 
 \ fade the screen black
-code fadeout ( -- )
-	REGISTERS ## w mov,
+code-thumb fadeout ( -- )
+	$4000050 w LITERAL	\ REGISTERS + $50
 	
 	\ REG_BLDCNT = $EF
 	$ef ## v0 mov,
-	w $50 #( v0 strh,
+	w 0@ v0 strh,		\ REGISTERS + $50
 	
 	\ Loop v1 = 0-15
 	0 ## v1 mov,
@@ -88,21 +88,24 @@ code fadeout ( -- )
 	l: __loop
 	
 	\ REG_COLEY = v1
-	w $54 #( v1 strh,
+	w $4 #( v1 strh,	\ REGISTERS + $54
 	1 ## v1 v1 add,
 	
 	\ Wait for a vertical blank (160)
+	$50 ## w sub,		\ REGISTERS
 	l: __wait
-	w 6 #( v2 ldrh,
+	w 6 #( v2 ldrh,		\ REGISTERS + $6
 	160 ## v2 cmp,
 	__wait ne? b,
 	
 	\ Wait for a vertical blank (159)
 	l: __wait
-	w 6 #( v2 ldrh,
+	w 6 #( v2 ldrh,		\ REGISTERS + $6
 	159 ## v2 cmp,
 	__wait ne? b,
 	
+	$50 ## w add,		\ REGISTERS + $50
+
 	\ Loop 16 times
 	$10 ## v1 cmp,
 	__loop le? b,
