@@ -26,18 +26,23 @@ code-thumb mosaictiles ( bg flag -- )
 end-code
 
 \ set or reset the sprite mosaic bit of a sprite
-code spritemosaic ( sprite flag -- )
+code-thumb spritemosaic ( sprite flag -- )
 	w pop
-	0 ## tos cmp,
 	
 	\ address of sprite
-	IWRAM ## v2 mov,
-	w 3 #lsl v2 w add,
+	$30 ## v2 mov,
+	20 ## v2 v2 lsl,	\ IWRAM
+	3 ## w w lsl,
+	v2 w w add,
 	
 	\ load and clear or set
 	w 0@ v0 ldrh,
-	$1000 ## v0 v0 eq? bic,
-	$1000 ## v0 v0 ne? orr,
+	$10 ## v1 mov,
+	8 ## v1 v1 lsl,		\ $1000
+	v1 v0 bic,
+	0 ## tos cmp,
+	4 #offset eq? b,
+	v1 v0 orr,
 	w 0@ v0 strh,
 	
 	\ done
