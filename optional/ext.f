@@ -12,17 +12,19 @@ end-code
 : allocate ( b -- a ) aligned r-alloc ;
 
 \ copy data using DMA 3
-code dmacopy ( addr1 addr2 u -- )
-	sp ia! v1 v2 ldm,
-	$4000000 ## v0 mov,
+code-thumb dmacopy ( addr1 addr2 u -- )
+	v1 v2 pop
+	$40000d0 v0 LITERAL	\ REGISTERS + $d0
 	
 	\ setup dma transfer addresses
-	v0 $d4 #( v1 str,
-	v0 $d8 #( v2 str,
+	v0 $4 #( v1 str,	\ REGISTERS + $d4
+	v0 $8 #( v2 str,	\ REGISTERS + $d8
 	
 	\ set control to 32-bit, increment both
-	$84000000 ## tos tos orr,
-	v0 $dc #( tos str,
+	$84 ## v1 mov,
+	24 ## v1 v1 lsl,	\ $84000000
+	v1 tos orr,
+	v0 $c #( tos str,	\ REGISTERS + $dc
 	
 	\ done
 	tos pop
