@@ -25,38 +25,43 @@ $0019001f , \ each palette entry is increased by 6
 $000c0013 , \ starting from the darkest color and
 $00000006 , \ increasing in intensity to white
 
-code makepalette ( pal -- )
+code-thumb makepalette ( pal -- )
+	r6 r7 push
 	__colors r1 literal
 	10 ## r2 mov,
 
 	\ blue loop
 	l: __blue
-	r1 r2 +( r9 ldrh,
+	r1 r2 +( r4 ldrh,
 	10 ## r3 mov,
 	
 	\ green loop
 	l: __green
-	r1 r3 +( r10 ldrh,
-	10 ## r8 mov,
+	r1 r3 +( r5 ldrh,
+	10 ## r6 mov,
 	
 	\ red loop
 	l: __red
-	r1 r8 +( r11 ldrh,
+	r1 r6 +( r7 ldrh,
 	
 	\ create 15-bit color
-	r10 5 #lsl r11 r11 orr,
-	r9 10 #lsl r11 r11 orr,
-	r0 2 (# r11 strh,
+	5 ## r5 r5 lsl,
+	r5 r7 orr,
+	10 ## r4 r4 lsl,
+	r4 r7 orr,
+	r0 0@ r7 strh,
+	2 ## r0 add,
 	
 	\ finish loops
-	2 ## r8 r8 s! sub,
+	2 ## r6 sub,
 	__red pl? b,
-	2 ## r3 r3 s! sub,
+	2 ## r3 sub,
 	__green pl? b,
-	2 ## r2 r2 s! sub,
+	2 ## r2 sub,
 	__blue pl? b,
 	
 	\ done
+	r6 r7 pop
 	tos pop
 	ret
 end-code
