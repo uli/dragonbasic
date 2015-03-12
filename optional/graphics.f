@@ -28,13 +28,15 @@ icode-thumb view-width ( mode -- u )
 end-code
 
 \ return the size (in words) of the display (inlined)
-icode view-size ( mode -- u )
+icode-thumb view-size ( mode -- u )
 	\ set mode 3 display size
-	$4b00 ## w mov,
+	$4b ## w mov,
+	8 ## w w lsl,	\ $4b00
 	3 ## tos cmp,
 	
 	\ if not mode 3 then multiply by 2
-	w 1 #lsl w eq? mov,
+	4 #offset ne? b,
+	1 ## w w lsl,
 	w tos mov,
 end-code
 
