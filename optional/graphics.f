@@ -188,12 +188,13 @@ code-thumb (plot-4) ( x y c a -- )
 end-code
 
 \ get a pixel color in modes 3 and 5
-code (pixel) ( x y a u -- c )
-	sp ia! v1 v2 v3 ldm,
+code-thumb (pixel) ( x y a u -- c )
+	v1 v2 w pop
 	
 	\ get pixel
-	tos v2 v2 mul,
-	v3 1 #lsl v2 v2 add,
+	tos v2 mul,
+	1 ## w w lsl,
+	w v2 v2 add,
 	v1 v2 +( tos ldrh,
 	
 	\ done
