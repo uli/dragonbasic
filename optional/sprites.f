@@ -12,7 +12,7 @@
 
 \ copy sprite data from ROM to VRAM
 : loadsprite ( n a blocks -- )
-	5 # n* a! swap 5 # n* $6000000 # + $10000 # + swap a copy ;
+	3 # n* a! swap 5 # n* $6000000 # + $10000 # + swap a dmacopy ;
 
 \ returns the current frame character of a sprite
 : spriteframe ( n -- char )
