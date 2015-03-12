@@ -95,8 +95,7 @@ end-code
 :n round ( f -- n ) $80 # + int ;
 
 \ fixed-point square root
-code fsqrt# ( f1 -- f2 )
+icode-thumb fsqrt# ( f1 -- f2 )
 	8 swi,
-	tos 4 #lsl tos mov,
-	ret
+	4 ## tos tos lsl,
 end-code
