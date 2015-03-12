@@ -17,7 +17,7 @@ end-code
 
 \ copy ROM data to VRAM tile data
 : loadtiles ( charblock offset from blocks -- )
-	5 # n* a! push swap charblock swap 5 # n* + pop a copy ;
+	3 # n* a! push swap charblock swap 5 # n* + pop a dmacopy ;
 
 \ copy a font in ROM data to a character block
 : loadfont16 ( charblock a -- ) 32 # swap 95 # loadtiles ;
