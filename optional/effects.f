@@ -2,19 +2,22 @@
   -- Original code by Jeff Massung, 2003 }
 
 \ set or clear the mosaic bit for a background
-code mosaictiles ( bg flag -- )
+code-thumb mosaictiles ( bg flag -- )
 	w pop
 	
 	\ move to REG_BGxCNT
-	REGISTERS ## v2 mov,
-	tos 1 #lsl tos mov,
-	8 ## tos tos add,
-	0 ## w cmp,
+	$40 ## v2 mov,
+	20 ## v2 v2 lsl,	\ REGISTERS
+	1 ## tos tos lsl,
+	8 ## tos add,
 	
 	\ set or reset bit in REG_BGxCNT
 	v2 tos +( v1 ldrh,
-	$40 ## v1 v1 eq? bic,
-	$40 ## v1 v1 ne? orr,
+	$40 ## v0 mov,
+	v0 v1 bic,
+	0 ## w cmp,
+	4 #offset eq? b,
+	v0 v1 orr,
 	v2 tos +( v1 strh,
 	
 	\ done
