@@ -413,86 +413,134 @@ $00100008 , $00200008 , $00200010 , $00300020 , \ wide
 $00080010 , $00080020 , $00100020 , $00200030 , \ tall
 
 \ check to see if two sprites overlap at all
-code bumpsprites ( sprite1 sprite2 -- flag )
-	v6 pop
-	tos v7 mov,
+code-thumb bumpsprites ( sprite1 sprite2 -- flag )
+	a pop
+	r6 r7 push
+	tos r7 mov,
 	
 	\ get address of size table
-	IWRAM ## v5 mov,
+	$30 ## v0 mov,
+	20 ## v0 v0 lsl,	\ IWRAM
 	__sizes tos LITERAL
+	tos v5 mov,
 	
 	\ get addresses of sprites
-	v6 3 #lsl v5 v6 add,
-	v7 3 #lsl v5 v7 add,
+	3 ## a a lsl,
+	v0 a a add,
+	3 ## r7 r7 lsl,
+	v0 r7 r7 add,
 
 	\ get the size of sprite 1 (V6->[V0,V1])
-	v6 0@ v4 ldrh,
-	v6 2 #( v5 ldrh,
-	$c000 ## v4 v4 and,
-	v4 12 #lsr v4 mov,
-	v5 14 #lsr v4 v4 orr,
-	tos v4 2 #lsl +( v0 ldr,
-	$ff ## v0 v1 and,
-	v0 16 #lsr v0 mov,
+	a 0@ r6 ldrh,
+	a 2 #( v0 ldrh,
+	$c0 ## tos mov,
+	8 ## tos tos lsl,	\ $c000
+	tos r6 and,
+	12 ## r6 r6 lsr,
+	14 ## v0 v0 lsr,
+	v0 r6 orr,
+	2 ## r6 r6 lsl,
+	v5 tos mov,
+	tos r6 +( v2 ldr,
+	$ff ## tos mov,
+	v2 v1 mov,
+	tos v1 and,
+	16 ## v2 v2 lsr,
+	v2 v6 mov,
 
 	\ get the position of sprite 1 (V6->[V2,V6])
-	v6 2 #( v2 ldrh,
-	v6 0@ v6 ldrh,
-	$ff ## v6 v6 and,
-	$fe00 ## v2 v2 bic,
+	a 2 #( v2 ldrh,
+	a 0@ a ldrh,
+	$ff ## tos mov,
+	tos a and,
+	$fe ## tos mov,
+	8 ## tos tos lsl,	\ $fe00
+	tos v2 bic,
 
 	\ make sure that negative values will collide
 	240 ## v2 cmp,
-	$200 ## v2 v2 ge? sub,
-	160 ## v6 cmp,
-	$100 ## v6 v6 ge? sub,
+	8 #offset lt? b,
+	$2 ## tos mov,
+	8 ## tos tos lsl,	\ $200
+	tos v2 v2 sub,
+
+	160 ## a cmp,
+	8 #offset lt? b,
+	$1 ## tos mov,
+	8 ## tos tos lsl,	\ $100
+	tos a a sub,
 
 	\ get the size of sprite 2 (V7->[V5,V3])
-	v7 0@ v4 ldrh,
-	v7 2 #( v5 ldrh,
-	$c000 ## v4 v4 and,
-	v4 12 #lsr v4 mov,
-	v5 14 #lsr v4 v4 orr,
-	tos v4 2 #lsl +( v5 ldr,
-	$ff ## v5 v3 and,
-	v5 16 #lsr v5 mov,
+	r7 0@ r6 ldrh,
+	r7 2 #( v0 ldrh,
+	$c0 ## tos mov,
+	8 ## tos tos lsl,	\ $c000
+	tos r6 and,
+	12 ## r6 r6 lsr,
+	14 ## v0 v0 lsr,
+	v0 r6 orr,
+	v5 tos mov,
+	2 ## r6 r6 lsl,
+	tos r6 +( v0 ldr,
+	$ff ## tos mov,
+	v0 tos and,
+	tos v3 mov,
+	16 ## v0 v0 lsr,
 
 	\ get the position of sprite 2 (V7->[V4,V7])
-	v7 2 #( v4 ldrh,
-	v7 0@ v7 ldrh,
-	$ff ## v7 v7 and,
-	$fe00 ## v4 v4 bic,
+	r7 2 #( r6 ldrh,
+	r7 0@ r7 ldrh,
+	$ff ## tos mov,
+	tos r7 and,
+	$fe ## tos mov,
+	8 ## tos tos lsl,	\ $fe00
+	tos r6 bic,
 
 	\ make sure that negative values will collide
-	240 ## v4 cmp,
-	$200 ## v4 v4 ge? sub,
-	160 ## v7 cmp,
-	$100 ## v7 v7 ge? sub,
+	240 ## r6 cmp,
+	8 #offset lt? b,
+	$2 ## tos mov,
+	8 ## tos tos lsl,	\ $200
+	tos r6 r6 sub,
+
+	160 ## r7 cmp,
+	8 #offset lt? b,
+	$1 ## tos mov,
+	8 ## tos tos lsl,	\ $100
+	tos r7 r7 sub,
 
 	\ set collision to false
 	0 ## tos mov,
 
 	\ test x direction (V4 > V2+V0 = fail)
-	v0 v2 w add,
-	w v4 cmp,
-	gt? ret \ fail
+	v6 w mov,
+	v2 w w add,
+	w r6 cmp,
+	6 #offset le? b,
+	l: __ret
+	r6 r7 pop
+	ret \ fail
 
 	\ test x direction (V4+V5 < V2 = fail)
-	v5 v4 w add,
+	v0 r6 w add,
 	w v2 cmp,
-	gt? ret \ fail
+	__ret gt? b, \ fail
 
 	\ test y direction (V7 > V6+V1 = fail)
-	v1 v6 w add,
-	w v7 cmp,
-	gt? ret \ fail
+	v1 a w add,
+	w r7 cmp,
+	__ret gt? b, \ fail
 
 	\ test y direction (V7+V3 < V6 = fail)
-	v3 v7 w add,
-	w v6 cmp,
+	v3 w mov,
+	r7 w w add,
+	w a cmp,
 
 	\ success
-	0 ## tos le? mvn,
+	6 #offset gt? b,
+	0 ## tos mov,
+	tos tos mvn,
+	r6 r7 pop
 	ret
 end-code
 
