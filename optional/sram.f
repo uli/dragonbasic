@@ -16,17 +16,19 @@
 : loadlong ( -- x ) >a c@a c@a *8 c@a *8 c@a *8 a> ;
 
 \ save a string
-code /savetext ( a -- )
-	$100 ## w s! mov,
+code-thumb /savetext ( a -- )
+	$100 w movi
 	
 	l: __loop
 	
 	\ copy a byte
-	tos 1 (# v0 ldrh,
-	a 1 (# v0 strb,
+	tos 0@ v0 ldrb,
+	1 ## tos add,
+	a 0@ v0 strb,
+	1 ## a add,
 	
 	\ loop until 256 bytes written
-	1 ## w w s! sub,
+	1 ## w sub,
 	__loop gt? b,
 	
 	\ done
