@@ -102,15 +102,16 @@ code-thumb (cls) ( color a size -- )
 end-code
 
 \ paste an image on the screen
-code (wallpaper) ( a-source a-dest size -- )
-	sp ia! v1 v2 ldm,
-	REGISTERS ## v0 mov,
+code-thumb (wallpaper) ( a-source a-dest size -- )
+	v1 v2 pop
+	$40000d0 v0 LITERAL	\ REGISTERS + $d0
 	
-    \ setup DMA transfer
-    $95000000 ## tos tos add,
-	v0 $d4 #( v2 str,
-	v0 $d8 #( v1 str,
-    v0 $dc #( tos str,
+	\ setup DMA transfer
+	$95000000 a movi
+	a tos tos add,
+	v0 $4 #( v2 str,	\ REGISTERS + $d4
+	v0 $8 #( v1 str,	\ REGISTERS + $d8
+	v0 $c #( tos str,	\ REGISTERS + $dc
 
 	\ done
 	tos pop
