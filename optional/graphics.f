@@ -152,30 +152,37 @@ code-thumb (plot) ( x y c a u -- )
 end-code
 
 \ plot a pixel in mode 4
-code (plot-4) ( x y c a -- )
-	sp ia! v1 v2 v3 ldm,
+code-thumb (plot-4) ( x y c a -- )
+	v1 v2 w pop
 	
 	\ get address
 	240 ## v0 mov,
-	v0 v2 v2 mul,
-	v3 v2 v2 add,
+	v0 v2 mul,
+	w v2 v2 add,
 	tos v2 v2 add,
 	
 	\ get aligned address and load
-	1 ## v2 tst,
-	1 ## v2 v0 bic,
-	v0 0@ v3 ldrh,
+	1 ## a mov,
+	v2 v0 mov,
+	a v0 bic,
+	v0 0@ w ldrh,
 	
 	\ mask off a byte
-	$ff ## v3 v3 ne? and,
-	$ff00 ## v3 v3 eq? and,
-	
+	$ff ## tos mov,
+	a v2 tst,
+	6 #offset eq? b,
+	\ odd pixel, leave mask at $ff, shift color up
+	8 ## v1 v1 lsl,
+	4 #offset b,
+	\ even pixel, shift mask up, leave color
+	8 ## tos tos lsl,
+
+	tos w and,
 	\ store desired byte
-	v1 v3 v3 eq? orr,
-	v1 8 #lsl v3 v3 ne? orr,
+	v1 w orr,
 	
 	\ set and done
-	v0 0@ v3 strh,
+	v0 0@ w strh,
 	tos pop
 	ret
 end-code
