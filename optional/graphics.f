@@ -288,92 +288,130 @@ end-code
 	view-width (blit) then ;
 
 \ finish drawing a line
-code /line ( -- )
-	u r9 pop
+code-thumb /line ( -- )
+	r6 r7 pop
 	tos pop
 	ret
 end-code
 
 \ draw a horizontal bresenham line
-code (h-line) ( -- )
-	r6 1 #lsr r5 r10 sub,
+code-thumb (h-line) ( -- )
+	1 ## r6 r0 lsr,
+	r0 r5 r7 sub,
 
+	r9 r1 mov,
 	l: __loop
 	
 	\ test done
-	r2 r4 cmp,
+	r10 r4 cmp,
 	/line eq? b,
 
 	\ horizontal loop
-	0 ## r10 cmp,
-	r9 r3 r3 pl? add,
-	r6 r10 r10 pl? sub,
-	r8 r4 r4 add,
-	r5 r10 r10 add,
+	0 ## r7 cmp,
+	6 #offset mi? b,
+	r1 r3 r3 add,
+	r6 r7 r7 sub,
+
+	r8 r0 mov,
+	r0 r4 r4 add,
+	r5 r7 r7 add,
 	
 	\ write pixel
-	r4 1 #lsl r11 mov,
-	r11 r3 +( r0 strh,
+	1 ## r4 r2 lsl,
+	r12 r0 mov,
+	r2 r3 +( r0 strh,
 	__loop b,
 end-code
 
 \ draw a vertical bresenham line
-code (v-line) ( -- )
-	r5 1 #lsr r6 r10 sub,
+code-thumb (v-line) ( -- )
+	1 ## r5 r0 lsr,
+	r0 r6 r7 sub,
 	
+	r1 r11 mov,
+	r9 r1 mov,
 	l: __loop
 	
-	r3 r1 cmp,
+	r3 r11 cmp,
 	/line eq? b,
 
 	\ vertical loop 
-	0 ## r10 cmp,
-	r8 r4 r4 pl? add,
-	r5 r10 r10 pl? sub,
-	r9 r3 r3 add,
-	r6 r10 r10 add,
+	0 ## r7 cmp,
+	8 #offset mi? b,
+	r8 r0 mov,
+	r0 r4 r4 add,
+	r5 r7 r7 sub,
+
+	r1 r3 r3 add,
+	r6 r7 r7 add,
 	
 	\ write pixel
-	r4 1 #lsl r11 mov,
-	r11 r3 +( r0 strh,
+	1 ## r4 r2 lsl,
+	r12 r0 mov,
+	r2 r3 +( r0 strh,
 	__loop b,
 end-code
 
 \ draw a bresenham line
-code (line) ( x1 y1 x2 y2 color screen -- )
-	\ get screen width
-	REGISTERS ## r1 mov,
-	r1 0@ r1 ldrh,
-	7 ## r1 r1 and,
-	5 ## r1 cmp,
-	320 ## r9 eq? mov,
-	480 ## r9 ne? mov,
-
+code-thumb (line) ( x1 y1 x2 y2 color screen -- )
 	\ load arguments and save forth registers
 	tos r10 mov,
-	sp ia! tos r1 r2 r3 r4 ldm,
-	u r9 push
+	tos r1 r2 r3 r4 pop
+	tos r12 mov,	\ r12 = color
+	r6 r7 push
+	r10 r7 mov,	\ r7 = screen
+	r2 r10 mov,	\ r10 = y2
+
+	\ get screen width
+	REGISTERS r0 movi
+	r0 0@ r0 ldrh,
+	7 ## r2 mov,
+	r2 r0 and,
+	160 ## r2 mov,
+
+	5 ## r0 cmp,
+	4 #offset eq? b,
+	240 ## r2 mov,
+
+	1 ## r2 r0 lsl,
+	r0 r9 mov,
 
 	\ prepare
-	1 ## r8 mov,
-	r3 r1 r5 s! sub,
-	r9 r1 r1 mul,
-	r9 r3 r3 mul,
+	1 ## r0 mov,
+	r0 r8 mov,
+	r9 r0 mov,
+
+	r3 r1 r5 sub,	\ subs, actually
+	8 #offset pl? b,
+	r5 r5 neg,
+	r0 r2 neg,
+	r2 r9 mov,
+
+	r0 r1 mul,
+	r0 r3 mul,
 
 	\ setup bresenham algorithm
-	0 ## r5 r5 mi? rsb,
-	0 ## r9 r9 mi? rsb,
-	r4 r2 r6 s! sub,
-	0 ## r6 r6 mi? rsb,
-	0 ## r8 r8 mi? rsb,
-	r5 1 #lsl r5 mov,
-	r6 1 #lsl r6 mov,
-	r10 1 #lsr r4 r4 add,
-	r10 1 #lsr r2 r2 add,
+	r10 r0 mov,
+
+	r4 r0 r6 sub,	\ subs, actually
+	10 #offset pl? b,
+	r6 r6 neg,
+	1 ## r0 mov,
+	r0 r2 neg,
+	r2 r8 mov,
+
+	1 ## r5 r5 lsl,
+	1 ## r6 r6 lsl,
+	1 ## r7 r2 lsr,
+	r2 r4 r4 add,
+	r10 r0 mov,
+	r2 r0 r0 add,
+	r0 r10 mov,
 	
 	\ write the first pixel at (x,y)
-	r4 1 #lsl r11 mov,
-	r11 r3 +( r0 strh,
+	1 ## r4 r2 lsl,
+	r12 r0 mov,
+	r2 r3 +( r0 strh,
 	r5 r6 cmp,
 	
 	\ if dy < dx then horizontal bresenham 
