@@ -87,29 +87,38 @@ code-thumb ontimer ( a -- )
 end-code
 
 \ setup an interrupt event handler (horizontal blank)
-code onhblank ( a -- )
-	REGISTERS ## v3 mov,
-	0 ## tos cmp,
+code-thumb onhblank ( a -- )
+	REGISTERS v0 movi
 	
 	\ enable hblank bit in REG_DISPSTAT
-	v3 4 #( v1 ldrh,
-	$10 ## v1 v1 eq? bic,
-	$10 ## v1 v1 ne? orr,
-	v3 4 #( v1 strh,
+	v0 4 #( v1 ldrh,
+	$10 ## a mov,
+	a v1 bic,
+
+	0 ## tos cmp,
+	4 #offset eq? b,
+	a v1 orr,
+
+	v0 4 #( v1 strh,
 	
 	\ offset to interrupt registers
-	$200 ## v3 v3 add,
+	$200 a movi
+	a v0 v0 add,
 	
 	\ write address of interrupt handler
-	IWRAM ## v2 mov,
-	GLOBALS ## v2 v2 add,
+	IWRAM_GLOBALS v2 LITERAL
 	v2 INT_HB #( tos str,
 	
 	\ set hblank interrupt flag
-	v3 0@ tos ldrh,
-	$2 ## tos tos eq? bic,
-	$2 ## tos tos ne? orr,
-	v3 0@ tos strh,
+	v0 0@ v1 ldrh,
+	2 ## a mov,
+	a v1 bic,
+
+	0 ## tos cmp,
+	4 #offset eq? b,
+	a v1 orr,
+
+	v0 0@ v1 strh,
 	
 	\ done
 	tos pop
