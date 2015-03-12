@@ -65,8 +65,8 @@ code-thumb blocks ( w h d -- u )
 end-code
 
 \ return the number of bytes used by blocks (inlined)
-icode tileoffset ( n -- u )
-	tos 5 #lsl tos mov,
+icode-thumb tileoffset ( n -- u )
+	5 ## tos tos lsl,
 end-code
 
 \ inlined absolute value
