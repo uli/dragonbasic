@@ -2178,7 +2178,7 @@ parse_next:
 		cur_icode = icodes.appendNew(getNextWord());
 		DEBUG("===start icode %s\n", cur_icode->word);
 		asm_mode = true;
-		if (word[6] == 't') {
+		if (word[5] == '-' && word[6] == 't') {
 			thumb = true;
 			cur_icode->thumb = true;
 		} else {
