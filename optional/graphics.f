@@ -202,18 +202,19 @@ code-thumb (pixel) ( x y a u -- c )
 end-code
 
 \ get a pixel in mode 4
-code (pixel-4) ( x y a -- c )
-	sp ia! v1 v2 ldm,
+code-thumb (pixel-4) ( x y a -- c )
+	v1 v2 pop
 	
 	\ get address
 	240 ## v0 mov,
-	v0 v1 v1 mul,
+	v0 v1 mul,
 	v2 v1 v1 add,
 	tos v1 v1 add,
 	
 	\ mis-aligned will load properly
 	v1 0@ tos ldrb,
-	$ff ## tos tos and,
+	$ff ## v1 mov,
+	v1 tos and,
 	
 	\ done
 	ret
