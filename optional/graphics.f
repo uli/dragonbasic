@@ -137,13 +137,14 @@ end-code
 : wallpaper ( a -- ) screen display-mode view-size (wallpaper) ;
 
 \ plot a pixel in modes 3 and 5
-code (plot) ( x y c a u -- )
-	sp ia! v1 v2 v3 v4 ldm,
+code-thumb (plot) ( x y c a u -- )
+	a v0 v1 v2 pop
 	
 	\ plot pixel
-	tos v3 v3 mul,
-	v4 1 #lsl v3 v3 add,
-	v1 v3 +( v2 strh,
+	tos v1 mul,
+	1 ## v2 v2 lsl,
+	v2 v1 v1 add,
+	a v1 +( v0 strh,
 	
 	\ done
 	tos pop
