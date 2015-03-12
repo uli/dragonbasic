@@ -289,7 +289,7 @@ end-code
 
 \ finish drawing a line
 code /line ( -- )
-	sp db u r9 ldm,
+	u r9 pop
 	tos pop
 	ret
 end-code
@@ -340,7 +340,7 @@ code (v-line) ( -- )
 end-code
 
 \ draw a bresenham line
-code line ( screen x1 y1 x2 y2 color -- )
+code (line) ( x1 y1 x2 y2 color screen -- )
 	\ get screen width
 	REGISTERS ## r1 mov,
 	r1 0@ r1 ldrh,
@@ -350,8 +350,9 @@ code line ( screen x1 y1 x2 y2 color -- )
 	480 ## r9 ne? mov,
 
 	\ load arguments and save forth registers
-	sp ia! r1 r2 r3 r4 r10 ldm,
-	sp db u r9 stm,
+	tos r10 mov,
+	sp ia! tos r1 r2 r3 r4 ldm,
+	u r9 push
 
 	\ prepare
 	1 ## r8 mov,
@@ -379,3 +380,6 @@ code line ( screen x1 y1 x2 y2 color -- )
 	(h-line) gt? b,
 	(v-line) b,
 end-code
+
+: line ( x1 y1 x2 y2 color -- )
+	screen (line) ;
