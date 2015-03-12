@@ -32,13 +32,15 @@ code-thumb dmacopy ( addr1 addr2 u -- )
 end-code
 
 \ wait for the dma to finish
-code dmawait ( -- )
-	REGISTERS ## w mov,
+code-thumb dmawait ( -- )
+	$40000dc w LITERAL	\ REGISTERS + $dc
 	
 	\ wait for start bit to clear
+	$1 ## v1 mov,
+	31 ## v1 v1 lsl,	\ $80000000
 	l: __wait
-	w $dc #( v0 ldr,
-	$80000000 ## v0 tst,
+	w 0@ v0 ldr,
+	v1 v0 tst,
 	__wait ne? b,
 	
 	\ done
