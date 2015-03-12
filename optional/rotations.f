@@ -100,16 +100,17 @@ code-thumb sin# ( degrees -- f )
 end-code
 
 \ tangent is a function of sin and cos
-code tan# ( degrees -- f )
+code-thumb tan# ( degrees -- f )
 	__sincos w literal
-	w tos 2 #lsl +( tos ldr,
+	2 ## tos tos lsl,
+	w tos +( tos ldr,
 	
 	\ cos -> a
-	tos 16 #ror a mov,
-	a 16 #asr a mov,
+	16 ## tos a lsl,
+	16 ## a a asr,
 	
 	\ sin -> tos and divide
-	tos 8 #asr tos mov,
+	8 ## tos tos asr,
 	6 swi,
 	ret
 end-code
