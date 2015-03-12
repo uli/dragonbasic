@@ -1079,6 +1079,20 @@ static unsigned int immrot(unsigned int val, int *err)
 	return ((ror << 8) & 0xf00) | val;
 }
 
+static void immshift(unsigned int *val, int *lsl)
+{
+	*lsl = 0;
+	if (*val > 0xff) {
+		while (!(*val & 1)) {
+			(*lsl)++;
+			*val >>= 1;
+		}
+	}
+
+	if (*val > 0xff)
+		GLB_error("immediate 0x%x too complex\n", *val);
+}
+
 static int can_immrot(unsigned int val)
 {
 	int err;
@@ -1762,6 +1776,16 @@ bool Parser::parseThumb(const char *word)
 		assert(TOS_TYPE == ASM_IMM ||
 		       TOS_TYPE == ASM_OFF);
 		code16(insn);
+	} else if (W("movi")) {
+		unsigned int rd = POP_TREG;
+		unsigned int val = POP_IMM;
+		int lsl;
+		immshift(&val, &lsl);
+		codeAsm(val, "##"); PUSH_ASM(ASM_REG, rd); codeAsm("mov,");
+		if (lsl) {
+			codeAsm(lsl, "##"); PUSH_ASM(ASM_REG, rd);
+			PUSH_ASM(ASM_REG, rd); codeAsm("lsl,");
+		}
 	} else if (W("tothumb")) {
 		// We have been called as ARM, but want to be Thumb.
 		// Used by assembly language interrupt handlers.
