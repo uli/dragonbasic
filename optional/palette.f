@@ -75,11 +75,12 @@ code-thumb getpalentry ( pal index entry -- color )
 	ret
 end-code
 
-code setpalentry ( pal index entry color -- )
-	sp ia! v1 v2 v3 ldm,
-	v2 5 #lsl v2 mov,
-	v1 1 #lsl v2 v1 add,
-	v3 v1 +( tos strh,
+code-thumb setpalentry ( pal index entry color -- )
+	v0 v1 v2 pop
+	5 ## v1 v1 lsl,
+	1 ## v0 v0 lsl,
+	v1 v0 v0 add,
+	v2 v0 +( tos strh,
 	tos pop
 	ret
 end-code
