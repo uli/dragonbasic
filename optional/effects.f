@@ -51,20 +51,23 @@ code-thumb spritemosaic ( sprite flag -- )
 end-code
 
 \ set parameters of mosaic effect
-code mosaic ( bgx bgy objx objy -- )
-	sp ia! v1 v2 v3 ldm,
+code-thumb mosaic ( bgx bgy objx objy -- )
+	v0 v1 v2 pop
 
 	\ sprite
-	tos 12 #lsl tos mov,
-	v1 8 #lsl tos tos orr,
+	12 ## tos tos lsl,
+	8 ## v0 v0 lsl,
+	v0 tos orr,
 	
 	\ bg
-	v2 4 #lsl tos tos orr,
-	v3 tos tos orr,
+	4 ## v1 v1 lsl,
+	v1 tos orr,
+	v2 tos orr,
 	
 	\ set
-	REGISTERS ## v1 mov,
-	v1 $4c #( tos str,
+	$40 ## v0 mov,
+	20 ## v0 v0 lsl,	\ REGISTERS
+	v0 $4c #( tos str,
 
 	\ done
 	tos pop
