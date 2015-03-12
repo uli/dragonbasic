@@ -85,10 +85,11 @@ code-thumb setpalentry ( pal index entry color -- )
 	ret
 end-code
 
-code rotatepal16 ( pal index -- )
-	sp ia! r1 r4 ldm,
-	r0 5 #lsl r1 r0 add,
-	2 ## r0 r0 add, \ skip entry 0
+code-thumb rotatepal16 ( pal index -- )
+	r1 r4 pop
+	5 ## r0 r0 lsl,
+	r1 r0 r0 add,
+	2 ## r0 add, \ skip entry 0
 	0 ## r1 mov,
 	r0 r1 +( r2 ldrh,
 	
