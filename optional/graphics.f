@@ -277,8 +277,8 @@ code-thumb (blit) ( a x y w h screen u -- )
 end-code
 
 \ blit an image in mode 4
-code (blit-4) ( a x y w h screen -- )
-	\ ret
+code-thumb (blit-4) ( a x y w h screen -- )
+	ret
 end-code
 
 \ wrapper function for blitting an image
