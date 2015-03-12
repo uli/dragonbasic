@@ -72,26 +72,31 @@ code-thumb screen ( -- addr )
 end-code
 
 \ clear the screen with a solid color
-code (cls) ( color a size -- )
+code-thumb (cls) ( color a size -- )
 	\ load arguments
-	REGISTERS ## v0 mov,
-	sp ia! v1 v2 ldm,
+	$40000d0 v0 LITERAL	\ REGISTERS + $d0
+	v1 v2 pop
 	
 	\ store color, load new tos
-	v2 16 #lsl v2 v2 orr,
-	sp v2 v2 swp,
+	16 ## v2 a lsl,
+	a v2 orr,
+	v2 a mov,
+	sp 0@ v2 ldr,
+	sp 0@ a str,
 	
 	\ set 32-bit 
-	v0 $d8 #( v1 str,
-	v0 $d4 #( sp str,
-	$85000000 ## v1 mov,
+	v0 $8 #( v1 str,	\ REGISTERS + $d8
+	sp v1 mov,
+	v0 $4 #( v1 str,	\ REGISTERS + $d4
+	$85 ## v1 mov,
+	24 ## v1 v1 lsl,	\ $85000000
 	
 	\ enable dma 3 to write 32-bit blocks
 	tos v1 v1 add,
-	v0 $dc #( v1 str,
+	v0 $c #( v1 str,	\ REGISTERS + $dc
 	
 	\ done
-	4 ## sp sp add,
+	4 ## sp add,
 	v2 tos mov,
 	ret
 end-code
