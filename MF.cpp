@@ -1513,7 +1513,7 @@ bool Parser::parseThumb(const char *word)
 
 	else if (W("cmp,")) {
 		unsigned short insn;
-		unsigned int rd = POP_TREG;
+		unsigned int rd = POP_REG;
 		if (POP_TYPE == ASM_AMODE &&
 		    TOS_VAL == AMODE_IMM) {
 			insn = 0x2800;
@@ -1522,10 +1522,19 @@ bool Parser::parseThumb(const char *word)
 			insn |= rd << 8;
 			DEBUG("tcmpimm\n");
 		} else {
-			insn = 0x4000 | TOP_CMP;
-			insn |= rd << 0;
-			insn |= TOS_VAL << 3;
-			ASSERT_TREG;
+			unsigned int rs = TOS_VAL;
+			ASSERT_REG;
+			if (rd < 8 && rs < 8) {
+				insn = 0x4000 | TOP_CMP;
+				insn |= rd << 0;
+				insn |= rs << 3;
+			} else {
+				insn = 0x4500;
+				insn |= !!(rd & 8) << 7;
+				insn |= !!(rs & 8) << 6;
+				insn |= (rd & 7) << 0;
+				insn |= (rs & 7) << 3;
+			}
 		}
 		code16(insn);
 	} else if ((W("sub,") || W("add,"))) {
