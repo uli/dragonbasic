@@ -2,15 +2,17 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ returns the current graphics mode (bitmapped)
-code display-mode ( -- n )
+code-thumb display-mode ( -- n )
 	tos push
 	
 	\ load REG_DISPCNT
-	REGISTERS ## tos mov,
+	$40 ## tos mov,
+	20 ## tos tos lsl,
 	tos 0@ tos ldrh,
 	
 	\ mask off other bits
-	7 ## tos tos and,
+	29 ## tos tos lsl,
+	29 ## tos tos lsr,
 	ret
 end-code
 
