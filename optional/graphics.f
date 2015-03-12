@@ -119,12 +119,13 @@ code-thumb (wallpaper) ( a-source a-dest size -- )
 end-code
 
 \ make the back buffer visible
-code flip ( -- )
-	REGISTERS ## v1 mov,
+code-thumb flip ( -- )
+	REGISTERS v1 movi
 	v1 0@ v2 ldrh,
 	
 	\ toggle the backbuffer bit
-	$10 ## v2 v2 eor,
+	$10 ## w mov,
+	w v2 eor,
 	v1 0@ v2 strh,
 	
 	\ done
