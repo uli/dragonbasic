@@ -108,11 +108,11 @@ code-thumb rotatepal16 ( pal index -- )
 	ret
 end-code
 
-code rotatepal256 ( pal -- )
-	r0 5 #lsl r0 mov,
-	2 ## r0 r0 add, \ skip index 0
+code-thumb rotatepal256 ( pal -- )
+	5 ## r0 r0 lsl,
+	2 ## r0 add, \ skip index 0
 	0 ## r1 mov,
-	$200 ## r4 mov,
+	$200 r4 movi
 	2 ## r4 r4 sub,
 	r0 r1 +( r2 ldrh,
 	
