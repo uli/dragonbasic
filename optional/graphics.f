@@ -17,12 +17,14 @@ code-thumb display-mode ( -- n )
 end-code
 
 \ return the width (in bytes) of the display (inlined)
-icode view-width ( mode -- u )
-	5 ## tos cmp,
-	
+icode-thumb view-width ( mode -- u )
 	\ works for only modes 3 and 5!
-	320 ## tos eq? mov,
-	480 ## tos ne? mov,
+	tos w mov,
+	160 ## tos mov,
+	5 ## w cmp,
+	4 #offset eq? b,
+	240 ## tos mov,
+	1 ## tos tos lsl,
 end-code
 
 \ return the size (in words) of the display (inlined)
