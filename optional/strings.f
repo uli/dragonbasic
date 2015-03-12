@@ -36,7 +36,6 @@ code-thumb print ( tile a -- )
 	tos pop
 	ret
 	
-	\ loop, writing 2 bytes at a time
 	l: __print
 	
 	w 0@ tos ldrb,
