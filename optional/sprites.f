@@ -338,17 +338,22 @@ code-thumb movesprite ( sprite dx dy -- )
 end-code
 
 \ set the draw priority of a sprite
-code ordersprite ( sprite priority -- )
+code-thumb ordersprite ( sprite priority -- )
 	w pop
 	
 	\ address of sprite
-	IWRAM ## v2 mov,
-	w 3 #lsl v2 w add,
+	$30 ## v2 mov,
+	20 ## v2 v2 lsl,	\ IWRAM
+	3 ## w w lsl,
+	v2 w w add,
 	
 	\ load, clear and set priority bit
 	w 4 #( v2 ldrh,
-	$c00 ## v2 v2 bic,
-	tos 10 #lsl v2 v2 orr,
+	$c ## v1 mov,
+	8 ## v1 v1 lsl,	\ $c00
+	v1 v2 bic,
+	10 ## tos tos lsl,
+	tos v2 orr,
 	w 4 #( v2 strh,
 
 	\ done
