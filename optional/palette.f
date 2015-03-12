@@ -7,7 +7,7 @@
 
 \ copy 512 bytes of data from ROM to palette RAM
 : loadpal256 ( palette a -- )
-	512 # copy ;
+	128 # dmacopy ;
 
 \ prototype color = rgb(r,g,b)
 :n rgb ( r g b -- color )
