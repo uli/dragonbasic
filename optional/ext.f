@@ -77,8 +77,7 @@ icode-thumb abs ( n1 -- n2 )
 end-code
 
 \ inlined square root
-icode sqrt ( n1 -- n2 )
-	sp db! u stm,
+icode-thumb sqrt ( n1 -- n2 )
 	8 swi,
 end-code
 
