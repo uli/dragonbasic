@@ -37,22 +37,22 @@ code-thumb /savetext ( a -- )
 end-code
 
 \ load a string
-code /loadtext ( a -- a )
-	$100 ## w s! mov,
-	tos v7 mov,
+code-thumb /loadtext ( a -- a )
+	$100 w movi
+	tos v2 mov,
 	
 	l: __loop
 	
 	\ load two bytes
-	a 1 (# v1 ldrb,
-	a 1 (# v0 ldrb,
+	a 0@ v1 ldrb,
+	1 ## a add,
 	
 	\ write bytes
-	v0 8 #lsl v1 v1 add,
-	v7 2 (# v1 strh,
+	v2 0@ v1 strb,
+	1 ## v2 add,
 	
 	\ loop until length is zero
-	2 ## w w s! sub,
+	1 ## w sub,
 	__loop gt? b,
 	
 	\ done
