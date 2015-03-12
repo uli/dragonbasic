@@ -233,39 +233,47 @@ end-code
 	view-width (pixel) then ;
 
 \ blit a bitmap onto the screen (modes 3 and 5)
-code (blit) ( a x y w h screen u -- )
+code-thumb (blit) ( a x y w h screen u -- )
+	tos v4 mov,
 	\ pop arguments
-	sp ia! v1 v2 v3 v4 v5 v6 ldm,
-	tos w mov,
-	tos pop
+	tos a v0 v1 v2 w pop
+	v0 v3 mov,
+	v4 v0 mov,
 
-	\ calculate first address: v4=v1+((v4*v3+v5)<<1)
-	w v4 v4 mul,
-	v5 1 #lsl v4 v4 add,
-	v1 v4 v1 add,
-	v3 1 #lsl w w sub,
+	\ calculate first address: v1=tos+((v1*v3+v2)<<1)
+	v0 v1 mul,
+	1 ## v2 v2 lsl,
+	v2 v1 v1 add,
+	v1 tos tos add,
+	v3 v2 mov,
+	1 ## v2 v2 lsl,
+	v2 v0 v0 sub,
 	
 	l: __blit
-	
-	\ loop until h<0
-	1 ## v2 v2 s! sub,
-	mi? ret
-	
 	\ draw each scanline
-	v3 v5 mov,
+	v3 v2 mov,
+
 	l: __scanline
-	
-	\ loop until w<0
-	1 ## v5 v5 s! sub,
-	w v1 v1 mi? add,
-	__blit mi? b,
-	
 	\ load mask and store
-	v6 2 (# v4 ldrh,
-	v4 v4 tst,
-	v1 0@ v4 ne? strh,
-	2 ## v1 v1 add,
-	__scanline b,
+	w 0@ v1 ldrh,
+	2 ## w w add,
+
+	v1 v1 tst,
+	4 #offset eq? b,
+	tos 0@ v1 strh,
+
+	2 ## tos tos add,
+	\ loop until w=0
+	1 ## v2 sub,		\ subs, actually
+	__scanline ne? b,
+
+	v0 tos tos add,
+	\ loop until h=0
+	1 ## a sub,	\ subs, actually
+	__blit ne? b,
+
+	tos pop
+	ret
 end-code
 
 \ blit an image in mode 4
