@@ -60,23 +60,26 @@ code-thumb r-alloc ( u -- a )
 end-code
 
 \ copy bytes from one address to another
-code copy ( to from u -- )
-	sp ia! v0 v1 ldm,
+code-thumb copy ( to from u -- )
+	v0 v1 pop
 	tos tos tst,
 	
 	\ loop
 	l: __copy
 	
 	\ if <= 0 then return
-	tos le? pop
-	le? ret
+	6 #offset gt? b,
+	tos pop
+	ret
 	
 	\ transfer
-	v0 2 (# w ldrh,
-	v1 2 (# w strh,
+	v0 0@ w ldrh,
+	2 ## v0 add,
+	v1 0@ w strh,
+	2 ## v1 add,
 	
 	\ decrement and loop
-	2 ## tos tos s! sub,
+	2 ## tos sub,	\ subs, actually
 	__copy b,
 end-code
 
