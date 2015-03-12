@@ -165,33 +165,43 @@ code-thumb onvblank ( a -- )
 end-code
 
 \ setup an interrupt event handler (vertical count)
-code onvcount ( a count -- )
+code-thumb onvcount ( a count -- )
 	w pop
 	
 	\ address of registers
-	REGISTERS ## v3 mov,
-	0 ## w cmp,
+	REGISTERS v0 movi
 	
 	\ enable vcountbit in REG_DISPSTAT
-	v3 4 #( v1 ldrh,
-	$20 ## v1 v1 eq? bic,
-	$20 ## v1 v1 ne? orr,
-	tos 8 #lsl v1 v1 add, \ count
-	v3 4 #( v1 strh,
+	v0 4 #( v1 ldrh,
+	$20 ## a mov,
+	a v1 bic,
+
+	0 ## w cmp,
+	4 #offset eq? b,
+	a v1 orr,
+
+	8 ## tos tos lsl,
+	tos v1 v1 add, \ count
+	v0 4 #( v1 strh,
 	
 	\ offset to interrupt registers
-	$200 ## v3 v3 add,
+	$200 a movi
+	a v0 v0 add,
 	
 	\ write address of interrupt handler
-	IWRAM ## v2 mov,
-	GLOBALS ## v2 v2 add,
+	IWRAM_GLOBALS v2 LITERAL
 	v2 INT_VC #( w str,
 	
 	\ set vblank interrupt flag
-	v3 0@ tos ldrh,
-	$4 ## tos tos eq? bic,
-	$4 ## tos tos ne? orr,
-	v3 0@ tos strh,
+	v0 0@ tos ldrh,
+	4 ## a mov,
+	a tos bic,
+
+	0 ## w cmp,
+	4 #offset eq? b,
+	a tos orr,
+
+	v0 0@ tos strh,
 	
 	\ done
 	tos pop
