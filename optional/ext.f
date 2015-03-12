@@ -70,9 +70,10 @@ icode-thumb tileoffset ( n -- u )
 end-code
 
 \ inlined absolute value
-icode abs ( n1 -- n2 )
+icode-thumb abs ( n1 -- n2 )
 	0 ## tos cmp,
-	0 ## tos tos mi? rsb,
+	4 #offset pl? b,
+	tos tos neg,
 end-code
 
 \ inlined square root
