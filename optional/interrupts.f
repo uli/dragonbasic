@@ -10,30 +10,38 @@
 	$4000208 # ( REG_IF) 0 # poke ;
 
 \ setup an interrupt event handler (keypad)
-code onkey ( addr n1 n2 -- )
-	sp ia! r1 r2 r3 ldm,
-	$4000000 ## r9 mov,
-	$200 ## r9 r9 add,
+code-thumb onkey ( addr n1 n2 -- )
+	r1 r2 r3 pop
+	$4000132 r4 LITERAL
 	
 	\ write mask to REG_KEYCNT
+	$4000 r5 movi
+	r5 r1 r1 add,
+
 	0 ## r0 cmp,
-	$4000 ## r1 r1 add,
-	$8000 ## r1 r1 ne? add,
-	r9 -206 #( r1 strh,
+	6 #offset eq? b,
+	1 ## r5 r5 lsl,		\ $8000
+	r5 r1 r1 add,
+
+	r4 0@ r1 strh,
 	
 	\ write address of interrupt handler
-	IWRAM ## r8 mov,
-	GLOBALS ## r8 r8 add,
-	r8 INT_P1 #( r2 str,
-	0 ## r2 cmp,
+	IWRAM_GLOBALS r0 LITERAL
+	r0 INT_P1 #( r2 str,
 	
 	\ set key interrupt flag
-	r9 0@ r2 ldrh,
+	$ce ## r4 add,		\ REGISTERS + $200
+	r4 0@ r0 ldrh,
 	
 	\ if the address is zero then turn off the interrupt
-	$1000 ## r2 r2 eq? bic,
-	$1000 ## r2 r2 ne? orr,
-	r9 0@ r2 strh,
+	$1000 r5 movi
+	r5 r0 bic,
+
+	0 ## r2 cmp,
+	4 #offset eq? b,
+	r5 r0 orr,
+
+	r4 0@ r0 strh,
 	
 	\ done
 	r3 r0 mov,
