@@ -2235,8 +2235,10 @@ parse_next:
 		word_start = out->addr;
 		local_idx = 0;
 	} else if (W("label")) {
+		out->alignDword();
 		sym = symbols.appendNew(out->addr, getNextWord());
 		DEBUG("===start label %s at 0x%x\n", sym->word, sym->addr);
+		thumb = false;
 	} else if (W("local:")) {
 		sym = symbols.appendNew(local_idx, getNextWord());
 		sym->is_const = true;
