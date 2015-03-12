@@ -2,17 +2,16 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ wait for a button state to change
-code input ( n -- )
-	REGISTERS ## v1 mov,
-	$130 ## v1 v1 add,
+code-thumb input ( n -- )
+	$4000130 v1 LITERAL	\ REGISTERS + $130
 	v1 0@ v2 ldrh,
-	v2 tos v2 and,
+	tos v2 and,
 	
 	\ wait until the mask changes
 	l: __wait
-	v1 0@ v3 ldrh,
-	v3 tos v3 and,
-	v3 v2 v3 s! eor,
+	v1 0@ v0 ldrh,
+	tos v0 and,
+	v2 v0 eor,	\ eors, actually
 	__wait eq? b,
 	
 	\ done
