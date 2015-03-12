@@ -41,25 +41,33 @@ icode-thumb view-size ( mode -- u )
 end-code
 
 \ return the current draw buffer address
-code screen ( -- addr )
+code-thumb screen ( -- addr )
 	tos push
-	VRAM ## tos mov,
+	$60 ## tos mov,
+	20 ## tos tos lsl,	\ VRAM
 	
 	\ get the screen mode
-	REGISTERS ## v2 mov,
+	$40 ## v2 mov,
+	20 ## v2 v2 lsl,	\ REGISTERS
 	v2 0@ v1 ldrh,
 	
 	\ test for mode 3
-	7 ## v1 v2 and,
+	7 ## v2 mov,
+	v1 v2 and,
 	3 ## v2 cmp,
-	lr eq? bx,
+	4 #offset ne? b,
+	ret
 	
 	\ test for back buffer bit
-	$10 ## v1 tst,
-	lr ne? bx,
+	$10 ## v2 mov,
+	v2 v1 tst,
+	4 #offset eq? b,
+	ret
 	
 	\ use backbuffer
-	BACKBUFFER ## tos tos add,
+	$a0 ## v2 mov,
+	8 ## v2 v2 lsl,		\ BACKBUFFER
+	v2 tos tos add,
 	ret
 end-code
 
