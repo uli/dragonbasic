@@ -29,10 +29,9 @@ code-thumb key ( n1 -- n2 )
 end-code
 
 \ return the status of all buttons (0=released)
-code keys ( -- n )
+code-thumb keys ( -- n )
 	tos push
-	REGISTERS ## v1 mov,
-	$130 ## v1 v1 add,
+	$4000130 v1 LITERAL
 	v1 0@ tos ldrh,
 	tos tos mvn,
 	ret
