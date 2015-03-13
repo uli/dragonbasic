@@ -52,13 +52,12 @@ code-thumb starttimer ( -- )
 end-code
 
 \ stop the user timer
-code stoptimer ( -- )
+code-thumb stoptimer ( -- )
 	\ offset to timer registers
-	REGISTERS ## v2 mov,
-	$100 ## v2 v2 add,
+	$4000100 v2 LITERAL	\ REGISTERS + $100
 	
 	\ clear and write
-	v1 v1 v1 eor,
+	v1 v1 eor,
 	v2 $c #( v1 strh,
 	v2 $a #( v1 strh,
 	v2 $e #( v1 strh,
