@@ -230,18 +230,18 @@ code-thumb scroll ( bg dx dy -- )
 end-code
 
 \ set absolute scroll position of a background
-code scrollpos ( bg x y -- )
-	sp ia! v1 v2 ldm,
+code-thumb scrollpos ( bg x y -- )
+	v1 v2 pop
 	
 	\ address of background globals
-	IWRAM ## v5  mov,
-	BG_REGS ## v5 v5 add,
-	v2 5 #lsl v5 v5 add,
-	BG0_SX ## v5 v5 add,
+	$3000400 v0 LITERAL	\ IWRAM + BG_REGS
+	5 ## v2 v2 lsl,
+	v2 v0 v0 add,
+	\ nop BG0_SX ## v0 v0 add,
 	
 	\ load current scroll values, add and write
-	v5 4 (# v1 str,
-	v5 4 (# tos str,
+	v0 0@ v1 str,
+	v0 4 #( tos str,
 	
 	\ done
 	tos pop
