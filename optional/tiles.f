@@ -249,14 +249,15 @@ code-thumb scrollpos ( bg x y -- )
 end-code
 
 \ return x scroll of a background
-code scrollx ( bg -- x )
-	IWRAM ## v5  mov,
-	BG_REGS ## v5 v5 add,
-	tos 5 #lsl v5 v5 add,
-	BG0_SX ## v5 v5 add,
+\ XXX: candidates for inlining
+code-thumb scrollx ( bg -- x )
+	$3000400 v0 LITERAL	\ IWRAM + BG_REGS
+	5 ## tos tos lsl,
+	tos v0 v0 add,
+	\ nop BG0_SX ## v0 v0 add,
 	
 	\ load
-	v5 0@ tos ldr,
+	v0 0@ tos ldr,
 	ret
 end-code
 
