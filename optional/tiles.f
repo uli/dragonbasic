@@ -274,30 +274,36 @@ code-thumb scrolly ( bg -- y )
 end-code
 
 \ map tiles from ROM to VRAM
-code maptiles ( tile-addr a w h -- )
-	sp ia! v1 v2 v3 ldm,
+code-thumb maptiles ( tile-addr a w h -- )
+	v0 v1 v2 pop
+	r6 r7 push
 	
 	\ loop until mapped
 	l: __loop
-	v1 v4 mov,
+	v0 w mov,
 	
 	\ loop through each row
 	l: __row
-	v3 0@ v6 ldrh,
-	$f000 ## v6 v6 and,
-	v2 2 (# v5 ldrh,
-	v6 v5 v6 orr,
-	v3 2 (# v6 strh,
-	1 ## v4 v4 s! sub,
+	v2 0@ r6 ldrh,
+	$f000 r7 movi
+	r7 r6 and,
+	v1 0@ a ldrh,
+	2 ## v1 add,
+	a r6 orr,
+	v2 0@ r6 strh,
+	2 ## v2 add,
+	1 ## w sub,
 	__row gt? b,
 	
 	\ finish each row
-	64 ## v3 v3 add,
-	v1 1 #lsl v3 v3 sub,
-	1 ## tos tos s! sub,
+	64 ## v2 add,
+	1 ## v0 r7 lsl,
+	r7 v2 v2 sub,
+	1 ## tos sub,
 	__loop gt? b,
 	
 	\ done
+	r6 r7 pop
 	tos pop
 	ret
 end-code
