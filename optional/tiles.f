@@ -94,14 +94,15 @@ code-thumb enabletiles ( bg screen char flags -- )
 end-code
 
 \ turn off a background layer
-code disabletiles ( bg -- )
-	REGISTERS ## v1 mov,
+code-thumb disabletiles ( bg -- )
+	REGISTERS v1 movi
 	v1 0@ v2 ldrh,
 	
 	\ clear bit in REG_DISPCNT
-	1 ## v3 mov,
-	8 ## tos tos add,
-	v3 tos lsl v2 v2 bic,
+	1 ## v0 mov,
+	8 ## tos add,
+	tos v0 lsl,
+	v0 v2 bic,
 	v1 0@ v2 strh,
 	
 	\ done
