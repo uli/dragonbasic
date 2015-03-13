@@ -10,9 +10,10 @@ icode-thumb charblock ( n -- a )
 end-code
 
 \ return the VRAM address of map data (inlined)
-icode screenblock ( n -- a )
-	tos 11 #lsl tos mov,
-	VRAM ## tos tos add,
+icode-thumb screenblock ( n -- a )
+	VRAM w movi
+	11 ## tos tos lsl,
+	w tos tos add,
 end-code
 
 \ copy ROM data to VRAM tile data
