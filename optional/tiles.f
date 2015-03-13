@@ -129,20 +129,25 @@ code-thumb colortile ( a pal -- )
 end-code
 
 \ flip a tile
-code fliptile ( a x y -- )
-	sp ia! v1 v2 ldm,
+code-thumb fliptile ( a x y -- )
+	v1 v2 pop
 	
 	\ load and clear flip bits
 	v2 0@ v0 ldrh,
-	$c00 ## v0 v0 bic,
+	$c00 w movi
+	w v0 bic,
 	
 	\ compare and set x flip bits
 	0 ## v1 cmp,
-	$400 ## v0 v0 ne? orr,
+	8 #offset eq? b,
+	$400 w movi		\ 2 insns!
+	w v0 orr,
 	
 	\ compare and set y flip bits
 	0 ## tos cmp,
-	$800 ## v0 v0 ne? orr,
+	6 #offset eq? b,
+	1 ## w w lsl,	\ $800
+	w v0 orr,
 	
 	\ write and finish
 	v2 0@ v0 strh,
