@@ -178,26 +178,28 @@ code-thumb ordertiles ( bg priority -- )
 end-code
 
 \ erase a rectangle of tiles
-code cleartiles ( a w h -- )
-	sp ia! v1 v2 ldm,
-	v1 1 #lsl v1 mov,
+code-thumb cleartiles ( a w h -- )
+	v1 v2 pop
+	1 ## v1 v1 lsl,
 	
 	\ clear loop
 	l: __loop
-	v1 v4 mov,
+	v1 w mov,
 	
 	\ clear row loop
 	l: __row
-	v2 0@ v3 ldrh,
-	$f000 ## v3 v3 and,
-	v2 2 (# v3 strh,
-	2 ## v4 v4 s! sub,
+	v2 0@ v0 ldrh,
+	$f000 a movi
+	a v0 and,
+	v2 0@ v0 strh,
+	2 ## v2 add,
+	2 ## w sub,
 	__row gt? b,
 	
 	\ finish row
-	64 ## v2 v2 add,
+	64 ## v2 add,
 	v1 v2 v2 sub,
-	1 ## tos tos s! sub,
+	1 ## tos sub,
 	__loop gt? b,
 	
 	\ done
