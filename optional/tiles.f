@@ -262,14 +262,14 @@ code-thumb scrollx ( bg -- x )
 end-code
 
 \ return y scroll of a background
-code scrolly ( bg -- y )
-	IWRAM ## v5  mov,
-	BG_REGS ## v5 v5 add,
-	tos 5 #lsl v5 v5 add,
-	BG0_SX ## v5 v5 add,
+code-thumb scrolly ( bg -- y )
+	$3000400 v0 LITERAL	\ IWRAM + BG_REGS
+	5 ## tos tos lsl,
+	tos v0 v0 add,
+	\ nop BG0_SX ## v0 v0 add,
 	
 	\ load
-	v5 4 #( tos ldr,
+	v0 4 #( tos ldr,
 	ret
 end-code
 
