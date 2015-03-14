@@ -157,6 +157,14 @@ public:
 	void codeToThumb(bool save_lr = true);
 	void codeToArm();
 
+	void setR5(unsigned int c) {
+		r5_const = true;
+		r5 = c;
+	}
+	void invalR5() {
+		r5_const = false;
+	}
+
 private:
 	// These numbers reflect the instruction groups as defined in the
 	// GBATEK document, which in turn derives them from the chapter
@@ -198,6 +206,8 @@ public:
 	int lpsp;
 	bool thumb;
 	unsigned int last_insn;
+	bool r5_const;
+	unsigned int r5;
 };
 
 #define GLB_error(x ...) do { fprintf(stderr, "ERROR: " x); exit(1); } while (0)

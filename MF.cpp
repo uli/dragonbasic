@@ -2117,8 +2117,7 @@ void Parser::parseAll()
 	bool currently_naked = false;
 	// R5 is often repeatedly loaded with the same constant.  We keep
 	// track of its current value to avoid unnecessary reloading.
-	bool r5_const = false;
-	unsigned int r5 = 0;
+	invalR5();
 	unsigned int word_start = out->addr;
 	unsigned int local_idx = 0;
 	unsigned int num;
@@ -2945,6 +2944,7 @@ Parser::Parser()
 	asp = 0;
 	lpsp = 0;
 	thumb = false;
+	invalR5();
 }
 
 void Output::openOutFile(const char *name)
