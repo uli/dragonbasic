@@ -2202,7 +2202,7 @@ parse_next:
 			thumb = false;
 			cur_icode->thumb = false;
 		}
-		r5_const = false;
+		invalR5();
 	} else if (W("code") || W("code-thumb")) {
 		out->alignDword();
 		if (word[4] == '-' && word[5] == 't')
@@ -2213,7 +2213,7 @@ parse_next:
 		DEBUG("===start %s %s at 0x%x\n", word, sym->word, sym->addr);
 		sym->thumb = thumb;
 		asm_mode = true;
-		r5_const = false;
+		invalR5();
 		word_start = out->addr;
 	} else if (W("end-code")) {
 		if (cur_icode)
@@ -2221,12 +2221,12 @@ parse_next:
 		asm_mode = false;
 		literals.code(out);
 		lsp = 0;
-		r5_const = false;
+		invalR5();
 	} else if (asm_mode) {
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
 		out->alignDword();
-		r5_const = false;
+		invalR5();
 		currently_naked = word[1] == 'n';
 		const char *ident = getNextWord();
 		sym = symbols.appendNew(out->addr, ident);
@@ -2262,7 +2262,7 @@ parse_next:
 		sym->lit_addr = local_idx;
 		local_idx += 4;
 	} else if (W(";")) {
-		r5_const = false;
+		invalR5();
 		if (currently_naked)
 			codeAsm("lr", "bx,");
 		else
@@ -2274,11 +2274,11 @@ parse_next:
 		if (getNextWordIf("a!")) {
 			codeAsm("r1", "pop");
 		} else if (getNextWordIf("-")) {
-			r5_const = false;
+			invalR5();
 			codeAsm("r5", "pop");
 			codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("over")) {
-			r5_const = false;
+			invalR5();
 			codeAsm("sp", "0@", "r5", "ldr,");
 			codeAsm("r5", "push");
 			codeAsm("sp", "4", "#(", "r0", "str,");
@@ -2290,7 +2290,7 @@ parse_next:
 			if (!thumb)
 				codeAsm("sp", "r0", "r0", "swp,");
 			else {
-				r5_const = false;
+				invalR5();
 				codeAsm("r5", "pop");
 				codeAsm("r0", "push");
 				codeAsm("r5", "r0", "mov,");
@@ -2304,11 +2304,11 @@ parse_next:
 		}
 	} else if (W("over")) {
 		if (getNextWordIf("-")) {
-			r5_const = false;
+			invalR5();
 			codeAsm("sp", "0@", "r5", "ldr,");
 			codeAsm("r5", "r0", "r0", "sub,");
 		} else if (getNextWordIf("!")) {
-			r5_const = false;
+			invalR5();
 			codeAsm("r5", "pop");
 			codeAsm("r5", "0@", "r0", "str,");
 			codeAsm("r5", "r0", "mov,");
@@ -2343,11 +2343,11 @@ parse_next:
 			codeAsm("r0", "r0", "mvn,");
 		}
 	} else if (W("and")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r5", "r0", "and,");
 	} else if (W("or")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r5", "r0", "orr,");
 	} else if ((sym = getSymbol(word)) && sym->is_const) {
@@ -2393,7 +2393,7 @@ handle_const:
 					codeAsm(num, "##", "r0", "r0", "asr,");
 			} else if (getNextWordIf("n*")) {
 				if (!thumb && getNextWordIf("+")) {
-					r5_const = false;
+					invalR5();
 					codeAsm("r5", "pop");
 					codeAsm("r0");
 					codeAsm(num, "#lsl", "r5", "r0",
@@ -2446,7 +2446,7 @@ handle_const:
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
 					}
 
-					r5_const = false;
+					invalR5();
 					codeAsm("r5", "pop");
 					codeAsm("r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
@@ -2602,15 +2602,15 @@ handle_const:
 			codeAsm("r0", "pop");
 		}
 	} else if (W("+")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r0", "r5", "r0", "add,");
 	} else if (W("-")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r0", "r5", "r0", "sub,");
 	} else if (W("*")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r5", "r0", "mul,");
 	} else if (W("a!")) {
@@ -2650,7 +2650,7 @@ handle_const:
 		codeAsm("r0", "push");
 		codeAsm("r6", "r0", "mov,");
 	} else if (W("!")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r0", "0@", "r5", "str,");
 		codeAsm("r0", "pop");
@@ -2686,7 +2686,7 @@ handle_const:
 	// branch insn to relocate, the entry must be encoded as "address +
 	// 2" to make any jumps to it end up in the right place.
 	} else if (W("if")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r0", "r0", "tst,");
 		codeAsm("r0", "pop");
 		if (thumb) {
@@ -2713,7 +2713,7 @@ handle_const:
 	} else if (W("=") && getNextWordIf("if")) {
 		cond = thumb ? "eq?" : "ne?";
 do_if:
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r0", "r5", "cmp,");
 do_if2:
@@ -2727,7 +2727,7 @@ do_if2:
 			codeBranch(out->addr, cond, "b,");
 		}
 	} else if (W("else")) {
-		r5_const = false;
+		invalR5();
 		codeBranch(out->addr, "b,");
 		if (thumb) {
 			out->reloc10(loop_stack[--lpsp], out->addr);
@@ -2737,19 +2737,19 @@ do_if2:
 			loop_stack[lpsp++] = out->addr - 4;
 		}
 	} else if (W("then")) {
-		r5_const = false;
+		invalR5();
 		if (thumb)
 			out->reloc10(loop_stack[--lpsp], out->addr);
 		else
 			out->reloc24(loop_stack[--lpsp], out->addr);
 	} else if (W("begin")) {
-		r5_const = false;
+		invalR5();
 		if (thumb)
 			loop_stack[lpsp++] = out->addr + 2;
 		else
 			loop_stack[lpsp++] = out->addr;
 	} else if (W("while")) {
-		r5_const = false;
+		invalR5();
 		codeAsm("r0", "r0", "tst,");
 		codeAsm("r0", "pop");
 		if (thumb) {
@@ -2766,7 +2766,7 @@ do_if2:
 	} else if (W("<=") && getNextWordIf("while")) {
 		cond = thumb ? "le?" : "gt?";
 do_while:
-		r5_const = false;
+		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r0", "r5", "cmp,");
 		codeAsm("r0", "pop");
@@ -2779,7 +2779,7 @@ do_while:
 			codeBranch(out->addr, cond, "b,");
 		}
 	} else if (W("repeat")) {
-		r5_const = false;
+		invalR5();
 		if (thumb) {
 			out->reloc10(loop_stack[--lpsp], out->addr + 2);
 			codeBranch(loop_stack[--lpsp] - 2, "b,");
@@ -2788,7 +2788,7 @@ do_while:
 			codeBranch(loop_stack[--lpsp], "b,");
 		}
 	} else if (W("again")) {
-		r5_const = false;
+		invalR5();
 		if (thumb)
 			codeBranch(loop_stack[--lpsp] - 2, "b,");
 		else
@@ -2801,7 +2801,7 @@ do_while:
 		codeAsm("0", "##", "r0", "mov,");
 	} else if (W("interrupt")) {
 		out->alignDword();
-		r5_const = false;
+		invalR5();
 		sym = symbols.appendNew(out->addr, getNextWord());
 		sym->is_addr = true;
 		sym->lit_addr = out->addr;
@@ -2809,18 +2809,18 @@ do_while:
 		codeAsm("sp", "db!", "lr", "r10", "r9", "r8", "stm,");
 		codeToThumb(false);
 	} else if (W("exit")) {
-		r5_const = false;
+		invalR5();
 		codeToArm();
 		codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		codeAsm("lr", "bx,");
 	} else if (out->use_pimp && W("modvblank")) {
 		codeAsm("r0", "push");
-		r5_const = false;
+		invalR5();
 		codeCallThumb(RT_pimp_vblank);
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modframe")) {
 		codeAsm("r0", "push");
-		r5_const = false;
+		invalR5();
 		codeCallThumb(RT_pimp_frame);
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modinit")) {
@@ -2830,7 +2830,7 @@ do_while:
 			codeAsm("r0", "0@", "r1", "ldr,");
 			codeAsm("4", "##", "r0", "add,");
 		}
-		r5_const = false;
+		invalR5();
 		codeCallThumb(RT_pimp_init);
 		codeAsm("r0", "pop");
 	} else if ((sym = getSymbol(word))) {
@@ -2890,7 +2890,7 @@ do_while:
 		} else {
 			assert(!currently_naked);
 			assert(sym->addr != 0);
-			r5_const = false;
+			invalR5();
 			if (sym->thumb)
 				codeCallThumb(sym->addr);
 			else {
@@ -2922,7 +2922,7 @@ do_while:
 			else
 				codeToThumb();
 		}
-		r5_const = false;
+		invalR5();
 	} else {
 		GLB_error("unknown word %s at %d\n", word,
 			  (int)(tptr - text));
