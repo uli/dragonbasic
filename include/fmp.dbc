@@ -27,7 +27,9 @@ SUB FMPMAPTILES16x16(fmp, screen_block, start_x, start_y, width, height)
 	LOCAL x, y		; 16x16 FMP tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
 	LOCAL block		; screen block (SCx)
+	LOCAL line_block	; first screen block (SCx) of current line
 	LOCAL cell		; tile index
+	LOCAL line_ptr		; first tile index of current line
 
 	fmp = peekw(fmp + 8)	; pointer to map data
 
@@ -37,11 +39,13 @@ SUB FMPMAPTILES16x16(fmp, screen_block, start_x, start_y, width, height)
 	FOR y = 0 TO width
 		dest_y = y * 2 + start_y
 		yy = dest_y mod 32
+		line_ptr = fmp + y * 32
+		line_block = screen_block + (dest_y / 32) * 2
 		FOR x = 0 TO height
 			dest_x = x * 2 + start_x
-			block = screen_block + (dest_x / 32) + (dest_y / 32) * 2
+			block = line_block + dest_x / 32
 			xx = dest_x mod 32
-			cell = peekb(fmp + y * 32 + x) * 4
+			cell = peekb(line_ptr + x) * 4
 			settile tile(block, xx, yy), cell
 			settile tile(block, xx+1, yy), cell+1
 			settile tile(block, xx, yy+1), cell+2
