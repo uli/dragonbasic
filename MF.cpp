@@ -2676,6 +2676,7 @@ handle_const:
 		out->vaddr += 4 * size;
 	} else if (W("data:")) {
 		out->alignDword();
+		thumb = false;
 		sym = symbols.appendNew(out->addr, getNextWord());
 		sym->is_addr = true;
 		sym->lit_addr = out->addr;
