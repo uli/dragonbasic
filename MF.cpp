@@ -2408,9 +2408,8 @@ handle_const:
 				}
 			} else if (getNextWordIf("+")) {
 				if (num != 0) {
-					if (thumb && num < 8) {
-						codeAsm(num, "##", "r0",
-							"r0", "add,");
+					if (thumb && num < 256) {
+						codeAsm(num, "##", "r0", "add,");
 					} else if (!thumb && can_immrot(num)) {
 						codeAsm(num, "##", "r0",
 							"r0", "add,");
