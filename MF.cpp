@@ -2312,6 +2312,22 @@ parse_next:
 			codeAsm("r5", "pop");
 			codeAsm("r5", "0@", "r0", "str,");
 			codeAsm("r5", "r0", "mov,");
+		} else if (isWordN(0, "@") && isWordN(1, "+")) {
+			getNextWord();
+			getNextWord();
+			if (isWordN(0, "over") && isWordN(1, "!")) {
+				getNextWord();
+				getNextWord();
+				codeAsm("r3", "pop");
+				codeAsm("r3", "0@", "r2", "ldr,");
+				codeAsm("r2", "r0", "r0", "add,");
+				codeAsm("r3", "0@", "r0", "str,");
+				codeAsm("r3", "r0", "mov,");
+			} else {
+				codeAsm("sp", "0@", "r2", "ldr,");
+				codeAsm("r2", "0@", "r2", "ldr,");
+				codeAsm("r2", "r0", "r0", "add,");
+			}
 		} else {
 			codeAsm("r0", "push");
 			codeAsm("sp", "4", "#(", "r0", "ldr,");
