@@ -2471,8 +2471,8 @@ handle_const:
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					}
 				}
-			} else if (num < 8 && getNextWordIf("-")) {
-				codeAsm(num, "##", "r0", "r0", "sub,");
+			} else if (num < 256 && getNextWordIf("-")) {
+				codeAsm(num, "##", "r0", "sub,");
 			} else if (getNextWordIf("*")) {
 				if (!thumb && can_immrot(num))
 					codeAsm(num, "##", "r5", "mov,");
