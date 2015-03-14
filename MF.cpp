@@ -2541,14 +2541,13 @@ handle_const:
 					} else
 						GLB_error("internal error\n");
 				} else if (num > 0xff) {
-					if (thumb || !can_immrot(num)) {
+					if (!can_immrot(num)) {
 						codeAsm("r0", "push");
 						literals.prependNew(num, out->addr, thumb);
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					} else {
 						codeAsm("r0", "push");
-						codeAsm(num, "##", "r0",
-							"mov,");
+						codeAsm(num, "r0", "movi");
 					}
 				} else {
 					DEBUG("small num 0x%x\n", num);
