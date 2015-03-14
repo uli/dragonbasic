@@ -2421,11 +2421,6 @@ handle_const:
 					}
 
 				}
-			} else if (isPow2(num) && getNextWordIf("mod")) {
-				// XXX: wrong sign!
-				unsigned int shift = 32 - log2(num);
-				codeAsm(shift, "##", "r0", "r0", "lsl,");
-				codeAsm(shift, "##", "r0", "r0", "lsr,");
 			} else if (isPow2(num) && getNextWordIf("/")) {
 				codeAsm(log2(num), "##", "r0", "r0", "asr,");
 			} else if (isPow2(num) && getNextWordIf("*")) {
