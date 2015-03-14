@@ -183,6 +183,8 @@ int Decode(const char *filename,Output *out) {
 	out->emitDword(0);
 	unsigned int map_ptr = out->addr;
 	out->emitDword(0);
+	unsigned int dim = out->addr;
+	out->emitDword(0);
 
 	while ((tag = GetWord(f)) != -1) {
 		int tagLen = GetWord(f);
@@ -190,9 +192,20 @@ int Decode(const char *filename,Output *out) {
 		fread(block,tagLen,1,f);
 
 		totalSize -= 8 + tagLen;
-		if (tag == FOURCC('M','P','H','D'))
+		if (tag == FOURCC('M','P','H','D')) {
 			DecodeMPHD((MPHD *)block,tagLen);
-		else if (tag == FOURCC('C','M','A','P')) {
+			DEBUG("map w %d h %d block w %d h %d\n",
+				Header->mapwidth,
+				Header->mapheight,
+				Header->blockwidth,
+				Header->blockheight);
+			// XXX: endianness...
+			out->patch32(dim,
+				(Header->mapheight    << 24) |
+				(Header->mapwidth   << 16) |
+				(Header->blockheight  <<  8) |
+				(Header->blockwidth <<  0));
+		} else if (tag == FOURCC('C','M','A','P')) {
 			out->patch32(cmap_ptr, out->addr);
 			DecodeCMAP((unsigned char *)block,tagLen,out);
 		}
