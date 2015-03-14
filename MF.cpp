@@ -2405,19 +2405,28 @@ handle_const:
 					} else
 						codeAsm(num, "##", "r0", "r0", "lsl,");
 				}
-			} else if (getNextWordIf("+")) {
+			} else if (isWordN(0, "+") ||
+				   isWordN(0, "-")) {
+				const char *op;
+				if (getNextWordIf("+"))
+					op = "add,";
+				else if (getNextWordIf("-"))
+					op = "sub,";
+				else
+					abort();
+
 				if (num != 0) {
 					if (thumb && num < 256) {
-						codeAsm(num, "##", "r0", "add,");
+						codeAsm(num, "##", "r0", op);
 					} else if (!thumb && can_immrot(num)) {
 						codeAsm(num, "##", "r0",
-							"r0", "add,");
+							"r0", op);
 					} else {
 						r5_const = true;
 						r5 = num;
 						literals.prependNew(num, out->addr, true);
 						codeAsm("pc", "0", "#(", "r5", "ldr,");
-						codeAsm("r5", "r0", "r0", "add,");
+						codeAsm("r5", "r0", "r0", op);
 					}
 
 				}
@@ -2465,8 +2474,6 @@ handle_const:
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					}
 				}
-			} else if (num < 256 && getNextWordIf("-")) {
-				codeAsm(num, "##", "r0", "sub,");
 			} else if (isWordN(0, "*") ||
 				   isWordN(0, "and")) {
 				const char *word = getNextWord();
