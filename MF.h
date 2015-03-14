@@ -22,6 +22,24 @@
 //  Ulrich Hecht
 //  ulrich.hecht@gmail.com
 
+extern bool option_debug;
+extern bool debug_words;
+
+#ifndef NDEBUG
+#define DEBUGN(x ...) do { if (option_debug) fprintf(stderr, x); \
+} while (0)
+#define DEBUG(x ...) do { \
+	if (debug_words) { \
+		DEBUGN("\"\n"); \
+		debug_words = false; \
+	} \
+	DEBUGN("DEBUG " x); \
+} while (0)
+
+#else
+#define DEBUG(x ...) do {} while(0)
+#define DEBUGN(x ...) do {} while(0)
+#endif
 
 class Icode {
 public:

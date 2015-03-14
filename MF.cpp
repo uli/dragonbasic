@@ -43,21 +43,6 @@
 bool option_debug = false;
 bool debug_words = false;
 
-#ifndef NDEBUG
-#define DEBUGN(x ...) do { if (option_debug) fprintf(stderr, x); \
-} while (0)
-#define DEBUG(x ...) do { \
-	if (debug_words) { \
-		DEBUGN("\"\n"); \
-		debug_words = false; \
-	} \
-	DEBUGN("DEBUG " x); \
-} while (0)
-
-#else
-#define DEBUG(x ...) do {} while(0)
-#define DEBUGN(x ...) do {} while(0)
-#endif
 
 Icode::Icode()
 {
