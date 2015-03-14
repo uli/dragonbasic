@@ -1444,6 +1444,10 @@ bool Parser::parseArm(const char *word)
 		assert(TOS_TYPE == ASM_IMM ||
 		       TOS_TYPE == ASM_OFF);
 		code(insn);
+	} else if (W("movi")) {
+		unsigned int rd = POP_REG;
+		unsigned int val = POP_IMM;
+		codeAsm(val, "##"); PUSH_ASM(ASM_REG, rd); codeAsm("mov,");
 	} else
 		return false;
 
