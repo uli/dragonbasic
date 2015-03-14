@@ -2467,16 +2467,23 @@ handle_const:
 				}
 			} else if (num < 256 && getNextWordIf("-")) {
 				codeAsm(num, "##", "r0", "sub,");
-			} else if (getNextWordIf("*")) {
-				if (!thumb && can_immrot(num))
-					codeAsm(num, "##", "r5", "mov,");
-				else {
+			} else if (isWordN(0, "*") ||
+				   isWordN(0, "and")) {
+				const char *word = getNextWord();
+				if (can_immrot(num)) {
+					if (!thumb)
+						codeAsm(num, "##", "r5", "mov,");
+					else
+						codeAsm(num, "r5", "movi");
+				} else {
 					literals.prependNew(num, out->addr, thumb);
 					codeAsm("pc", "0", "#(", "r5", "ldr,");
 				}
-				r5 = num;
-				r5_const = true;
-				codeAsm("r5", "r0", "mul,");
+				setR5(num);
+				if (W("*"))
+					codeAsm("r5", "r0", "mul,");
+				else if (W("and"))
+					codeAsm("r5", "r0", "and,");
 			} else if (!thumb && can_immrot(num) && getNextWordIf("and")) {
 				codeAsm(num, "##", "r0", "r0", "and,");
 			} else {
