@@ -2498,10 +2498,7 @@ handle_const:
 				   isWordN(0, "and")) {
 				const char *word = getNextWord();
 				if (can_immrot(num)) {
-					if (!thumb)
-						codeAsm(num, "##", "r5", "mov,");
-					else
-						codeAsm(num, "r5", "movi");
+					codeAsm(num, "r5", "movi");
 				} else {
 					literals.prependNew(num, out->addr, thumb);
 					codeAsm("pc", "0", "#(", "r5", "ldr,");
