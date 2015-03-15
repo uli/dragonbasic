@@ -2113,6 +2113,23 @@ void Parser::codeCallArm(unsigned int dest)
 	}
 }
 
+const char *op2cond(const char *word, bool invert)
+{
+	if (W(">"))
+		return !invert ? "gt?" : "le?";
+	else if (W(">="))
+		return !invert ? "ge?" : "lt?";
+	else if (W("<"))
+		return !invert ? "lt?" : "ge?";
+	else if (W("<="))
+		return !invert ? "le?" : "gt?";
+	else if (W("<>"))
+		return !invert ? "ne?" : "eq?";
+	else if (W("="))
+		return !invert ? "eq?" : "ne?";
+	abort();
+}
+
 void Parser::parseAll()
 {
 	const char *word;
