@@ -2727,7 +2727,7 @@ handle_const:
 	// jump to "entry - 2" (the conditional branch).  If there is no
 	// branch insn to relocate, the entry must be encoded as "address +
 	// 2" to make any jumps to it end up in the right place.
-	} else if (W("if")) {
+	} else if (W("if") || W("while")) {
 		invalR5();
 		codeAsm("r0", "r0", "tst,");
 		codeAsm("r0", "pop");
@@ -2790,18 +2790,6 @@ do_if2:
 			loop_stack[lpsp++] = out->addr + 2;
 		else
 			loop_stack[lpsp++] = out->addr;
-	} else if (W("while")) {
-		invalR5();
-		codeAsm("r0", "r0", "tst,");
-		codeAsm("r0", "pop");
-		if (thumb) {
-			codeBranch(out->addr + 4, "ne?", "b,");
-			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "b,");
-		} else {
-			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "eq?", "b,");
-		}
 	} else if (W("<") && getNextWordIf("while")) {
 		cond = thumb ? "lt?" : "ge?";
 		goto do_while;
