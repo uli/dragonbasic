@@ -2739,35 +2739,6 @@ handle_const:
 			loop_stack[lpsp++] = out->addr;
 			codeBranch(out->addr, "eq?", "b,");
 		}
-	} else if (W(">") && getNextWordIf("if")) {
-		cond = thumb ? "gt?" : "le?";
-		goto do_if;
-	} else if (W("<") && getNextWordIf("if")) {
-		cond = thumb ? "lt?" : "ge?";
-		goto do_if;
-	} else if (W(">=") && getNextWordIf("if")) {
-		cond = thumb ? "ge?" : "lt?";
-		goto do_if;
-	} else if (W("0=") && getNextWordIf("if")) {
-		cond = thumb ? "eq?" : "ne?";
-		codeAsm("r0", "r0", "tst,");
-		goto do_if2;
-	} else if (W("=") && getNextWordIf("if")) {
-		cond = thumb ? "eq?" : "ne?";
-do_if:
-		invalR5();
-		codeAsm("r5", "pop");
-		codeAsm("r0", "r5", "cmp,");
-do_if2:
-		codeAsm("r0", "pop");
-		if (thumb) {
-			codeBranch(out->addr + 4, cond, "b,");
-			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "b,");
-		} else {
-			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, cond, "b,");
-		}
 	} else if (W("else")) {
 		invalR5();
 		codeBranch(out->addr, "b,");
@@ -2790,15 +2761,22 @@ do_if2:
 			loop_stack[lpsp++] = out->addr + 2;
 		else
 			loop_stack[lpsp++] = out->addr;
-	} else if (W("<") && getNextWordIf("while")) {
-		cond = thumb ? "lt?" : "ge?";
-		goto do_while;
-	} else if (W("<=") && getNextWordIf("while")) {
-		cond = thumb ? "le?" : "gt?";
-do_while:
+	} else if (W("0=") && (getNextWordIf("if") || getNextWordIf("while"))) {
+		cond = thumb ? "eq?" : "ne?";
+		codeAsm("r0", "r0", "tst,");
+		goto do_ifwhile;
+	} else if ((W("<=") ||
+		    W("<") ||
+		    W(">") ||
+		    W(">=") ||
+		    W("<>") ||
+		    W("=")) &&
+		   (getNextWordIf("while") || getNextWordIf("if"))) {
+		cond = op2cond(word, !thumb);
 		invalR5();
 		codeAsm("r5", "pop");
 		codeAsm("r0", "r5", "cmp,");
+do_ifwhile:
 		codeAsm("r0", "pop");
 		if (thumb) {
 			codeBranch(out->addr + 4, cond, "b,");
