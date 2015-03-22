@@ -2605,19 +2605,27 @@ handle_const:
 			codeAsm("sp", "r6", "mov,");
 			// Save return address.
 			codeAsm("lr", "push");
+			// NB: We now have a bogus value in TOS that we
+			// have to discard in the epilog!
 		} else if (getNextWordIf("lepilog")) {
 			// Restore return address.
 			codeAsm("r6", "pop");
 			// Purge locals from stack...
 			codeAsm(num, "##", "sp", "add,");
-			// ...including TOS.
+			// ...including bogus TOS.
 			codeAsm("r0", "pop");
 		} else if (getNextWordIf("flepilog")) {
-			// Restore return address.
-			codeAsm("r6", "pop");
-			// Purge locals from stack...
+			// Here, the user stack looks like this:
+			// TOS		return value
+			// SP+0		bogus TOS
+			// SP+4		return address
+			// SP+8 etc.	locals/arguments
+
+			// Dispose of bogus TOS and restore return address.
+			codeAsm("r2", "r6", "pop");
+			// Purge locals and arguments from stack...
 			codeAsm(num, "##", "sp", "add,");
-			// ...but keep TOS because it contains the return
+			// ...and keep TOS because it contains the return
 			// value.
 		} else {
 			GLB_error("unimp num\n");
