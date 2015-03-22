@@ -75,3 +75,19 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, start_x, start_y, width, he
 		NEXT
 	NEXT
 END SUB
+
+FUNCTION FMPWIDTH(fmp)
+	RETURN peekb(fmp + 14)
+END FUNCTION
+
+FUNCTION FMPHEIGHT(fmp)
+	RETURN peekb(fmp + 15)
+END FUNCTION
+
+FUNCTION FMPLAYERS(fmp)
+	RETURN peek(fmp + 18)
+END FUNCTION
+
+FUNCTION FMPTILES(fmp)
+	RETURN peek(fmp + 16)
+END FUNCTION
