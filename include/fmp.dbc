@@ -36,12 +36,12 @@ SUB FMPMAPTILES16x16(fmp, screen_block, start_x, start_y, width, height)
 	width = width - 1	; thanks, BASIC :(
 	height = height - 1
 
-	FOR y = 0 TO width
+	FOR y = 0 TO height
 		dest_y = y * 2 + start_y
 		yy = dest_y and 31
 		line_ptr = fmp + y * 32
 		line_block = screen_block + (dest_y / 32) * 2
-		FOR x = 0 TO height
+		FOR x = 0 TO width
 			dest_x = x * 2 + start_x
 			block = line_block + dest_x / 32
 			xx = dest_x and 31
