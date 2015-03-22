@@ -103,10 +103,8 @@ static int DecodeBGFX(unsigned char *bits,int tagLen, Output *out) {
 	int i, j;
 	int area = Header->blockwidth * Header->blockheight;
 
-	if (!Header) {
-		GLB_warning("got BGFX before header!\n");
-		return;
-	}
+	if (!Header)
+		GLB_error("got BGFX before header!\n");
 
 	tagLen /= area;
 	int tiles = tagLen;
