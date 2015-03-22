@@ -145,12 +145,20 @@ end-code
 code-thumb vblank ( -- )
 	$4000000 v0 LITERAL
 	
+	\ wait for not vertical blank
+	\ makes sure we wait for one frame if less than one scanline has
+	\ passed since the previous call
+	l: __wait
+	v0 6 #( v1 ldrh,
+	160 ## v1 cmp,
+	__wait eq? b,
+
 	\ wait for vertical blank
 	l: __wait
 	v0 6 #( v1 ldrh,
 	160 ## v1 cmp,
 	__wait ne? b,
-	
+
 	\ done
 	ret
 end-code
