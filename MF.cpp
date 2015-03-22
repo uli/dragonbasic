@@ -1509,7 +1509,6 @@ bool Parser::parseThumb(const char *word)
 			insn |= POP_VAL << 0;
 			assert(TOS_VAL < 256);
 			insn |= rd << 8;
-			DEBUG("tcmpimm\n");
 		} else {
 			unsigned int rs = TOS_VAL;
 			ASSERT_REG;
