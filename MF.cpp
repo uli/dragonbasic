@@ -2303,7 +2303,7 @@ parse_next:
 			codeAsm("r5", "push");
 			codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
-			code16(0xbc00 | (1 << REG_R2) | (1 << REG_R3)); // pop {r2,r3}
+			codeAsm("r2", "r3", "pop");
 			codeAsm("r2", "0@", "r0", "str,");
 			codeAsm("r3", "r0", "mov,");
 		} else {
