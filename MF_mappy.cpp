@@ -185,6 +185,11 @@ int Decode(const char *filename,Output *out) {
 	out->emitDword(0);
 	unsigned int dim = out->addr;
 	out->emitDword(0);
+	unsigned int tiles_addr = out->addr;
+	out->emitWord(0);
+	unsigned int layers_addr = out->addr;
+	out->emitWord(0);
+	int layers = 0;
 
 	while ((tag = GetWord(f)) != -1) {
 		int tagLen = GetWord(f);
@@ -213,10 +218,18 @@ int Decode(const char *filename,Output *out) {
 			DecodeBKDT((BLKSTR *)block,tagLen);
 		else if (tag == FOURCC('B','G','F','X')) {
 			out->patch32(gfx_ptr, out->addr);
-			DecodeBGFX((unsigned char *)block,tagLen,out);
+			int tiles = DecodeBGFX((unsigned char *)block,tagLen,out) *
+			        Header->blockwidth / 8 *
+			        Header->blockheight / 8;
+			out->patch16(tiles_addr, tiles);
 		}
-		else if (tag == FOURCC('B','O','D','Y')) {
+		else if (tag == FOURCC('B','O','D','Y') ||
+			 (tag & 0xffffff00) == FOURCC('L','Y','R',0)) {
+			++layers;
 			out->patch32(map_ptr, out->addr);
+			map_ptr = out->addr;
+			out->emitDword(0);
+			fprintf(stderr, "layer at 0x%x\n", out->addr);
 			DecodeBODY((short *)block,tagLen,out);
 		}
 		else {
@@ -224,6 +237,8 @@ int Decode(const char *filename,Output *out) {
 			free(block);
 		}
 	}
+
+	out->patch16(layers_addr, layers);
 
 	if (totalSize)
 		GLB_error("'%s' - warning - %d bytes after IFF\n",filename,totalSize);
