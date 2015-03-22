@@ -2575,6 +2575,18 @@ handle_const:
 						r5 = num;
 						codeAsm(num, "##", "r5", "mov,");
 						codeAsm("r0", "0@", "r5", "str,");
+					} else if ((isWordN(0, "=") ||
+						    isWordN(0, "<=") ||
+						    isWordN(0, ">=") ||
+						    isWordN(0, "<") ||
+						    isWordN(0, ">") ||
+						    isWordN(0, "<>")) &&
+						   (isWordN(1, "if") || isWordN(1, "while"))) {
+						const char *op = getNextWord();
+						getNextWord();
+						cond = op2cond(op, !thumb);
+						codeAsm(num, "##", "r0", "cmp,");
+						goto do_ifwhile;
 					} else {
 						codeAsm("r0", "push");
 						codeAsm(num, "##", "r0", "mov,");
