@@ -99,7 +99,7 @@ static void DecodeBKDT(BLKSTR *str,int tagLen) {
 	Blocks = str;
 }
 
-static void DecodeBGFX(unsigned char *bits,int tagLen, Output *out) {
+static int DecodeBGFX(unsigned char *bits,int tagLen, Output *out) {
 	int i, j;
 	int area = Header->blockwidth * Header->blockheight;
 
@@ -109,6 +109,7 @@ static void DecodeBGFX(unsigned char *bits,int tagLen, Output *out) {
 	}
 
 	tagLen /= area;
+	int tiles = tagLen;
 
 	while (tagLen) {
 		for (i=0; i<Header->blockheight; i+=8) {
@@ -124,6 +125,7 @@ static void DecodeBGFX(unsigned char *bits,int tagLen, Output *out) {
 		tagLen--;
 		bits += area;
 	}
+	return tiles;
 }
 
 static int first_nonzero(int a,int b) {
