@@ -91,3 +91,21 @@ END FUNCTION
 FUNCTION FMPTILES(fmp)
 	RETURN peek(fmp + 16)
 END FUNCTION
+
+SUB FMPMAPTILES(fmp, layer, screen_block, start_x, start_y, width, height)
+	LOCAL map_ptr
+
+	; find address of map data
+	map_ptr = peekw(fmp + 8)	; first layer
+	WHILE layer > 0
+		map_ptr = peekw(map_ptr) ; next layer
+		dec layer
+	LOOP
+
+	; choose mapping routine based on tile size
+	IF peekb(fmp + 12) = 16
+		fmpmaptiles16x16 map_ptr + 4, fmpwidth(fmp), screen_block, start_x, start_y, width, height
+	ELSE
+		fmpmaptiles8x8 map_ptr + 4, fmpwidth(fmp), screen_block, start_x, start_y, width, height
+	END IF
+END SUB
