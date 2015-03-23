@@ -637,7 +637,10 @@ void Compiler::doDirInclude()
 	bool change_dir;
 	char appdir_path[256];
 
-	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
+	if (parser->checkNextBasicObjType(OBJ_PATH))
+		bobj = parser->getObjectWithType(OBJ_PATH, "<include file name>");
+	else
+		bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
 	line_no_saved = line_no;
 	parser_saved = parser;
 	lpPathName = bobj->val.symbolic;
@@ -646,7 +649,18 @@ void Compiler::doDirInclude()
 	     --basename)
 		;
 	change_dir = basename >= lpPathName;
-	if (!change_dir) {
+	if (bobj->otype == OBJ_PATH) {
+		GLB_getAppDir(appdir_path);
+		strcat(appdir_path, PATHSEP "include" PATHSEP);
+		if (change_dir) {
+			*basename = 0;
+			strcat(appdir_path, lpPathName);
+			filename = basename + 1;
+		} else
+			filename = lpPathName;
+		lpPathName = appdir_path;
+		change_dir = true;
+	} else if (!change_dir) {
 		filename = bobj->val.symbolic;
 	} else {
 		*basename = 0;
