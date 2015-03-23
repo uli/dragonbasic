@@ -8,11 +8,35 @@
 
 #REQUIRES "PALETTE.F"
 
+; Palette memory base addresses
+#CONSTANT BG_PALETTE		&5000000 	; Base address of background palette
+#CONSTANT SPRITE_PALETTE	&5000200 	; Base address of sprite palette
+
 ; Color functions
 PROTOTYPE FUNCTION	RGB(red,green,blue)
 PROTOTYPE FUNCTION	RGBR(color)
 PROTOTYPE FUNCTION	RGBG(color)
 PROTOTYPE FUNCTION	RGBB(color)
+
+; Some constant 15-bit colors
+; XXX: needs to be below RGB() because otherwise DBC misinterprets the
+;      argument "red" as a constant...
+#CONSTANT RED 				&001F
+#CONSTANT GREEN 			&03E0
+#CONSTANT BLUE 				&7C00
+#CONSTANT BLACK 			&0000
+#CONSTANT WHITE				&7FFF
+#CONSTANT CYAN				&7FE0
+#CONSTANT YELLOW			&03FF
+#CONSTANT MAGENTA			&7C1F
+#CONSTANT DARKRED			&000F
+#CONSTANT DARKGREEN			&01E0
+#CONSTANT DARKBLUE			&3C00
+#CONSTANT OLIVE				&01EF
+#CONSTANT ORANGE			&01FF
+#CONSTANT TEAL				&3DE0
+#CONSTANT GRAY				&3DEF
+#CONSTANT BROWN				&01B4
 
 ; Palette subroutines
 PROTOTYPE SUB		LOADPAL16(palette,index,label)

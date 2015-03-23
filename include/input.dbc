@@ -8,6 +8,19 @@
 
 #REQUIRES "INPUT.F"
 
+; Player 1 keypad constants
+#CONSTANT KEY_A				&001 		; A button mask
+#CONSTANT KEY_B				&002 		; B button mask
+#CONSTANT KEY_SELECT		&004 		; SELECT button mask
+#CONSTANT KEY_START			&008 		; START button mask
+#CONSTANT KEY_RIGHT			&010 		; Right arrow mask
+#CONSTANT KEY_LEFT			&020 		; Left arrow mask
+#CONSTANT KEY_UP			&040 		; UP arrow mask
+#CONSTANT KEY_DOWN			&080 		; Down arrow mask
+#CONSTANT KEY_R				&100 		; Right trigger mask
+#CONSTANT KEY_L				&200 		; Left trigger mask
+#CONSTANT KEY_ANY			&3FF 		; Any key
+
 ; Status of all buttons (1=pressed)
 PROTOTYPE FUNCTION	KEYS
 

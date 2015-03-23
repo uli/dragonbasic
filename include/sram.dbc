@@ -7,6 +7,8 @@
 
 #REQUIRES "SRAM.F"
 
+#CONSTANT SRAM				&E000000 	; Start of static ram
+
 ; Save data
 PROTOTYPE SUB		SAVEBYTE(x)
 PROTOTYPE SUB		SAVEWORD(x)

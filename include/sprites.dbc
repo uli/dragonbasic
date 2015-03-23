@@ -8,6 +8,23 @@
 
 #REQUIRES "SPRITES.F"
 
+; Sprite flags
+#CONSTANT DOUBLE			&0200 		; Sprite uses 2x size
+#CONSTANT NORMAL			&0000 		; Normal sprite rendering
+#CONSTANT TRANSPERANT		&0400 		; Transparent sprite
+#CONSTANT WINDOWED			&0800 		; Windowed sprite
+#CONSTANT COLOR_16			&0000 		; Uses one of 16 16-color palettes
+#CONSTANT COLOR_256			&2000 		; Uses one 256-color palette
+#CONSTANT FLIP_X			&1000 		; Flip horizontally
+#CONSTANT FLIP_Y			&2000 		; Flip vertically
+#CONSTANT SIZE_8			&0000 		; 8x8 (square)
+#CONSTANT SIZE_16			&4000 		; 16x16 (square)
+#CONSTANT SIZE_32			&8000 		; 32x32 (square)
+#CONSTANT SIZE_64			&C000 		; 64x64 (square)
+#CONSTANT SQUARE			&0000 		; Square in size
+#CONSTANT WIDE				&4000 		; Wide
+#CONSTANT TALL				&8000 		; Tall
+
 ; Memory
 PROTOTYPE FUNCTION	SPRITE(n)
 PROTOTYPE SUB		LOADSPRITE(n,label,blocks)
