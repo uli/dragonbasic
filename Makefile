@@ -37,10 +37,11 @@ win:
 linux:
 	$(MAKE) _all PLATFORM=linux
 
-_all:	dbc$(SUFF) mf$(SUFF)
+_all:	dbc$(SUFF) mf$(SUFF) converter$(SUFF)
 
 clean:
 	rm -f dbc.exe dbc mf.exe mf *.o.* run*.gba run*.elf runtime_syms.h
+	rm -f converter converter.exe
 	$(MAKE) -C $(PIMPMOBILE) clean
 
 mf$(SUFF): $(MOBJS)
@@ -74,5 +75,8 @@ runpimp.elf: runtime/runpimp.c runtime/gba_crt0.s runtime/gba_cart.ld $(PIMPMOBI
 runpimp.gba: runpimp.elf
 	objcopy -O binary $< $@
 
+converter$(SUFF):
+	$(MAKE) -C $(PIMPMOBILE)/converter TARGET=$@ CXX=$(CXX) LD=$(CXX)
+	cp -p $(PIMPMOBILE)/converter/converter$(SUFF) .
 $(PIMPMOBILE)/lib/libpimpmobile.a:
 	$(MAKE) -C $(PIMPMOBILE) lib/libpimpmobile.a
