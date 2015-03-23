@@ -126,19 +126,19 @@ void dump_module(module_t *mod, const char *filename)
 	
 	// order_ptr
 	pointer_map.insert(make_pair(&mod->order[0], pos));
-	dump_word((unsigned)&mod->order[0]);
+	dump_word((unsigned long)&mod->order[0]);
 
 	// pattern_ptr
 	pointer_map.insert(make_pair(&mod->patterns[0], pos));
-	dump_word((unsigned)&mod->patterns[0]);
+	dump_word((unsigned long)&mod->patterns[0]);
 	
 	// channel_ptr
 	pointer_map.insert(make_pair(&mod->channels[0], pos));
-	dump_word((unsigned)&mod->channels[0]);
+	dump_word((unsigned long)&mod->channels[0]);
 	
 	// instrument_ptr
 	pointer_map.insert(make_pair(&mod->instruments[0], pos));
-	dump_word((unsigned)&mod->instruments[0]);
+	dump_word((unsigned long)&mod->instruments[0]);
 	
 	dump_halfword(mod->period_low_clamp);
 	dump_halfword(mod->period_high_clamp);
@@ -167,7 +167,7 @@ void dump_module(module_t *mod, const char *filename)
 	{
 		align(4);
 		pointer_map.insert(make_pair(&mod->patterns[i].pattern_data[0], pos));
-		dump_word((unsigned)&mod->patterns[i].pattern_data[0]); // data_ptr
+		dump_word((unsigned long)&mod->patterns[i].pattern_data[0]); // data_ptr
 		dump_halfword(mod->patterns[i].num_rows);
 	}
 	
@@ -228,22 +228,22 @@ void dump_module(module_t *mod, const char *filename)
 		
 		align(4);
 		if (&instr.samples[0] != 0) pointer_map.insert(make_pair(&instr.samples[0], pos));
-		dump_word((unsigned)&instr.samples[0]);
+		dump_word((unsigned long)&instr.samples[0]);
 		
 		if (instr.volume_envelope != 0)
 		{
 			pointer_map.insert(make_pair(instr.volume_envelope, pos));
-			dump_word((unsigned)instr.volume_envelope);
+			dump_word((unsigned long)instr.volume_envelope);
 		}
 		else
 		{
 			dump_word(0);
 		}
 		
-		dump_word((unsigned)instr.panning_envelope);
+		dump_word((unsigned long)instr.panning_envelope);
 #if 0
 		// IT ONLY 
-		dump_word((unsigned)instr.pitch_envelope);
+		dump_word((unsigned long)instr.pitch_envelope);
 #endif
 		dump_halfword(instr.fadeout_rate);
 		dump_halfword(instr.samples.size());
@@ -344,7 +344,7 @@ void dump_module(module_t *mod, const char *filename)
 		unsigned *target = (unsigned*)(&data[it->second]);
 		
 		// verify that the data pointed to is really the original pointer (just another sanity-check)
-		if (*target != (unsigned)it->first)
+		if (*target != (unsigned long)it->first)
 		{
 			printf("POOOTATOOOOO!\n");
 			exit(1);

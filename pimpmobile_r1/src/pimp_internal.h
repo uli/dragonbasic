@@ -16,7 +16,7 @@ static INLINE void *get_ptr(const unsigned int *offset)
 
 static INLINE void set_ptr(unsigned int *dst, const void *ptr)
 {
-	*dst = ((int)ptr) - (int)dst;
+	*dst = (int)((char *)ptr - (char *)dst);
 }
 
 
