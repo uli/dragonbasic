@@ -9,7 +9,7 @@ endif
 DEVKITARM = $(DEVKITPRO)/devkitARM
 LIBGBA    = $(DEVKITPRO)/libgba
 
-PREFIX ?= arm-eabi-
+PREFIX ?= arm-none-eabi-
 CC      = $(PREFIX)gcc
 CXX     = $(PREFIX)g++
 OBJCOPY = $(PREFIX)objcopy
