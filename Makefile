@@ -1,4 +1,6 @@
 DEVKITPRO ?= $(HOME)/devkitPro
+PIMPMOBILE = ./pimpmobile_r1
+
 # only used on Linux
 APPDIR ?= $(shell pwd)
 
@@ -39,6 +41,7 @@ _all:	dbc$(SUFF) mf$(SUFF)
 
 clean:
 	rm -f dbc.exe dbc mf.exe mf *.o.* run*.gba run*.elf runtime_syms.h
+	$(MAKE) -C $(PIMPMOBILE) clean
 
 mf$(SUFF): $(MOBJS)
 	$(CXX) -o $@ $(MOBJS) $(LDFLAGS) $(LIBS)
@@ -62,11 +65,14 @@ runtime.gba: runtime.elf
 runtime_syms.h: runpimp.elf extract_syms.sh
 	./extract_syms.sh $< >$@
 
-runpimp.elf: runtime/runpimp.c runtime/gba_crt0.s runtime/gba_cart.ld
+runpimp.elf: runtime/runpimp.c runtime/gba_crt0.s runtime/gba_cart.ld $(PIMPMOBILE)/lib/libpimpmobile.a
 	$(ARMCC) $(AFLAGS) -nostdlib -I$(DEVKITPRO)/libgba/include \
-	-I../pimpmobile_r1/include -marm -T runtime/gba_cart.ld runtime/gba_crt0.s $(CRTDIR)/crti.o \
-	$(CRTDIR)/crtbegin.o $< ../pimpmobile_r1/lib/libpimpmobile.a -L \
+	-I$(PIMPMOBILE)/include -marm -T runtime/gba_cart.ld runtime/gba_crt0.s $(CRTDIR)/crti.o \
+	$(CRTDIR)/crtbegin.o $< $(PIMPMOBILE)/lib/libpimpmobile.a -L \
 	$(DEVKITPRO)/libgba/lib -lgcc -lsysbase -lc -lgba $(CRTDIR)/crtend.o \
 	$(CRTDIR)/crtn.o -o $@
 runpimp.gba: runpimp.elf
 	objcopy -O binary $< $@
+
+$(PIMPMOBILE)/lib/libpimpmobile.a:
+	$(MAKE) -C $(PIMPMOBILE) lib/libpimpmobile.a
