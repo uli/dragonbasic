@@ -319,7 +319,7 @@ public:
 	BasicObject *parseDecimal();
 	BasicObject *parseDirective();
 	BasicObject *parseComment();
-	BasicObject *parseString();
+	BasicObject *parseString(const char delim);
 	BasicObject *parseHex();
 	BasicObject *parseBinary();
 	BasicObject *parseOperator();

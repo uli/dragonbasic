@@ -2248,7 +2248,7 @@ BasicObject *Parser::parseNext()
 						result = parseComment();
 						break;
 					case '"':
-						result = parseString();
+						result = parseString('"');
 						break;
 					case '&':
 						result = parseHex();
@@ -2499,7 +2499,7 @@ BasicObject *Parser::parseComment()
 	return parseNext();
 }
 
-BasicObject *Parser::parseString()
+BasicObject *Parser::parseString(const char delim)
 {
 	BasicObject *bobj;
 	char *c;
@@ -2508,7 +2508,7 @@ BasicObject *Parser::parseString()
 	c = bobj->val.symbolic;
 	++text_ptr;
 	bobj->vtype = VAR_ARRAY;
-	while (*text_ptr != '"' && *text_ptr) {
+	while (*text_ptr != delim && *text_ptr) {
 		*c++ = *text_ptr++;
 		if (*text_ptr == PATHSEP[0])
 			*c++ = *text_ptr++;
