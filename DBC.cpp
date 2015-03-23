@@ -2250,6 +2250,12 @@ BasicObject *Parser::parseNext()
 					case '"':
 						result = parseString('"');
 						break;
+					case '<':
+						if (last_otype != OBJ_DIR)
+							goto parse_op;
+						result = parseString('>');
+						result->otype = OBJ_PATH;
+						break;
 					case '&':
 						result = parseHex();
 						break;
@@ -2257,6 +2263,7 @@ BasicObject *Parser::parseNext()
 						result = parseBinary();
 						break;
 					default:
+parse_op:
 						result = parseOperator();
 						if (result->otype == OBJ_OP &&
 						    result->val.numeric ==

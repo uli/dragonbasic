@@ -41,6 +41,7 @@ enum obj_t {
 	OBJ_STR = 8,
 	OBJ_EOL = 10,
 	OBJ_EOT = 11,
+	OBJ_PATH = 12,
 };
 
 enum vartype_t {
