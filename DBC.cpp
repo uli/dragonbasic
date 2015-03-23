@@ -386,17 +386,16 @@ int Compiler::writeOutput(const char *filename)
 	return fclose(fp);
 }
 
-TIN *Compiler::emitTin(const char *fmt, ...)
+void Compiler::emitTin(const char *fmt, ...)
 {
-	TIN *result;
+	TIN *tail;
 	char buf[256];
 	va_list va;
 
 	va_start(va, fmt);
 	vsprintf(buf, fmt, va);
-	result = tin_tail->addCode(buf);
-	tin_tail = result;
-	return result;
+	tail = tin_tail->addCode(buf);
+	tin_tail = tail;
 }
 
 void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
@@ -619,12 +618,12 @@ void Compiler::doDirTitle()
 	emitTin("TITLE\" %s\"", bobj->val.symbolic);
 }
 
-TIN *Compiler::doDirRequires()
+void Compiler::doDirRequires()
 {
 	BasicObject *bobj;
 
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	return emitTin("REQUIRES\" %s\"", bobj->val.symbolic);
+	emitTin("REQUIRES\" %s\"", bobj->val.symbolic);
 }
 
 void Compiler::doDirInclude()
@@ -681,52 +680,52 @@ void Compiler::doDirInclude()
 		GLB_popDir();
 }
 
-TIN *Compiler::doDirImport()
+void Compiler::doDirImport()
 {
 	BasicObject *bobj;
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#IMPORT");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	return emitTin("IMPORT\" %s\"", bobj->val.symbolic);
+	emitTin("IMPORT\" %s\"", bobj->val.symbolic);
 }
 
-TIN *Compiler::doDirBitmap()
+void Compiler::doDirBitmap()
 {
 	BasicObject *bobj;
 
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
 	checkNotSegment(SEG_INTR | SEG_SUB, "#BITMAP");
-	return emitTin("BITMAP\" %s\"", bobj->val.symbolic);
+	emitTin("BITMAP\" %s\"", bobj->val.symbolic);
 }
 
-TIN *Compiler::doDirMap()
+void Compiler::doDirMap()
 {
 	BasicObject *bobj;
 
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
 	checkNotSegment(SEG_INTR | SEG_SUB, "#MAP");
-	return emitTin("MAP\" %s\"", bobj->val.symbolic);
+	emitTin("MAP\" %s\"", bobj->val.symbolic);
 }
 
-TIN *Compiler::doDirPalette()
+void Compiler::doDirPalette()
 {
 	BasicObject *bobj;
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#PALETTE");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	return emitTin("PALETTE\" %s\"", bobj->val.symbolic);
+	emitTin("PALETTE\" %s\"", bobj->val.symbolic);
 }
 
-TIN *Compiler::doDirSound()
+void Compiler::doDirSound()
 {
 	BasicObject *bobj;
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#SOUND");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	return emitTin("SOUND\" %s\"", bobj->val.symbolic);
+	emitTin("SOUND\" %s\"", bobj->val.symbolic);
 }
 
-TIN *Compiler::doDirMusic()
+void Compiler::doDirMusic()
 {
 	BasicObject *bobj;
 
@@ -734,7 +733,7 @@ TIN *Compiler::doDirMusic()
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#MUSIC");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	return emitTin("MUSIC\" %s\"", bobj->val.symbolic);
+	emitTin("MUSIC\" %s\"", bobj->val.symbolic);
 }
 
 void Compiler::doDirConstant()
@@ -1101,7 +1100,7 @@ void Compiler::doCmdData()
 	} while (had_unary_minus || parser->requireRop(ROP_COMMA));
 }
 
-TIN *Compiler::doCmdRead()
+void Compiler::doCmdRead()
 {
 	BasicObject *bobj;
 
@@ -1113,7 +1112,7 @@ TIN *Compiler::doCmdRead()
 		doRval(bobj);
 		emitTin("! ");
 	} while (parser->requireRop(ROP_COMMA));
-	return emitTin("A> ");
+	emitTin("A> ");
 }
 
 void Compiler::doCmdRestore()
