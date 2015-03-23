@@ -15,12 +15,12 @@ LDFLAGS  =
 ASFLAGS  = 
 
 OBJS = \
-	converter.o \
-	converter_xm.o \
-	converter_s3m.o \
-	converter_mod.o \
-	dump_module.o \
-	dump_samples.o
+	converter.o.$(PLATFORM) \
+	converter_xm.o.$(PLATFORM) \
+	converter_s3m.o.$(PLATFORM) \
+	converter_mod.o.$(PLATFORM) \
+	dump_module.o.$(PLATFORM) \
+	dump_samples.o.$(PLATFORM)
 
 TARGET = ../bin/converter
 
@@ -39,18 +39,18 @@ endif
 all: $(TARGET)
 
 clean:
-	$(RM) $(TARGET) $(OBJS) $(OBJS:.o=.d) *~
+	$(RM) $(TARGET) converter converter.exe *.o.* $(OBJS:.o.$(PLATFORM)=.d) *~
 
 $(TARGET): $(OBJS)
 	$(LD) $^ $(LDFLAGS) -o $@
 	
-converter2: dump_module2.o dump.o
+converter2: dump_module2.o.$(PLATFORM) dump.o.$(PLATFORM)
 	$(LD) $^ $(LDFLAGS) -o $@
 
-%.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ -MMD -MP -MF $(@:.o=.d)
+%.o.$(PLATFORM): %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ -MMD -MP -MF $(@:.o.$(PLATFORM)=.d)
 
-%.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ -MMD -MP -MF $(@:.o=.d)
+%.o.$(PLATFORM): %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ -MMD -MP -MF $(@:.o.$(PLATFORM)=.d)
 
--include $(OBJS:.o=.d)
+-include $(OBJS:.o.$(PLATFORM)=.d)
