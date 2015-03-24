@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header {  background-color: #99CCFF;      color: black;   font-family: ms sans serif;     font-size: 2;   border-width: 0;        border-right-width: 1;  border-bottom-width: 1; border-style: solid;    border-color: gray;     padding-top: 5px;       padding-left: 5px;      padding-bottom: 5px;}pre {      background-color: #CCCCCC;      color: black;   font-family: courier new;}a {   color: blue;    text-decoration: underline;}
+  </style>
+
+  <title>Dragon BASIC Help :: BITMAPPED :: FLIP</title>
+</head>
+
+<body>
+  <p class="HEADER"><font size="2">Dragon BASIC, online at <a href=
+  "http://www.jm-basic.com" target=
+  "_blank">http://www.jm-basic.com</a></font></p>
+
+  <h2><a href="BITMAPPED.htm">BITMAPPED</a> :: FLIP</h2>
+
+  <blockquote>
+    Toggles the currently visible buffer in a double-buffered mode.
+    <pre>
+SUB FLIP
+</pre>
+  </blockquote><b>Parameters</b>
+
+  <blockquote>
+    None.
+  </blockquote><b>Return</b>
+
+  <blockquote>
+    None.
+  </blockquote><b>Remarks</b>
+
+  <blockquote>
+    In modes 4 and 5, this function will toggle the current
+    backbuffer, displaying the previous one. In mode 3 or tiled
+    modes, this function has no effect. This function should always
+    be used in a VBLANK.
+  </blockquote><b>See Also</b>
+
+  <blockquote>
+    <a href="CORE_GRAPHICS.htm">GRAPHICS</a> | <a href=
+    "CORE_VBLANK.htm">VBLANK</a>
+  </blockquote>
+  <hr width="95%" align="middle">
+
+  <center>
+    <a href="mailto:jma@mfire.com">Send feedback on this
+    topic</a><br>
+    <a href="http://www.jm-basic.com/dragon/docs.php" target=
+    "_blank">Copyright (c) 2004 by Jeff Massung. All rights
+    reserved.</a>
+  </center>
+</body>
+</html>

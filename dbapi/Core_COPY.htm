@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header {  background-color: #99CCFF;      color: black;   font-family: ms sans serif;     font-size: 2;   border-width: 0;        border-right-width: 1;  border-bottom-width: 1; border-style: solid;    border-color: gray;     padding-top: 5px;       padding-left: 5px;      padding-bottom: 5px;}pre {      background-color: #CCCCCC;      color: black;   font-family: courier new;}a {   color: blue;    text-decoration: underline;}
+  </style>
+
+  <title>Dragon BASIC Help :: CORE :: COPY</title>
+</head>
+
+<body>
+  <p class="HEADER"><font size="2">Dragon BASIC, online at <a href=
+  "http://www.jm-basic.com" target=
+  "_blank">http://www.jm-basic.com</a></font></p>
+
+  <h2><a href="CORE.htm">CORE</a> :: COPY</h2>
+
+  <blockquote>
+    Copies bytes of data from one address to another.
+    <pre>
+SUB COPY(
+    address,
+    source,
+    bytes
+)
+</pre>
+  </blockquote><b>Parameters</b>
+
+  <blockquote>
+    <i>address</i> - a 32-bit, unsigned destination address<br>
+    <i>source</i> - a 32-bit, unsigned source address<br>
+    <i>bytes</i> - the number of bytes to copy<br>
+  </blockquote><b>Return</b>
+
+  <blockquote>
+    None.
+  </blockquote><b>Remarks</b>
+
+  <blockquote>
+    Copies bytes from source to address. If bytes is odd, at least
+    bytes+1 bytes will be copied.
+  </blockquote><b>See Also</b>
+
+  <blockquote>
+    <a href="EXTENDED_DMACOPY.htm">DMACOPY</a> | <a href=
+    "CORE_ERASE.htm">ERASE</a> | <a href="CORE_PEEK.htm">PEEK</a> |
+    <a href="CORE_POKE.htm">POKE</a>
+  </blockquote>
+  <hr width="95%" align="middle">
+
+  <center>
+    <a href="mailto:jma@mfire.com">Send feedback on this
+    topic</a><br>
+    <a href="http://www.jm-basic.com/dragon/docs.php" target=
+    "_blank">Copyright (c) 2004 by Jeff Massung. All rights
+    reserved.</a>
+  </center>
+</body>
+</html>

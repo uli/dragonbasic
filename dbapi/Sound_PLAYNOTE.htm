@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header {  background-color: #99CCFF;      color: black;   font-family: ms sans serif;     font-size: 2;   border-width: 0;        border-right-width: 1;  border-bottom-width: 1; border-style: solid;    border-color: gray;     padding-top: 5px;       padding-left: 5px;      padding-bottom: 5px;}pre {      background-color: #CCCCCC;      color: black;   font-family: courier new;}a {   color: blue;    text-decoration: underline;}
+  </style>
+
+  <title>Dragon BASIC Help :: SOUND :: PLAYNOTE</title>
+</head>
+
+<body>
+  <p class="HEADER"><font size="2">Dragon BASIC, online at <a href=
+  "http://www.jm-basic.com" target=
+  "_blank">http://www.jm-basic.com</a></font></p>
+
+  <h2><a href="SOUND.htm">SOUND</a> :: PLAYNOTE</h2>
+
+  <blockquote>
+    Plays a single note.
+    <pre>
+SUB PLAYNOTE(
+    channel,
+    length,
+    frequency,
+    wave_duty
+)
+</pre>
+  </blockquote><b>Parameters</b>
+
+  <blockquote>
+    <i>channel</i> - the sound channel to play out of (1 or 2)<br>
+    <i>length</i> - the duration of the note to play (0-64)<br>
+    <i>frequency</i> - the frequency of the note<br>
+    <i>wave_duty</i> - the wave duty cycle (WAVE_DUTY_12,
+    WAVE_DUTY_25, WAVE_DUTY_50 or WAVE_DUTY_75)<br>
+  </blockquote><b>Return</b>
+
+  <blockquote>
+    None.
+  </blockquote><b>Remarks</b>
+
+  <blockquote>
+    This function will play a single note out of one of two
+    possible sound channels. If length is 0, the note will play
+    forever, otherwise 64 is the longest duration possible.
+    Modifying frequency and wave_duty will alter the sound emitted.
+  </blockquote><b>See Also</b>
+
+  <blockquote>
+    <a href="SOUND_PLAYDRUM.htm">PLAYDRUM</a> | <a href=
+    "SOUND_TURNSOUNDON.htm">TURNSOUNDON</a>
+  </blockquote>
+  <hr width="95%" align="middle">
+
+  <center>
+    <a href="mailto:jma@mfire.com">Send feedback on this
+    topic</a><br>
+    <a href="http://www.jm-basic.com/dragon/docs.php" target=
+    "_blank">Copyright (c) 2004 by Jeff Massung. All rights
+    reserved.</a>
+  </center>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header {  background-color: #99CCFF;      color: black;   font-family: ms sans serif;     font-size: 2;   border-width: 0;        border-right-width: 1;  border-bottom-width: 1; border-style: solid;    border-color: gray;     padding-top: 5px;       padding-left: 5px;      padding-bottom: 5px;}pre {      background-color: #CCCCCC;      color: black;   font-family: courier new;}a {   color: blue;    text-decoration: underline;}
+  </style>
+
+  <title>Dragon BASIC Help :: ROTATIONS :: WRAPANGLE</title>
+</head>
+
+<body>
+  <p class="HEADER"><font size="2">Dragon BASIC, online at <a href=
+  "http://www.jm-basic.com" target=
+  "_blank">http://www.jm-basic.com</a></font></p>
+
+  <h2><a href="ROTATIONS.htm">ROTATIONS</a> :: WRAPANGLE</h2>
+
+  <blockquote>
+    Clamps an angle to [0,359].
+    <pre>
+FUNCTION WRAPANGLE(
+    degrees
+)
+</pre>
+  </blockquote><b>Parameters</b>
+
+  <blockquote>
+    <i>degrees</i> - an angle between 0-359<br>
+  </blockquote><b>Return</b>
+
+  <blockquote>
+    An angle between the range of 0 and 359.
+  </blockquote><b>Remarks</b>
+
+  <blockquote>
+    This function should only be used when modifying an existing
+    angle that may end above 359 or below 0. All trigometric
+    functions in Dragon BASIC takes angles between 0 and 360
+    degrees.
+  </blockquote><b>See Also</b>
+
+  <blockquote>
+    <a href="ROTATIONS_COS.htm">COS#</a> | <a href=
+    "ROTATIONS_SIN.htm">SIN#</a> | <a href=
+    "ROTATIONS_TAN.htm">TAN#</a>
+  </blockquote>
+  <hr width="95%" align="middle">
+
+  <center>
+    <a href="mailto:jma@mfire.com">Send feedback on this
+    topic</a><br>
+    <a href="http://www.jm-basic.com/dragon/docs.php" target=
+    "_blank">Copyright (c) 2004 by Jeff Massung. All rights
+    reserved.</a>
+  </center>
+</body>
+</html>

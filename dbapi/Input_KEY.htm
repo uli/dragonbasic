@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header {  background-color: #99CCFF;      color: black;   font-family: ms sans serif;     font-size: 2;   border-width: 0;        border-right-width: 1;  border-bottom-width: 1; border-style: solid;    border-color: gray;     padding-top: 5px;       padding-left: 5px;      padding-bottom: 5px;}pre {      background-color: #CCCCCC;      color: black;   font-family: courier new;}a {   color: blue;    text-decoration: underline;}
+  </style>
+
+  <title>Dragon BASIC Help :: INPUT :: KEY</title>
+</head>
+
+<body>
+  <p class="HEADER"><font size="2">Dragon BASIC, online at <a href=
+  "http://www.jm-basic.com" target=
+  "_blank">http://www.jm-basic.com</a></font></p>
+
+  <h2><a href="INPUT.htm">INPUT</a> :: KEY</h2>
+
+  <blockquote>
+    Returns a masked copy of the current input register.
+    <pre>
+FUNCTION KEY(
+    mask
+)
+</pre>
+  </blockquote><b>Parameters</b>
+
+  <blockquote>
+    <i>mask</i> - a bit-mask of all buttons to test for, OR'ed
+    together with NOR<br>
+  </blockquote><b>Return</b>
+
+  <blockquote>
+    Reads REG_P1 from GBA hardware register, masks and returns.
+  </blockquote><b>Remarks</b>
+
+  <blockquote>
+    Use this function to check for 1 or more specific buttons being
+    pressed. A non-zero value indicates the button(s) is/are
+    pressed and 0 is released.
+  </blockquote><b>See Also</b>
+
+  <blockquote>
+    <a href="INPUT_KEYS.htm">KEYS</a> | <a href=
+    "CORE_NOR.htm">NOR</a>
+  </blockquote>
+  <hr width="95%" align="middle">
+
+  <center>
+    <a href="mailto:jma@mfire.com">Send feedback on this
+    topic</a><br>
+    <a href="http://www.jm-basic.com/dragon/docs.php" target=
+    "_blank">Copyright (c) 2004 by Jeff Massung. All rights
+    reserved.</a>
+  </center>
+</body>
+</html>

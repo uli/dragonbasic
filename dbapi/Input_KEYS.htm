@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header {  background-color: #99CCFF;      color: black;   font-family: ms sans serif;     font-size: 2;   border-width: 0;        border-right-width: 1;  border-bottom-width: 1; border-style: solid;    border-color: gray;     padding-top: 5px;       padding-left: 5px;      padding-bottom: 5px;}pre {      background-color: #CCCCCC;      color: black;   font-family: courier new;}a {   color: blue;    text-decoration: underline;}
+  </style>
+
+  <title>Dragon BASIC Help :: INPUT :: KEYS</title>
+</head>
+
+<body>
+  <p class="HEADER"><font size="2">Dragon BASIC, online at <a href=
+  "http://www.jm-basic.com" target=
+  "_blank">http://www.jm-basic.com</a></font></p>
+
+  <h2><a href="INPUT.htm">INPUT</a> :: KEYS</h2>
+
+  <blockquote>
+    Returns the current input mask.
+    <pre>
+FUNCTION KEYS
+</pre>
+  </blockquote><b>Parameters</b>
+
+  <blockquote>
+    None.
+  </blockquote><b>Return</b>
+
+  <blockquote>
+    Reads REG_P1 from the GBA hardware and returns it immediates.
+    All bits are flipped, so that a 0 is not-pressed and 1 is
+    pressed.
+  </blockquote><b>Remarks</b>
+
+  <blockquote>
+    The return value can be masked using a NAND operation along
+    with a KEY_ constant to see if a button is pressed.
+  </blockquote><b>See Also</b>
+
+  <blockquote>
+    <a href="INPUT_KEY.htm">KEY</a> | <a href=
+    "CORE_NAND.htm">NAND</a>
+  </blockquote>
+  <hr width="95%" align="middle">
+
+  <center>
+    <a href="mailto:jma@mfire.com">Send feedback on this
+    topic</a><br>
+    <a href="http://www.jm-basic.com/dragon/docs.php" target=
+    "_blank">Copyright (c) 2004 by Jeff Massung. All rights
+    reserved.</a>
+  </center>
+</body>
+</html>

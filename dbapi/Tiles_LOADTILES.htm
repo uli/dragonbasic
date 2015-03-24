@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header {  background-color: #99CCFF;      color: black;   font-family: ms sans serif;     font-size: 2;   border-width: 0;        border-right-width: 1;  border-bottom-width: 1; border-style: solid;    border-color: gray;     padding-top: 5px;       padding-left: 5px;      padding-bottom: 5px;}pre {      background-color: #CCCCCC;      color: black;   font-family: courier new;}a {   color: blue;    text-decoration: underline;}
+  </style>
+
+  <title>Dragon BASIC Help :: TILES :: LOADTILES</title>
+</head>
+
+<body>
+  <p class="HEADER"><font size="2">Dragon BASIC, online at <a href=
+  "http://www.jm-basic.com" target=
+  "_blank">http://www.jm-basic.com</a></font></p>
+
+  <h2><a href="TILES.htm">TILES</a> :: LOADTILES</h2>
+
+  <blockquote>
+    Load a character block with tile data.
+    <pre>
+SUB LOADTILES(
+    char,
+    offset,
+    label,
+    nblocks
+)
+</pre>
+  </blockquote><b>Parameters</b>
+
+  <blockquote>
+    <i>char</i> - the character block to load into (0-3)<br>
+    <i>offset</i> - the tile offset (in blocks) to begin loading
+    at<br>
+    <i>label</i> - the source label of tile data imported with
+    #BITMAP<br>
+    <i>nblocks</i> - the number of blocks used by the imported
+    tiles<br>
+  </blockquote><b>Return</b>
+
+  <blockquote>
+    None.
+  </blockquote><b>Remarks</b>
+
+  <blockquote>
+    Copies tile data from ROM to VRAM. This data is the image data
+    to be drawn by a screen block (map data).
+  </blockquote><b>See Also</b>
+
+  <blockquote>
+    <a href="TILES_CHARBLOCK.htm">CHARBLOCK</a> | <a href=
+    "TILES_ENABLETILES.htm">ENABLETILES</a> | <a href=
+    "TILES_SCREENBLOCK.htm">SCREENBLOCK</a> | <a href=
+    "EXTENDED_TILEOFFSET.htm">TILEOFFSET</a>
+  </blockquote>
+  <hr width="95%" align="middle">
+
+  <center>
+    <a href="mailto:jma@mfire.com">Send feedback on this
+    topic</a><br>
+    <a href="http://www.jm-basic.com/dragon/docs.php" target=
+    "_blank">Copyright (c) 2004 by Jeff Massung. All rights
+    reserved.</a>
+  </center>
+</body>
+</html>
