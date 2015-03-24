@@ -2850,6 +2850,11 @@ do_ifwhile:
 		invalR5();
 		codeCallThumb(RT_pimp_frame);
 		codeAsm("r0", "pop");
+	} else if (out->use_pimp && W("modclose")) {
+		codeAsm("r0", "push");
+		invalR5();
+		codeCallThumb(RT_pimp_close);
+		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modinit")) {
 		if (!thumb)
 			codeAsm("r0", "4", "(#", "r1", "ldr,");
@@ -2860,6 +2865,19 @@ do_ifwhile:
 		invalR5();
 		codeCallThumb(RT_pimp_init);
 		codeAsm("r0", "pop");
+	} else if (out->use_pimp && W("modsetpos")) {
+		codeAsm("r1", "pop");
+		invalR5();
+		codeCallThumb(RT_pimp_set_pos);
+		codeAsm("r0", "pop");
+	} else if (out->use_pimp && W("modgetrow")) {
+		codeAsm("r0", "push");
+		invalR5();
+		codeCallThumb(RT_pimp_get_row);
+	} else if (out->use_pimp && W("modgetorder")) {
+		codeAsm("r0", "push");
+		invalR5();
+		codeCallThumb(RT_pimp_get_order);
 	} else if ((sym = getSymbol(word))) {
 		//DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x thumb %d\n", sym->word, sym->addr,
 		//      out->addr, sym->is_addr, sym->lit_addr, sym->thumb);
