@@ -33,7 +33,7 @@ PROTOTYPE SUB		LOADFONT256(char,label)
 ; Locating, getting and setting
 PROTOTYPE FUNCTION	TILE(screenb,x,y)
 PROTOTYPE FUNCTION	GETTILE(address)
-prototype sub		SETTILE(address,index)
+PROTOTYPE SUB		SETTILE(address,index)
 
 ; Backgrounds
 PROTOTYPE SUB		ENABLETILES(bg,screenb,charb,flags)
