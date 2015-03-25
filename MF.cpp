@@ -2597,6 +2597,8 @@ handle_const:
 			}
 		} else if (getNextWordIf(",")) {
 			code(num);
+		} else if (getNextWordIf("h,")) {
+			out->emitWord(num);
 		} else if (getNextWordIf("lprolog")) {
 			assert(!currently_naked);
 			codeAsm("r0", "push");	// last param to stack
