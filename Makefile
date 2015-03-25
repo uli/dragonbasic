@@ -42,7 +42,15 @@ _all:	dbc$(SUFF) mf$(SUFF) converter$(SUFF)
 clean:
 	rm -f dbc.exe dbc mf.exe mf *.o.* run*.gba run*.elf runtime_syms.h
 	rm -f converter converter.exe
+	rm -f dbapi/dbapi.chm
 	$(MAKE) -C $(PIMPMOBILE) clean
+
+doc:	dbapi/dbapi.chm
+
+dbapi/dbapi.chm: dbapi/dbapi.hhp
+	cd dbapi ; chmcmd dbapi.hhp
+	rm -f dbapi/bla.something	# WTF?
+	chmod 644 dbapi/dbapi.chm
 
 mf$(SUFF): $(MOBJS)
 	$(CXX) -o $@ $(MOBJS) $(LDFLAGS) $(LIBS)
