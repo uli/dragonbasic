@@ -1,5 +1,5 @@
 
-OBJS = wavy/wavy.gba
+OBJS = wavy/wavy.gba tut_1/tut_1.gba
 
 all: $(OBJS)
 

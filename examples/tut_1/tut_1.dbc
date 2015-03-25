@@ -1,0 +1,140 @@
+; Tutorial # 1 - Hello, world!
+;
+; Welcome to the first tutorial for Dragon BASIC!
+; In this tutorial, you will learn the basic structure
+; of a program written in Dragon BASIC, how to set
+; the video mode, import some graphics and display
+; a message on your GBA screen.
+
+; The beginning of every Dragon BASIC program should be
+; its title. You can set any title you want, and you don't
+; have to set anything if you don't want. But this title
+; will be hard-coded into the final binary, and will help
+; to distiguish your game from others.
+
+#title "Tutorial 1"
+
+; Next you should always include the GBA.DBC file. This
+; file is included with the Dragon BASIC package, and it
+; imports ALL the libraries of Dragon BASIC into your
+; program, making them available to you.
+
+#include <gba.dbc>
+
+; Now we're ready to begin programming. We'll begin by
+; importing all the data that our program will need. Each
+; piece of data should have a label attached to it.
+
+; First we'll import the FONT bitmap. This is a 16-color
+; tilemap, and to import it we will use the #BITMAP
+; directive. Let's create a label called FONT so that we
+; can reference this data later.
+
+font: #bitmap "font.bmp"
+
+; Next, we'll import the palette inside the bitmap. This
+; is done with the #PALETTE directive, and like the FONT
+; label, we'll create one for this data, too. We'll call
+; it PAL.
+
+pal: #palette "font.bmp"
+
+; Declare the variables we are going to use: one integer
+; (i) and one string (s$).
+dim i,s$
+
+; Now that we've imported all our data, we can begin the
+; program. This is done with the START label. This label
+; is very special. It will enter a code segment (before
+; we were in the data segment) and it tells the compiler
+; where your program will begin.
+start:
+
+	; Once the GBA has booted up, the first thing we'll
+	; want to do is set the graphics mode. The GBA has
+	; 6 different (documented) modes to choose from. The
+	; first 3 (0-2) are tiled modes and the last 3 (3-5)
+	; are bitmapped modes.
+
+	; We set the graphics mode with the GRAPHICS subroutine
+	; and pass it the mode we want, and whether or not we
+	; want sprites enabled. For this tutorial, we'll use
+	; graphics mode 0 and no sprites.
+
+	graphics 0,false
+
+	; Now that the graphics mode has been set, and we've
+	; selected a tiled mode, we need to enable one of the
+	; 4 backgrounds (0-3) to draw tiles onto. This is done
+	; with the ENABLETILES subroutine. It needs 4 pieces
+	; of information: which background layer, the screen
+	; block to use (for map data), the character block to
+	; use (for tile data) and any flags to set.
+
+	enabletiles 0,0,1,TEXT_256x256 + BG_COLOR_16
+
+	; Once we've enabled a background layer, we need to
+	; load our tile data into RAM for the GBA to use.
+	; Since we're using a 16-color font, we'll use the
+	; LOADFONT16 subroutine to do this. We just pass the
+	; character block we want to load it into (1 from above)
+	; and the address (label) of our data.
+
+	loadfont16 1,font
+
+	; Next we need to load the palette. This can be done
+	; just as easily with the LOADPAL16 subroutine. This
+	; routine takes a destination palette address, an
+	; index into the palette (since we're only loading a
+	; 16-color font and not 256-color) and the address of
+	; our palette.
+
+	loadpal16 BG_PALETTE,0,pal
+
+	; All done, now we're ready to display our message.
+	; This is done with the PRINT command. This subroutine
+	; takes two arguments, an address to print to, and a
+	; string to print.
+
+	; The address can be obtained using the TILE function.
+	; The TILE function needs 3 arguments: the screen block
+	; (containing the map data) and the X,Y coordiates
+	; on the map.
+
+	print tile(0,2,2),"Hello, world!"
+
+	; Some other things you can print:
+	; print the leftmost six characters of "Hellooooo"
+	print tile(0,2,4), left$("Hellooooo", 6)
+	; print "Foobar"
+	print tile(0,2,7), append$("Foo", "bar")
+	; print the hexadecimal representation of 4096 ("1000")
+	print tile(0,2,8), hex$(4096)
+	; print numbers
+	print tile(0,2,9), str$(abs(-1234))
+	print tile(0,10,9), str$(abs(-1234))
+	print tile(0,2,10), str$(sqrt(500))
+	; print a fixed-point number (need to convert it to integer first)
+	print tile(0,10,10), str$(int(fsqrt#(500.0)))
+
+	; This prints the numbers from 100 to 10000, counting up by
+	; one every half-second.
+	; First, set the user timer to a frequency of 10 Hz and start it.
+	maketimer 10:starttimer
+	for i = 100 to 10000
+		s$ = str$(i)
+		; Print the number in line 13.  The subtraction ensures
+		; that the number is right-aligned at column 5.
+		print tile(0,5-len(s$),13),s$
+		; Wait for 5 timer periods (.5 seconds), then restart the
+		; timer.
+		waittimer 5:resettimer
+	next
+
+	; Finally, we'll enter an infinite loop. Otherwise the
+	; program would keep running random data in hardware
+	; until the GBA locked up, reset or did something else
+	; equally undesirable.
+
+	while
+	loop
