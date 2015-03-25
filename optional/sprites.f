@@ -558,8 +558,8 @@ code-thumb updatesprites ( -- )
 	v0 $4 #( v1 str,
 	v0 $8 #( v2 str,
 
-	\ set control to 32-bit, increment both, 128 words
-	$84000080 v1 LITERAL
+	\ set control to 32-bit, increment both, 256 words
+	$84000100 v1 LITERAL
 	v0 $c #( v1 str,
 
 	\ done
