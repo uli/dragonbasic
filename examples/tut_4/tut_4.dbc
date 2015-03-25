@@ -1,0 +1,148 @@
+; Welcome to tutorial 4 - Rotating and Scaling
+;
+; In this tutorial you will learn to create a
+; rotation matrix, rotate a sprite and move it
+; around on the screen at angles.
+
+#title "Tutorial 4"
+#include <gba.dbc>
+
+; First let's import our spaceship sprite
+
+ship_bmp: #bitmap "ship.bmp"
+ship_pal: #palette "ship.bmp"
+
+; A constant for out ship
+
+#constant SHIP 0
+
+; Last, let's create a variable to control the
+; angle of the ship and the fixed-point position
+
+dim angle,x#,y#
+
+; Next let's create a simple subroutine to load it
+
+sub create_ship
+
+	; Since we'll be running in a bitmapped mode,
+	; sprites 0-511 are unavailable (VRAM overlaps
+	; the sprite RAM), so we'll make our sprite 512.
+
+	loadsprite 512,ship_bmp,blocks(64,64,8)
+	loadpal256 SPRITE_PALETTE,ship_pal
+
+	; Now we'll make the sprite
+
+	makesprite SHIP,512
+	sizesprite SHIP,SQUARE,SIZE_64
+
+	; There is no need for COLORSPRITE to be called
+	; since our sprite is 256 colors and they all use
+	; the same palette.
+
+	; Last, let's position the sprite in the middle
+	; of the screen.
+
+	positionsprite SHIP,120-32,80-32
+
+	; Set the fixed point position of the ship
+	x# = fix#(spritex(SHIP))
+	y# = fix#(spritey(SHIP))
+end sub
+
+; Now we'll begin the program
+
+start:
+
+	; First we'll set the graphics mode
+
+	graphics 3,1
+
+	; Then create the spaceship sprite
+
+	create_ship
+
+	; Now that we have a sprite, it is time to create
+	; our first rotation matrix. This is done with the
+	; MAKEROTATION subroutine. The GBA has 4 built-in
+	; rotation matrices, numbered 0-3. The one we will
+	; make is 0 and that is our first argument. The
+	; next is the scaling factor of the sprite. We will
+	; leave these at 1,1 for now (no scaling). Finally,
+	; the angle we created is the last argument. This
+	; angle must be between 0 and 359.
+
+	makerotation 0,1#,1#,angle
+
+	; Now that we have a rotation matrix created, we
+	; can tell our sprite to use it. We do this with the
+	; ROTATESPRITE function. We give it our sprite and
+	; the number of the rotation matrix to use. If we
+	; told it to use a negative matrix (ie -1) then
+	; the sprite would cease to use the rotatio matrix
+	; and return to rendering normally.
+
+	rotatesprite SHIP,0
+
+	; Now let's enter our infinite loop
+
+	while
+
+		; First wait for the vertical blank, then
+		; update the sprite's position, etc.
+
+		vblank : updatesprites
+
+		; Now lets see if the user wants to rotate
+		; the ship to the right or left.
+
+		if key(KEY_RIGHT)
+
+			; Increment the angle by 1, but since it
+			; must be in range 0-359 at all times, we
+			; use the WRAPANGLE function to make sure.
+
+			angle = wrapangle(angle + 2)
+
+			; Now we recreate the rotation matrix
+
+			makerotation 0,1#,1#,angle
+
+		else if key(KEY_LEFT)
+
+			angle = wrapangle(angle - 2)
+
+			; Now we recreate the rotation matrix
+
+			makerotation 0,1#,1#,angle
+
+		end if
+
+		; Now we'll see if the player wants to move the
+		; ship forwards by pressing up
+
+		if key(KEY_UP)
+
+			; Lets move the fixed-point position of the
+			; ship by a single pixel based on the angle
+			; of the ship. We can use the INC (increment)
+			; keyword for this to make it faster and
+			; easier to type.
+
+			inc x#,cos#(angle)
+			inc y#,sin#(angle)
+
+			; Now let's make sure it stays onscreen.
+
+			if x# < 0# then x# = 0#
+			if y# < 0# then y# = 0#
+			if x# > 240#-64# then x# = 240#-64#
+			if y# > 160#-64# then y# = 160#-64#
+
+			; Now just reset the position of the sprite!
+
+			positionsprite SHIP,int(x#),int(y#)
+
+		end if
+	loop

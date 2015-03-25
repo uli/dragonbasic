@@ -1,5 +1,7 @@
-
-OBJS = wavy/wavy.gba tut_1/tut_1.gba
+OBJS = \
+	wavy/wavy.gba \
+	tut_1/tut_1.gba \
+	tut_4/tut_4.gba \
 
 all: $(OBJS)
 
