@@ -388,7 +388,7 @@ public:
 	void doCmdNext();
 	void doCmdDim();
 	void doCmdLocal();
-	void doCmdReturn();
+	void doCmdReturn(bool epilog);
 	void doCmdMap();
 	void doCmdData();
 	void doCmdRead();

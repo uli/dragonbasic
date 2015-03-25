@@ -798,7 +798,7 @@ void Compiler::doCommand(BasicObject *bobj)
 		doCmdLocal();
 		break;
 	case CMD_RETURN:
-		doCmdReturn();
+		doCmdReturn(false);
 		break;
 	case CMD_MAP:
 		doCmdMap();
@@ -1056,7 +1056,7 @@ void Compiler::doCmdLocal()
 	} while (parser->requireRop(ROP_COMMA));
 }
 
-void Compiler::doCmdReturn()
+void Compiler::doCmdReturn(bool eof)
 {
 	checkNotSegment(SEG_INTR | SEG_TOP, "RETURN");
 	if (sub_head->is_function && compileExpression() != sub_head->ret_vtype)
@@ -1070,7 +1070,12 @@ void Compiler::doCmdReturn()
 		emitTin("%d %sEPILOG ", 4 * (sub_head->num_args + sub_head->num_locals),
 			sub_head->is_function ? "FL" : "L");
 	}
-	emitTin("; ");
+
+	if (eof)
+		emitTin("; ");
+	else
+		emitTin(";r ");
+
 	if (!loop_stack.getStackPtr())
 		is_top_level = true;
 }
@@ -1288,7 +1293,7 @@ void Compiler::doCmdEnd()
 		if (sub_head->is_function)
 			GLB_error(ERR_NOTOKEN, "FUNCTION");
 		if (!is_top_level)
-			doCmdReturn();
+			doCmdReturn(true);
 		cur_seg = SEG_TOP;
 		break;
 	case CMD_FUNCTION:
@@ -1296,6 +1301,7 @@ void Compiler::doCmdEnd()
 			GLB_error(ERR_NOTOKEN, "SUB");
 		if (!is_top_level)
 			GLB_error(ERR_RETVAL);
+		emitTin(";l ");
 		cur_seg = SEG_TOP;
 		break;
 	default:
