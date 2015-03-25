@@ -3012,6 +3012,16 @@ Output::Output(unsigned int code_addr, unsigned int var_addr)
 	use_pimp = false;
 }
 
+bool clean_exit = false;
+static const char *outfile;
+
+static void clean_up(void)
+{
+	if (!option_debug && !clean_exit)
+		unlink(outfile);
+	delete outfile;
+}
+
 int main(int argc, char **argv)
 {
 	int rt_size;
@@ -3041,6 +3051,8 @@ int main(int argc, char **argv)
 		}
 	}
 
+	outfile = strdup(argv[2]);
+	atexit(clean_up);
 	out.openOutFile(argv[2]);
 
 	/* copy runtime to output */
@@ -3062,6 +3074,7 @@ int main(int argc, char **argv)
 
 	out.fixCartHeader();
 	out.closeOutFile();
+	clean_exit = true;
 	FreeImage_DeInitialise();
 	return 0;
 }
