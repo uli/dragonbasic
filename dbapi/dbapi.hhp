@@ -1,3 +1,5 @@
 [Options]
 Compiled file = dbapi.chm
 Contents file = dbapi.hhc
+[Windows]
+$global_main="Dragon BASIC API Reference","dbapi.hhc",,"Index.htm","Index.htm"
