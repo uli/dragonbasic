@@ -340,7 +340,7 @@ void Output::setEntry(unsigned int addr)
 {
 	long cur = ftell(fp);
 
-	fseek(fp, 0xfc, SEEK_SET);
+	fseek(fp, RT__tin_entry_p - 0x8000000, SEEK_SET);
 	fwrite(&addr, 1, 4, fp);
 	fseek(fp, cur, SEEK_SET);
 }
