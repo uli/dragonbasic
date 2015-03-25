@@ -1,0 +1,351 @@
+;
+; This tutorial will create the beginnings of a
+; side-scrolling shooter. You will learn how to
+; map a background onto the screen and scroll the
+; background. You will also control an airplane
+; and make it shoot bullets, controlling and array
+; of bullets and making sounds.
+
+#title "Tutorial 7"
+#include "$INC\gba.dbc"
+
+; Let's start as always by importing our various
+; images and palettes as well as any other data.
+
+; The Red Baron
+baron_bmp: #bitmap "baron.bmp"
+baron_pal: #palette "baron.bmp"
+
+; Bullets
+bullet_bmp: #bitmap "bullet.bmp"
+bullet_pal: #palette "bullet.bmp"
+
+; Score keeping and timer font
+font_bmp: #bitmap "font.bmp"
+font_pal: #palette "font.bmp"
+
+; The background sky
+cloud_bmp: #bitmap "cloud.bmp"
+clouds_bmp: #bitmap "clouds.bmp"
+
+; Palette for sky and clouds
+sky_pal: #palette "sky.pal"
+
+; We'll declare the constants that we will use
+
+#constant BG 		0
+#constant FONT 		1
+#constant CLOUD 	0
+#constant CLOUDS 	8
+#constant BARON 	0
+#constant BULLET 	1
+#constant BOMB 		4
+
+; Some global variables
+
+dim shot,shot_available,bullets,i,j,bullets$
+
+; Next let's define a subroutine to creat the main
+; background map. The background will consist of
+; some clouds and a blue sky -- all using the same
+; palette.
+
+sub create_bg
+	enabletiles BG,BG,1,0
+	ordertiles BG,1
+
+	; Load the clouds in order, etc.
+	loadtiles 1,CLOUD,cloud_bmp,8
+	loadtiles 1,CLOUDS,clouds_bmp,8
+
+	; Load the palette
+	loadpal16 BG_PALETTE,0,sky_pal
+
+	; Next we'll use the MAPIMAGE subroutine to map
+	; some of our clouds onto the tilemap. This is
+	; done by specifying a tile address as the upper-
+	; left corner of the imagemap, the base tile
+	; index to begin counting from, and the width and
+	; height of the imagemap.
+
+	mapimage tile(BG,3,4),CLOUD,4,2
+	mapimage tile(BG,13,6),CLOUD,4,2
+	mapimage tile(BG,22,12),CLOUD,4,2
+	mapimage tile(BG,27,2),CLOUDS,4,2
+	mapimage tile(BG,6,14),CLOUDS,4,2
+end sub
+
+; Next we'll create a subroutine to setup and load
+; our 16-color font into its background layer.
+
+sub create_font
+	enabletiles FONT,FONT,2,0
+	ordertiles FONT,0
+
+	; Load the font
+	loadfont16 2,font_bmp
+	loadpal16 BG_PALETTE,1,font_pal
+
+	; Since we are using more than one background
+	; layer, we are going to have them use two
+	; different palettes. Since all backgrounds
+	; default to using palette 0, we need to iterate
+	; through all the tiles in this layer and set
+	; them to use palette 1 with COLORTILE.
+
+	for i = 0 to 31
+		for j = 0 to 31
+			colortile tile(FONT,i,j),1
+		next
+	next
+
+	; Display text that will never change
+	print tile(font,1,18),"Score:"
+	print tile(font,8,18),"00000"
+	print tile(font,15,18),"Bullets:"
+	print tile(font,24,18),"--"
+end sub
+
+; Now for the routine that will create the red baron
+; sprite and display it on the screen!
+
+sub create_baron
+	; Load bitmap and palette
+	loadsprite 0,baron_bmp,16
+	loadpal16 SPRITE_PALETTE,0,baron_pal
+
+	; Create sprite
+	makesprite BARON,0
+	colorsprite BARON,0
+	positionsprite BARON,12,44
+	sizesprite BARON,SQUARE,SIZE_32
+
+	; Let's also create and load the bullet sprites!
+	loadsprite 16,bullet_bmp,1
+	loadpal16 SPRITE_PALETTE,1,bullet_pal
+
+	; We will make 3 bullet sprites that we can use
+	; for shooting with. We can do this easily with
+	; a FOR loop.
+
+	for i = BULLET to BULLET + 2
+		makesprite i,16
+		colorsprite i,1
+		hidesprite i
+		sizesprite i,SQUARE,SIZE_8
+	next
+end sub
+
+; Now for the biggest subroutine of the entire program.
+; This will control user-input and moving of the Red
+; Baron's plane. We will allow the Red Baron to move in
+; all directions, however, there will be a limit as to
+; how far to the right, and the plane will constantly
+; move backwards, simulating drag.
+
+sub move_baron
+	; Control movement vertical up
+	if key(KEY_UP) and spritey(BARON) > 2
+		movesprite baron,0,-2
+	end if
+
+	; Control movement vertical down
+	if key(KEY_DOWN) and spritey(BARON) < 98
+		movesprite baron,0,2
+	end if
+
+	; Control movement horizontal
+	if key(KEY_LEFT) then movesprite baron,-4,0
+	if key(KEY_RIGHT) then movesprite baron,4,0
+
+	; Constantly move the baron back
+	movesprite baron,-1,0
+
+	; Clamp the horizontal movement of the baron
+	if spritex(baron) > 100 then _
+		positionsprite baron,100,spritey(baron)
+	if spritex(baron) < 12 then _
+		positionsprite baron,12,spritey(baron)
+end sub
+
+; Now for an equally expensive routine, we'll control
+; the Baron's firepower. By pressing the A button we
+; will shoot the Baron's main gun. However, we want
+; to limit the number of shots on screen at any time to
+; 3. We'll do this with the 'bullets' and 'shot_available'
+; variables.
+
+sub shoot_gun
+	if key(KEY_A) and shot_available and bullets > 0
+
+		; The 'shot' variable will control the next
+		; available bullet sprite that can be shown.
+		; If it is offscreen (hidden), then it can
+		; be show. We use the SPRITEHIDDEN function
+		; to know if a sprite is offscreen or not.
+
+		if spritehidden(shot)
+
+			; Now for some sound. We can use the GBA's
+			; sound channel 4 for white noise to produce
+			; a good sound effect. We do this with the
+			; PLAYDRUM function. Like PLAYNOTE it takes
+			; a length parameter that ranges from 0-64,
+			; a frequency of the sound, as well as a
+			; frequency step parameter.
+
+			playdrum 64,0,8
+
+			; Shot no longer available and remove bullet
+			shot_available = 0
+			bullets = bullets - 1
+
+			; Show the bullet right in front of the baron
+			positionsprite shot,spritex(BARON) + 32,spritey(BARON) + 16
+		end if
+
+		; Advance to the next bullet
+		shot = shot + 1
+
+		; Start over if too many shots fired and wait
+		if shot > BULLET + 2 then shot = BULLET
+	end if
+end sub
+
+; This function will elegantly bring the Baron onto
+; the screen making a grand appearance.
+
+sub bring_in_the_baron
+	; Position the Baron offscreen
+	positionsprite BARON,-36,44
+
+	; We'll use the PLAYNOTE function to play some
+	; background engine noise for the plane. PLAYNOTE
+	; takes 4 parameters: a channel (1 or 2), a length
+	; (ranges from 0-64, 0=play forever), a frequency
+	; and a wave duty. We want this noise to play
+	; forever, and be of a low frequency.
+
+	playnote 2,0,50,WAVE_DUTY_12
+
+	; Slowly move him onscreen
+	while spritex(BARON) < 12
+		movesprite baron,1,0
+		vblank:updatesprites
+	loop
+
+	; Reset the number of weapons
+	bullets = 99
+end sub
+
+; Last, we'll create an interrupt that will scroll
+; the background. Interrupts are very powerful. They
+; can be used to 'interrupt' whatever is currently
+; happening given an event. There are 5 kinds of
+; interrupts that you have access to in Dragon BASIC:
+; timers, vertical blanks, horizontal blanks, input
+; and vertical counts.
+
+; All interrupts are created the same way, using the
+; INTERRUPT keyword. They act as subroutines, but
+; cannot take any arguments. You cannot RETURN from
+; an interrupt, but must EXIT from it. As interrupts
+; can occur at any time, special care must be taken
+; when using global variables within them!
+
+interrupt timer
+	; We'll wait until our timer has fired at least
+	; 7 times before scrolling the background.
+
+	if clocktimer >= 7
+
+		; Reset the timer to begin counting again
+		resettimer
+
+		; We can use the SCROLL subroutine to scroll
+		; any background layer. However, once a layer
+		; has been scrolled, we must use the UPDATETILES
+		; function to show the effects, much like using
+		; UPDATESPRITES to show a change in sprites.
+
+		; Let's scroll the sky background 1 pixel left.
+		scroll BG,1,0
+		updatetiles BG
+
+		; Another shot allowed now
+		shot_available = true
+	end if
+	exit
+
+; Now that all the preparations are done, we can program
+; the beginning of our game.
+
+start:
+	; Set the graphics mode to a tiles mode
+	graphics 0,1 ; Enable sprites
+
+	; Since we use sound functions, we must enable
+	; the sound chip on the GBA. This can be done
+	; with the TURNSOUNDON subroutine.
+
+	turnsoundon
+
+	; Let's call our various subroutines that we
+	; made now to create our background layers and
+	; sprites.
+
+	create_bg
+	create_font
+	create_baron
+
+	; Now that's done, we can setup our timer interrupt.
+	; We'll create a timer that fires 70 times a second,
+	; and make it start ticking.
+
+	maketimer 70
+	starttimer
+
+	; Now to setup and turn on our timer interrupt. This
+	; is done with the ONTIMER function. By passing our
+	; interrupt subroutine (timer) to it, we're telling
+	; the GBA to call this routine every time our timer
+	; fires.
+
+	ontimer timer
+
+	; However, we need to tell the GBA to enable all
+	; interrupts before any of them will be called. We
+	; can do this with ENABLEINTERRUPTS.
+
+	enableinterrupts
+
+	; Now, let's bring in the baron :)
+	bring_in_the_baron
+
+	while
+		; Wait for a vertical blank
+		vblank:updatesprites
+
+		; Every frame, we'll loop through the 3
+		; bullets that may or may not be fired and
+		; move them forward one tile (8 pixels)
+
+		for i = BULLET to BULLET + 2
+			if not spritehidden(i) then movesprite i,8,0
+		next
+
+		; Control the baron
+		move_baron
+		shoot_gun
+
+		; Last, before the next frame, lets show how
+		; many bullets the baron has left to shoot. We
+		; do this by first converting the bullets to
+		; a string, and then using PRINT to display it.
+
+		bullets$ = str$(bullets)
+
+		; Show, right-justified and with preceeding 0's
+		print tile(FONT,24,18),"00"
+		print tile(FONT,24+2-len(bullets$),18),bullets$
+	loop
