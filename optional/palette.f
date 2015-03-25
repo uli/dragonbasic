@@ -3,7 +3,7 @@
 
 \ copy 32 bytes of data from ROM to palette RAM
 : loadpal16 ( palette index a -- )
-	a! 5 # n* + a 32 # copy ;
+	a! 5 # n* + a@ 32 # copy ;
 
 \ copy 512 bytes of data from ROM to palette RAM
 : loadpal256 ( palette a -- )

@@ -176,8 +176,8 @@ code-thumb /hex ( a u -- )
 end-code
 
 \ convert a number to a string and return address
-: str$ ( n -- a ) a! 256 # r-alloc dup a /str ;
-: hex$ ( n -- a ) a! 256 # r-alloc dup a /hex ;
+: str$ ( n -- a ) a! 256 # r-alloc dup a@ /str ;
+: hex$ ( n -- a ) a! 256 # r-alloc dup a@ /hex ;
 
 \ transfer bytes from one address to address in A
 code-thumb -> ( from count -- a ) ( A: to -- to+count )
@@ -214,7 +214,7 @@ end-code
 \ grab the beginning of a string
 : left$ ( from count -- a )
 	256 # r-alloc a! swap over 1+
-		-> dup a! swap resize a ;
+		-> dup a! swap resize a@ ;
 
 \ grab the end of a string
 : right$ ( from count -- a )

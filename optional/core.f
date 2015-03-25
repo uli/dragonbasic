@@ -11,7 +11,7 @@ icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 
 \ divide and modula
 :n / ( n1 n2 -- n3 ) swap a! 7 swi ;
-:n mod ( n1 n2 -- n3 ) swap a! 7 swi drop a ;
+:n mod ( n1 n2 -- n3 ) swap a! 7 swi drop a@ ;
 
 \ conditionals
 :n = ( n1 n2 -- flag ) - 0= ;
@@ -34,7 +34,7 @@ variable .idata
 \ transfer from data pointer to local address register
 :n >a ( -- ) .idata @ a! ;
 
-:n a> ( -- ) a .idata ! ;
+:n a> ( -- ) a@ .idata ! ;
 
 \ allocate bytes of data on the return stack
 code-thumb r-alloc ( u -- a )

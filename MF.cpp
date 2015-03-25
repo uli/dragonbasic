@@ -2703,7 +2703,7 @@ handle_const:
 	} else if (W("a!")) {
 		codeAsm("r0", "r1", "mov,");
 		codeAsm("r0", "pop");
-	} else if (W("a")) {
+	} else if (W("a@")) {
 		codeAsm("r0", "push");
 		// Thumb substitute for "movs"
 		codeAsm("0", "##", "r1", "r0", "add,");
