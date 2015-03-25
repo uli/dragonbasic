@@ -939,7 +939,7 @@ start:
 		PRINT TILE(text,6,9),"PRESS START TO PLAY"
 		print tile(text,5,16),"WRITTEN BY BOOTLEGGER"
 		print tile(text,3,17),"PROGRAMMED IN DRAGONBASIC"
-		print tile(text,0,18),"VISIT  HTTP://WWW.JM-BASIC.COM"
+		print tile(text,2,18),"github.com/uli/dragonbasic"
 
 		updatetiles text
 		a=0 : ghostdir=0 : boardoffset=96
