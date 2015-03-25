@@ -2779,14 +2779,14 @@ handle_const:
 		if (thumb) {
 			codeBranch(out->addr + 4, "ne?", "b,");
 			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "b,");
+			codeBranch(out->addr, "jmp");
 		} else {
 			loop_stack[lpsp++] = out->addr;
 			codeBranch(out->addr, "eq?", "b,");
 		}
 	} else if (W("else")) {
 		invalR5();
-		codeBranch(out->addr, "b,");
+		codeBranch(out->addr, "jmp");
 		if (thumb) {
 			out->reloc10(loop_stack[--lpsp], out->addr);
 			loop_stack[lpsp++] = out->addr - 2;
@@ -2826,7 +2826,7 @@ do_ifwhile:
 		if (thumb) {
 			codeBranch(out->addr + 4, cond, "b,");
 			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "b,");
+			codeBranch(out->addr, "jmp");
 		} else {
 			loop_stack[lpsp++] = out->addr;
 			codeBranch(out->addr, cond, "b,");
@@ -2835,7 +2835,7 @@ do_ifwhile:
 		invalR5();
 		if (thumb) {
 			out->reloc10(loop_stack[--lpsp], out->addr + 2);
-			codeBranch(loop_stack[--lpsp] - 2, "b,");
+			codeBranch(loop_stack[--lpsp] - 2, "jmp");
 		} else {
 			out->reloc24(loop_stack[--lpsp], out->addr + 4);
 			codeBranch(loop_stack[--lpsp], "b,");
@@ -2843,7 +2843,7 @@ do_ifwhile:
 	} else if (W("again")) {
 		invalR5();
 		if (thumb)
-			codeBranch(loop_stack[--lpsp] - 2, "b,");
+			codeBranch(loop_stack[--lpsp] - 2, "jmp");
 		else
 			codeBranch(loop_stack[--lpsp], "b,");
 	} else if (W("0=")) {
