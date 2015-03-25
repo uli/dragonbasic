@@ -1419,8 +1419,8 @@ void Compiler::doLvalNotSub(BasicObject *bobj, bool array)
 		checkNotSegment(SEG_TOP, bobj->val.symbolic);
 		if (is_top_level == true)
 			GLB_error(ERR_UNREACHABLE);
-		if (array) {
-			// Use unoptimized path for array lvalues.
+		if (array || bobj->vtype == VAR_ARRAY) {
+			// Use unoptimized path for array/string lvalues.
 			doAssign(bobj);
 			if (bobj->vtype == VAR_ARRAY)
 				emitTin("MOVE ");
