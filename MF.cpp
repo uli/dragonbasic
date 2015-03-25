@@ -2284,6 +2284,18 @@ parse_next:
 		sym->is_const = true;
 		sym->lit_addr = local_idx;
 		local_idx += 4;
+	} else if (W(";r")) {
+		// return from inside a routine's body
+		if (currently_naked)
+			codeAsm("lr", "bx,");
+		else
+			codeAsm("r6", "bx,");
+	} else if (W(";l")) {
+		// end of function without return
+		invalR5();
+		currently_naked = false;
+		thumb = false;
+		literals.code(out);
 	} else if (W(";")) {
 		invalR5();
 		if (currently_naked)
