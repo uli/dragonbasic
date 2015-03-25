@@ -1,0 +1,282 @@
+; Welcome to tutorial # 6 - Animated Sprites & Sound!
+
+; In this tutorial you will learn how to animate
+; sprites, control them with user input, play
+; WAV files for sound effects and end up creating
+; a walking, jumping Mario!
+
+; First let's include our constants
+
+#title "tutorial 6"
+#include <gba.dbc>
+
+; Here we'll load all of our
+; data into the ROM.
+
+block_bmp:
+	#bitmap "block.pcx"
+block_pal:
+	#palette "block.pcx"
+
+; Mario sprites
+
+mario_stand_bmp:
+	#bitmap "mario_0.pcx"
+mario_walk_bmp:
+	#bitmap "mario_1.pcx"
+mario_run_bmp:
+	#bitmap "mario_2.pcx"
+mario_jump_bmp:
+	#bitmap "mario_3.pcx"
+
+; Load a palette from one image
+
+mario_pal:
+	#palette "mario_1.pcx"
+
+; The one new data type, which we will load here
+; is a WAV file. This is done with the #SOUND
+; directive, just like #BITMAP or #INCLUDE. It
+; must be a PCM, 8-bit, mono or stereo WAV file.
+
+jump_wav: #sound "jump.wav"
+
+; If you have a registered copy of Dragon BASIC, you
+; can uncomment these next two lines to add looping
+; background music to the tutorial.
+
+music: #sound "bg_music.wav"
+
+; Now let's define some sprite constants. Each
+; sprite will be 16x32 (4-bit), so 8 blocks.
+
+#constant MARIO_STAND 0
+#constant MARIO_WALK 8
+#constant MARIO_RUN 16
+#constant MARIO_JUMP 24
+
+; Our mario sprite, just a value from 0-127 and
+; the block tile (1).
+
+#constant MARIO 34
+#constant BLOCK 1
+
+; Now we'll define an array of jump heights, a jump
+; speed in the X direction and a running speed.
+
+DIM jump_y(16),jump_x,jump,speed
+DIM i
+
+; In this section of code we will handle Mario jumping
+; up and down on the screen.
+
+SUB mario_do_jump()
+
+	; Let's set the animation to JUMP.
+
+	animsprite MARIO,MARIO_JUMP,MARIO_JUMP,0
+
+	; Adjust the position of the sprite, we'll make
+	; sure that he won't go off the screen.
+
+	if spritex(MARIO)+jump_x < 0 then jump_x = -spritex(MARIO)
+	if spritex(MARIO)+jump_x > 223 then jump_x = 223 - spritex(MARIO)
+
+	movesprite MARIO,jump_x,jump_y[jump]
+
+	; Change the level of the jump, if we're done then
+	; stop the jump altogether.
+
+	jump = jump + 1
+	if jump > 15 then jump = 0
+
+	return
+
+END SUB
+
+; Let's begin our program
+
+start:
+
+	; Let's set the graphics mode to 0, and enable sprites
+	; We'll also setup background 0 to use screen block 8,
+	; character block 0 and only 16 colors.
+
+	graphics 0,true
+	enabletiles 0,8,0,TEXT_256x256 Nor BG_COLOR_16
+
+	; Now, just like in tutorial 1, let's load our background
+	; tiles and palette into memory at character block 0.
+
+	loadtiles 0,0,block_bmp,2
+	loadpal16 BG_PALETTE,0,block_pal
+
+	; Let's now load our sprites into memory.
+
+	loadsprite MARIO_STAND,mario_stand_bmp,8
+	loadsprite MARIO_WALK,mario_walk_bmp,8
+	loadsprite MARIO_RUN,mario_run_bmp,8
+	loadsprite MARIO_JUMP,mario_jump_bmp,8
+
+	; They all have the same palette.
+
+	loadpal16 SPRITE_PALETTE,0,mario_pal
+
+	; Now we're going to do something new. All sprites (128)
+	; are defaulted to load in the upper-left corner of the
+	; screen (0,0) by the GBA using sprite character 0. This
+	; means that when we start, there will be artifacts visible.
+	; To prevent this, we will use the HIDESPRITE function
+	; to move all the sprites off screen so we can't see them.
+
+	for i = 0 to 127
+		hidesprite i
+	next
+
+	; Next, let's setup the background. We have a block tile
+	; and want it along the bottom of the screen. The screen
+	; is 240x160, so 30x20 8x8 tiles. We can use the POKE
+	; function to set the value of the bottom row of tiles.
+
+	for i = 0 to 29
+		poke tile(8,i,18),BLOCK
+		poke tile(8,i,19),BLOCK
+	next
+
+	; Now let's make our Mario sprite. This sprite is is
+	; different from past sprites in that is isn't square.
+	; It is 16x32. The GBA has very sepecific shape and
+	; size parameters to accomidate many different sized
+	; sprites. For 16x32, we specify TALL and SIZE_32.
+
+	makesprite MARIO,MARIO_STAND
+	sizesprite MARIO,TALL,SIZE_32
+	colorsprite MARIO,0
+	positionsprite MARIO,112,112
+
+	; Let's create a jump array of values
+	jump = 0 ; Mario is not jumping
+	for i = 1 to 15
+		jump_y[i] = i - 8
+	next
+
+	; Now that we are done setting everything up, let's
+	; goto a routine to begin handling user input!
+
+	; Let's set up a simple game timer for speed control and
+	; start it ticking. It will "fire" 20 times a second.
+
+	maketimer 20
+	starttimer
+
+	; NOTE: If you have a registered copy of Dragon BASIC
+	; you can uncomment the line of code below to add looping
+	; background music to the tutorial.
+
+	; Now we'll begin playing background music! We use the
+	; function PLAYMUSIC to do this. It will continuously loop
+	; the music until we stop it with STOPMUSIC. It takes a
+	; single argument - the address of the WAV file.
+
+	playmusic music
+
+	while
+
+		; Well, first (of course) we'll update the screen
+
+		vblank : updatesprites
+
+		; Now we'll wait for 2 fires of our timer (1/10s)
+		; before checking for user input.
+
+		waittimer 1:resettimer
+
+		; The first thing we'll check is to see if the Mario
+		; is currently in a jump (jump > 0). If he is, then
+		; we'll branch to another section of code designed
+		; just for jumping.
+
+		if jump > 0 
+			mario_do_jump
+		else
+
+			; Next, let's start checking for user input. First we'll
+			; check if we should move left. If not, then right. Last,
+			; we'll just stop Mario from moving altogether.
+
+			; Let's check to see if the user is pressing the 'B' button.
+			; If so, let's speed up how fast Mario will move (run).
+
+			if key(KEY_B)
+				speed = 6
+			else
+				speed = 4
+			end if
+
+			; Check to see if the user jumped (A)
+
+			if key(KEY_A)
+
+				; We set our jump variable to initialize the jump
+				; on further frames on animation.
+
+				jump = 1
+
+				; Now let's play our WAV file in the background.
+				; We do this with the PLAYSOUND function. It takes
+				; one argument that is the address of the imported
+				; sound file. Unlike PLAYMUSIC, it will only play
+				; once and stop on its own.
+
+				playsound jump_wav
+
+			end if
+
+			if key(KEY_LEFT)
+
+				; Okay, let's begin walking Mario to the left.
+				; We'll do this with the ANIMSPRITE function.
+				; It will change the sprite character that is
+				; being used by our Mario sprite. and increment
+				; it if desired.
+
+				; It takes 4 parameters: our sprite, the initial
+				; character, the final character, and the number
+				; of blocks between each frame animation.
+
+				animsprite MARIO,MARIO_WALK,MARIO_RUN,8
+
+				; Next we'll flip the direction that the sprite
+				; is facing (to move left). And move it.
+
+				flipsprite MARIO,1,0
+				jump_x = -speed
+
+				if spritex(MARIO) >= speed then movesprite MARIO,jump_x,0
+
+			else
+
+				; Walk to the right?
+
+				if key(KEY_RIGHT)
+
+					animsprite MARIO,MARIO_WALK,MARIO_RUN,8
+					flipsprite MARIO,0,0
+					jump_x = speed
+
+					if spritex(MARIO) <= 223-jump_x then movesprite MARIO,jump_x,0
+
+				else
+
+					; Not moving, set the animation to standing
+					; still, and it doesn't change frames.
+
+					jump_x = 0
+
+					animsprite MARIO,MARIO_STAND,MARIO_STAND,0
+
+				end if
+			end if
+		end if
+
+	loop

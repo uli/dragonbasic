@@ -2,6 +2,7 @@ OBJS = \
 	wavy/wavy.gba \
 	tut_1/tut_1.gba \
 	tut_4/tut_4.gba \
+	tut_6/tut_6.gba \
 
 all: $(OBJS)
 
