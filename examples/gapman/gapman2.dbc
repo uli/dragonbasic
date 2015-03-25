@@ -1,0 +1,1072 @@
+; Copyright (c) 2003 by Bootlegger
+; All rights reserved.
+
+
+#title "GapMan"
+
+#include <gba.dbc>
+
+morph_bmp:			#bitmap		"morph.pcx"
+morph_pal:			#palette	"morph.pcx"
+pactitle_bmp:		#bitmap 	"pactitle3.pcx"
+pactitle_pal:		#palette 	"pactitle3.pcx"
+gapman_bmp: 		#bitmap		"gapman.pcx"   		;gapman image (rotated with rotatematrix command)
+gapman_pal: 		#palette	"gapman.pcx"
+ghosts_bmp: 		#bitmap 	"ghosts.pcx"   		; the yellow ghost image
+ghosts_pal: 		#palette 	"ghosts.pcx"  		; each other ghost is simply the same graphic with colour index tweaked
+ghostpoints_bmp: 	#bitmap 	"ghostpoints.pcx"	; points received for catching ghost in order
+ghostpoints_pal:	#palette 	"ghostpoints.pcx"
+deadpac_bmp: 		#bitmap 	"deadpac.pcx"  		; image of pac death
+deadpac_pal: 		#palette 	"deadpac.pcx"
+font_bmp: 			#bitmap 	"font.pcx" 			; in game font
+font_pal: 			#palette 	"font.pcx"
+fruitsprites_bmp: 	#bitmap 	"fruitsprites.pcx" 	; sprites of fruit images
+fruitsprites_pal: 	#palette 	"fruitsprites.pcx"
+fruitpoints_bmp: 	#bitmap 	"fruitpoints.pcx" 	; points received for getting fruit in order
+fruitpoints_pal: 	#palette 	"fruitpoints.pcx"
+maptiles_bmp: 		#bitmap 	"maptiles2.pcx" 	; tile graphics
+maptiles_pal: 		#palette 	"maptiles2.pcx"
+eatdot: 			#sound 		"eatdot.wav" 		; sound sample of eating dot
+ghostsnormal: 		#sound 		"ghostsnormal.wav" 	; sound sample of ghosts chasing you
+ghostsscared: 		#sound 		"ghostscared2.wav" 	; sound of ghosts running scared from you
+startgame: 			#sound 		"startgame.wav" 	; sound sample of jingle at start of game
+
+
+level_1_dots:
+	data 244 ; how many dots on the board
+level_1: ; the actual board map
+	map 00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
+	map 00,43,33,33,33,33,33,33,33,33,33,33,33,33,01,02,33,33,33,33,33,33,33,33,33,33,33,33,44,00
+	map 00,41,46,46,46,46,46,46,46,46,46,46,46,46,19,20,46,46,46,46,46,46,46,46,46,46,46,46,42,00
+	map 00,41,46,05,29,29,06,46,05,29,29,29,06,46,19,20,46,05,29,29,29,06,46,05,29,29,06,46,42,00
+	map 00,41,47,19,00,00,20,46,19,00,00,00,20,46,19,20,46,19,00,00,00,20,46,19,00,00,20,47,42,00
+	map 00,41,46,03,24,24,04,46,03,24,24,24,04,46,17,18,46,03,24,24,24,04,46,03,24,24,04,46,42,00
+	map 00,41,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,42,00
+	map 00,41,46,05,29,29,06,46,05,06,46,21,29,29,29,29,29,29,22,46,05,06,46,05,29,29,06,46,42,00
+	map 00,41,46,03,24,24,04,46,19,20,46,17,24,24,09,10,24,24,18,46,19,20,46,03,24,24,04,46,42,00
+	map 00,41,46,46,46,46,46,46,19,20,46,46,46,46,19,20,46,46,46,46,19,20,46,46,46,46,46,46,42,00
+	map 00,39,31,31,31,31,06,46,19,08,29,29,22,00,19,20,00,21,29,29,07,20,46,05,31,31,31,31,40,00
+	map 00,00,00,00,00,00,41,46,19,10,24,24,18,00,17,18,00,17,24,24,09,20,46,42,00,00,00,00,00,00
+	map 00,00,00,00,00,00,41,46,19,20,00,00,00,00,00,00,00,00,00,00,19,20,46,42,00,00,00,00,00,00
+	map 00,00,00,00,00,00,41,46,19,20,00,15,31,11,45,45,12,31,16,00,19,20,46,42,00,00,00,00,00,00
+	map 33,33,33,33,33,33,04,46,03,04,00,42,00,00,00,00,00,00,41,00,03,04,46,03,33,33,33,33,33,33
+	map 00,00,00,00,00,00,00,46,00,00,00,42,00,00,00,00,00,00,41,00,00,00,46,00,00,00,00,00,00,00
+	map 31,31,31,31,31,31,06,46,05,06,00,42,00,00,00,00,00,00,41,00,05,06,46,05,31,31,31,31,31,31
+	map 00,80,81,00,00,00,41,46,19,20,00,13,33,33,33,33,33,33,14,00,19,20,46,42,00,00,00,00,00,00
+	map 00,82,83,00,00,00,41,46,19,20,00,00,00,00,00,00,00,00,00,00,19,20,46,42,00,00,00,00,00,00
+	map 00,00,00,00,00,00,41,46,19,20,00,21,29,29,29,29,29,29,22,00,19,20,46,42,00,00,00,00,00,00
+	map 00,43,33,33,33,33,04,46,03,04,00,17,24,24,09,10,24,24,18,00,03,04,46,03,33,33,33,33,44,00
+	map 00,41,46,46,46,46,46,46,46,46,46,46,46,46,19,20,46,46,46,46,46,46,46,46,46,46,46,46,42,00
+	map 00,41,46,21,29,29,06,46,21,29,29,29,22,46,19,20,46,21,29,29,29,22,46,05,29,29,22,46,42,00
+	map 00,41,46,17,24,09,20,46,17,24,24,24,18,46,17,18,46,17,24,24,24,18,46,19,10,24,18,46,42,00
+	map 00,41,47,46,46,19,20,46,46,46,46,46,46,46,00,00,46,46,46,46,46,46,46,19,20,46,46,47,42,00
+	map 00,37,29,06,46,19,20,46,05,06,46,21,29,29,29,29,29,29,22,46,05,06,46,19,20,46,05,29,38,00
+	map 00,35,24,04,46,03,04,46,19,20,46,17,24,24,09,10,24,24,18,46,19,20,46,03,04,46,03,24,36,00
+	map 00,41,46,46,46,46,46,46,19,20,46,46,46,46,19,20,46,46,46,46,19,20,46,46,46,46,46,46,42,00
+	map 00,41,46,21,29,29,29,29,07,08,29,29,22,46,19,20,46,21,29,29,07,08,29,29,29,29,22,46,42,00
+	map 00,41,46,17,24,24,24,24,24,24,24,24,18,46,17,18,46,17,24,24,24,24,24,24,24,24,18,46,42,00
+	map 00,41,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,46,42,00
+	map 00,39,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,40,00
+
+ghostmap:; Map for how ghosts track back home - 96 left, 97 right, 98 up, 99 down; 95 - at home
+	map 00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
+	map 00,00,0,0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
+	map 00,00,99,97,97,97,97,99,97,97,97,97,97,99,00,00,99,96,96,96,96,96,99,96,96,96,96,99,00,00
+	map 00,00,99,00,00,00,00,99,00,00,00,00,00,00,00,00,99,00,00,00,00,00,99,00,00,00,00,99,00,00
+	map 00,00,99,00,00,00,00,99,00,00,00,00,00,99,00,00,99,00,00,00,00,00,99,00,00,00,00,99,00,00
+	map 00,00,99,00,00,00,00,99,00,00,00,00,00,99,00,00,99,00,00,00,00,00,99,00,00,00,00,99,00,00
+	map 00,00,97,97,97,97,97,97,97,97,99,96,96,96,96,97,97,97,97,99,96,96,96,96,96,96,96,96,00,00
+	map 00,00,98,00,00,00,00,98,00,00,99,00,00,00,00,00,00,00,00,99,00,00,98,00,00,00,00,98,00,00
+	map 00,00,98,00,00,00,00,98,00,00,99,00,00,00,00,00,00,00,00,99,00,00,98,00,00,00,00,98,00,00
+	map 00,00,98,97,97,97,97,98,00,00,97,97,97,99,00,00,99,96,96,96,00,00,98,96,96,96,96,96,00,00
+	map 00,00,00,00,00,00,00,98,00,00,00,00,00,99,00,00,99,00,00,00,00,00,99,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,99,00,00,00,00,00,99,00,00,99,00,00,00,00,00,99,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,99,00,00,97,97,97,97,99,99,96,96,96,96,00,00,99,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,99,00,00,98,00,00,00,99,99,00,00,00,98,00,00,99,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,99,00,00,98,00,00,00,99,99,00,00,00,98,00,00,99,00,00,00,00,00,00,00
+	map 97,97,97,97,97,97,97,97,97,97,98,00,00,00,95,95,00,00,00,98,96,96,96,96,96,96,96,96,96,96
+	map 00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,98,00,00,98,96,96,96,96,97,97,97,97,98,00,00,98,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00
+	map 00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00
+	map 00,00,97,97,97,97,97,97,97,97,98,96,96,96,00,00,97,97,97,98,96,96,96,96,96,96,96,96,00,00
+	map 00,00,98,00,00,00,00,98,00,00,00,00,00,98,00,00,98,00,00,00,00,00,98,00,00,00,00,98,00,00
+	map 00,00,98,00,00,00,00,98,00,00,00,00,00,98,00,00,98,00,00,00,00,00,98,00,00,00,00,98,00,00
+	map 00,00,96,96,99,00,00,98,96,96,97,97,97,98,96,97,98,96,96,96,96,96,96,00,00,97,97,98,00,00
+	map 00,00,00,00,99,00,00,98,00,00,98,00,00,00,00,00,00,00,00,98,00,00,98,00,00,98,00,00,00,00
+	map 00,00,00,00,99,00,00,98,00,00,98,00,00,00,00,00,00,00,00,98,00,00,98,00,00,99,00,00,00,00
+	map 00,00,97,97,97,97,97,98,00,00,98,96,96,96,00,00,97,97,97,98,00,00,98,96,96,96,96,96,00,00
+	map 00,00,98,00,00,00,00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00,00,00,00,98,00,00
+	map 00,00,98,00,00,00,00,00,00,00,00,00,00,98,00,00,98,00,00,00,00,00,00,00,00,00,00,98,00,00
+	map 00,00,97,97,97,97,97,97,97,97,97,97,97,98,96,97,98,97,97,97,97,97,97,97,97,97,97,98,00,00
+	map 00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Some background constants
+#constant text	1		; text background layer
+#constant board 2		; level/board background layer
+#constant gmap 	3		; ghost walk home map layer
+; Some sprite constants
+#constant gapman 		0		; gapman sprite & character
+#constant ghost1id 		4
+#constant ghost2id 		8
+#constant ghost3id 		12
+#constant ghost4id 		16
+#constant fruitsprite 	20
+
+#constant left 	0
+#constant right	1
+#constant up 	2
+#constant down 	3
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Global data
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+dim i,j,a,f,boardoffset,score,level,soundplay
+dim tilevalabove,tilevalbelow,tilevalcentre,tilevalleft,tilevalright
+dim g1tilevalabove,g1tilevalbelow,g1tilevalcentre,g1tilevalleft,g1tilevalright
+dim g2tilevalabove,g2tilevalbelow,g2tilevalcentre,g2tilevalleft,g2tilevalright
+dim g3tilevalabove,g3tilevalbelow,g3tilevalcentre,g3tilevalleft,g3tilevalright
+dim g4tilevalabove,g4tilevalbelow,g4tilevalcentre,g4tilevalleft,g4tilevalright
+dim gapmanx, gapmany,gapmanframe,gapmandir,gapmanoffset,gapmaninmove
+dim ghostsrunningscared,dotsleft,blinkdots,dead,fruit_in_show,extraman,looped,loopedmax
+dim notedir,note,soundmin,soundmax,debug,speed,animspeed,lives,hiscore,fruit_taken
+dim ghostanim,dirsavail,ghostboardoffset,ghostpoints,ghostid,ghostoffset,ghosteyesonly
+dim ghostdir,gtilevalabove,gtilevalbelow,gtilevalleft,gtilevalright,gtilevalcentre,ghostx,ghosty
+dim ghost1x,ghost1y,ghost1dir,ghost1inmove,oldghost1dir,ghost1offset,ghost1eyesonly
+dim ghost2x,ghost2y,ghost2dir,ghost2inmove,oldghost2dir,ghost2offset,ghost2eyesonly
+dim ghost3x,ghost3y,ghost3dir,ghost3inmove,oldghost3dir,ghost3offset,ghost3eyesonly
+dim ghost4x,ghost4y,ghost4dir,ghost4inmove,oldghost4dir,ghost4offset,ghost4eyesonly,ghost4toggle
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Game
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Creates the text background
+sub create_text
+	loadfont16 2,font_bmp
+	loadpal16 bg_palette,1,font_pal
+	for i = 0 to 29
+		for j = 0 to 31
+			colortile tile(text,i,j),1
+		next
+	next
+end sub
+
+; Creates the board & blocks
+sub create_board
+	loadtiles 3,0,maptiles_bmp,100
+	loadpal16 bg_palette,2,maptiles_pal
+	for i = 0 to 29
+		for j = 0 to 31
+			colortile tile(board,i,j),2
+		next
+	next
+	restore level_1_dots : read dotsleft
+	maptiles tile(board,0,0),level_1,30,33
+	ordertiles board,0
+end sub
+
+sub show_title
+	maketimer 60 : 	starttimer : while clocktimer<60 : loop
+	cleartiles tile(board,0,0),240/8,33
+	loadtiles 3,0,morph_bmp,320
+	loadpal16 bg_palette,2,morph_pal
+	for i = 0 to 29
+		for j = 0 to 31
+			colortile tile(board,i,j),2
+		next
+	next
+	mapimage tile(board,7,0),0,128/8,160/8
+	ordertiles board,0
+
+	fadein
+	maketimer 60 : 	starttimer : while clocktimer<180 : loop
+	fadeout
+	maketimer 60 : 	starttimer : while clocktimer<60 : loop
+
+	cleartiles tile(board,0,0),240/8,33
+	loadtiles 3,0,pactitle_bmp,200
+	loadpal16 bg_palette,2,pactitle_pal
+	for i = 0 to 29
+		for j = 0 to 31
+			colortile tile(board,i,j),2
+		next
+	next
+	mapimage tile(board,5,5),0,160/8,80/8
+	ordertiles board,0
+
+	fadein
+	maketimer 60 : 	starttimer : while clocktimer<180 : loop
+	fadeout
+	maketimer 60 : 	starttimer : while clocktimer<60 : loop
+
+end sub
+
+sub create_gapman ;set up gapman sprite
+	loadsprite gapman,gapman_bmp,blocks(16,16,4)
+	loadpal16 sprite_palette,0,gapman_pal
+	makesprite gapman,gapman
+	sizesprite gapman,square,size_16
+	colorsprite gapman,0
+end sub
+
+sub create_ghost1 ; set up ghost 1 sprite
+	loadsprite ghost1id,ghosts_bmp,blocks(16,16,4)
+	loadpal16 sprite_palette,1,ghosts_pal
+	makesprite ghost1id,ghost1id
+	sizesprite ghost1id,square,size_16
+	setpalentry sprite_palette,1,3,rgb(31,31,00)
+	colorsprite ghost1id,1
+end sub
+sub create_ghost2 ; set up ghost 2 sprite
+	loadsprite ghost2id,ghosts_bmp,blocks(16,16,4)
+	loadpal16 sprite_palette,2,ghosts_pal
+	makesprite ghost2id,ghost2id
+	sizesprite ghost2id,square,size_16
+	setpalentry sprite_palette,2,3,rgb(31,0,0)
+	colorsprite ghost2id,2
+end sub
+sub create_ghost3 ; set up ghost 3 sprite
+	loadsprite ghost3id,ghosts_bmp,blocks(16,16,4)
+	loadpal16 sprite_palette,3,ghosts_pal
+	makesprite ghost3id,ghost3id
+	sizesprite ghost3id,square,size_16
+	setpalentry sprite_palette,3,3,rgb(31,000,31)
+	colorsprite ghost3id,3
+end sub
+sub create_ghost4 ; set up ghost 4 sprite
+	loadsprite ghost4id,ghosts_bmp,blocks(16,16,4)
+	loadpal16 sprite_palette,4,ghosts_pal
+	makesprite ghost4id,ghost4id
+	sizesprite ghost4id,square,size_16
+	setpalentry sprite_palette,4,3,rgb(000,31,000)
+	colorsprite ghost4id,4
+end sub
+
+sub animframe ; animate gapman sprite
+	gapmanframe=gapmanframe+2 : if gapmanframe=40 then gapmanframe=00 ; causes a pause
+	if gapmanframe=00 then loadsprite gapman,gapman_bmp+0,4
+	if gapmanframe=10 then loadsprite gapman,gapman_bmp+128+gapmanoffset,4
+	if gapmanframe=20 then loadsprite gapman,gapman_bmp+256+gapmanoffset,4
+	if gapmanframe=30 then loadsprite gapman,gapman_bmp+128+gapmanoffset,4
+end sub
+
+sub blinkpacpills
+	if blinkdots=30 ; wait half a sec
+		setpalentry bg_palette,2,5,rgb(031,031,000) ; set pill to yellow
+	end if
+	if blinkdots=60 ; wait half a sec
+		blinkdots=0 ; reset flag
+		setpalentry bg_palette,2,5,rgb(000,000,000) ; set pill to black to hide
+	end if
+	inc blinkdots
+end sub
+
+sub blinkmap
+	turnsoundoff
+	loadsprite gapman,gapman_bmp+0,4
+	updatesprites
+	for f=1 to 10 ; simply rotate the palette around to flash the map.
+		for a=1 to 11 : rotatepal16 bg_palette,2 : next
+		for a=1 to 15 : vblank : next
+		for a=1 to 5 : rotatepal16 bg_palette,2 : next
+		for a=1 to 15 : vblank : next
+	next
+	loadpal16 bg_palette,2,maptiles_pal ; restore the tiles palette
+end sub
+
+sub invert_ghost
+	select ghostdir ; force ghost to about face direction
+		case left
+			ghostdir=right
+		case right
+			ghostdir=left
+		case up
+			ghostdir=down
+		case down
+			ghostdir=up
+	end select
+end sub
+
+
+sub gapmananim
+	makerotation 0,1#,1#,270 ; make rotation matrix
+	makerotation 1,1#,1#,90  ; currently fault with makerotation in dbe 1.4.4 - need two matrix
+	if gapmandir=left  : rotatesprite gapman,-1 : flipsprite gapman,1,0 : end if ; Point left
+	if gapmandir=right : rotatesprite gapman,-1 : flipsprite gapman,0,0 : end if ; Point right
+	if gapmandir=up    : rotatesprite gapman,0  : flipsprite gapman,0,0 : end if ; Point Up
+	if gapmandir=down  : rotatesprite gapman,1  : flipsprite gapman,0,0 : end if ; point down
+
+	tilevalabove =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+0))) NAND %11111111
+	tilevalbelow =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+3))) NAND %11111111
+	tilevalleft  =gettile(tile(board,((gapmanx sr 3)+0),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
+	tilevalright =gettile(tile(board,((gapmanx sr 3)+3),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
+	tilevalcentre=gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
+
+	print tile(text,1,0),"SCORE :        "
+	print tile(text,9,0),str$(score)
+	if score>hiscore then hiscore=score
+	print tile(text,16,0),"HIGH :        "
+	print tile(text,23,0),str$(hiscore)
+
+	if (tilevalcentre)=46 ; if normal pac pill
+		playsound eatdot
+		settile tile( board, (gapmanx sr 3)+1 , ((gapmany+boardoffset) sr 3)+1 ),0 ; clear dot
+		dec dotsleft
+		score=score+10 ; score points
+	end if
+
+	if (tilevalcentre)=47 ; if big pac pill
+		stopsound : playsound eatdot
+		stopmusic : playmusic ghostsscared
+		dec dotsleft
+		ghostpoints=200 ; reset ghost points counter
+		soundmin=65400 : soundmax=65415 : note=soundmax : resettimer ; start ghost scared timer routine
+		settile tile( board, (gapmanx sr 3)+1 , ((gapmany+boardoffset) sr 3)+1 ),0 ; clear dot
+		if ghostsrunningscared=0 ; if not already running scared then
+			ghostsrunningscared=1 ; set flag for scared
+			ghostdir=ghost1dir : invert_ghost : ghost1dir=ghostdir ; and make all ghosts about turn
+			ghostdir=ghost2dir : invert_ghost : ghost2dir=ghostdir
+			ghostdir=ghost3dir : invert_ghost : ghost3dir=ghostdir
+			ghostdir=ghost4dir : invert_ghost : ghost4dir=ghostdir
+		end if
+		score=score+50 ; add 50 points for big pac pill
+	end if
+
+	if  ghostsrunningscared=1 ; timer for ghost scared routine - if hit, cancel ghost scared
+			if clocktimer>(600-(level*50)) ; make ghostrunning scare timer less per each level
+				stopmusic ; and if out of scared time then set all flags back to normal
+				soundmin=65300 : soundmax=65330 : note=soundmax : resettimer
+				ghostsrunningscared=0 : ghostpoints=200
+				stopmusic : playmusic ghostsnormal
+			end if
+	end if
+
+	if gapmaninmove=0 or gapmandir=5 ; gapman move routines - check keys
+		if key(key_left)
+			if (tilevalleft <1 or tilevalleft >45) then gapmandir=left
+		end if
+		if key(key_right)
+			tilevalright =gettile(tile(board,((gapmanx sr 3)+2),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
+			if (tilevalright<1 or tilevalright>45) then gapmandir=right
+		end if
+		if key(key_up)
+			if (tilevalabove<1 or tilevalabove>45) then gapmandir=up
+		end if
+		if key(key_down)
+			tilevalbelow =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+2))) NAND %11111111
+			if (tilevalbelow<1 or tilevalbelow>45) then gapmandir=down
+		end if
+	end if
+
+	if gapmandir=left
+		gapmanx=gapmanx-1 : if gapmanx<0 then gapmanx=gapmanx+232 ; if in tunnel rotate to other side
+		animframe
+		inc gapmaninmove
+		if gapmaninmove=8
+			gapmaninmove=0
+			if  (tilevalleft>0 AND tilevalleft<46) AND gapmandir=0 then gapmandir=5 ; blocked so set no move flag
+		end if
+	end if
+	if gapmandir=right
+		gapmanx=gapmanx+1 : if gapmanx>=232 then gapmanx=gapmanx-232 ; if in tunnel rotate to other side
+		animframe
+		inc gapmaninmove
+		if gapmaninmove=8
+			if (tilevalright>0 AND tilevalright<46) and gapmandir=1 then gapmandir=5 ; blocked so set no move flag
+			gapmaninmove=0
+		end if
+	end if
+	if gapmandir=up
+		gapmany=gapmany-1
+		animframe
+		; scroll the board when required to keep gapman centered in map
+		if boardoffset>0 and gapmany<96 : gapmany=gapmany+1 : scroll board,0,-1 : dec boardoffset : updatetiles board: end if
+		inc gapmaninmove
+		if gapmaninmove=8
+			gapmaninmove=0
+			if (tilevalabove>0 AND tilevalabove<46) and gapmandir=2 then gapmandir=5
+		end if
+	end if
+	if gapmandir=down
+		animframe
+		gapmany=gapmany+1
+		if boardoffset<96 and gapmany>96: gapmany=gapmany-1 : scroll board,0,1 : inc boardoffset : updatetiles board : end if
+		inc gapmaninmove
+		if gapmaninmove=8
+			if (tilevalbelow>0 AND tilevalbelow<46) and gapmandir=3 then gapmandir=5
+			gapmaninmove=0
+		end if
+	end if
+
+	positionsprite gapman,gapmanx+4,gapmany+5
+	updatesprites
+end sub
+
+sub do_ghostoffset
+		; This whole routine is used to flash the ghosts when they are near the end of their ghostscared routine
+		; It simply overrides the normal ghosts animation offset with the ghost scared image
+		ghostoffset=0
+		if clocktimer<(400-(level*50)) then ghostoffset=1024
+		if clocktimer>(401-(level*50)) and clocktimer<(411-(level*50)) then ghostoffset=1024
+		if clocktimer>(421-(level*50)) and clocktimer<(431-(level*50)) then ghostoffset=1024
+		if clocktimer>(441-(level*50)) and clocktimer<(451-(level*50)) then ghostoffset=1024
+		if clocktimer>(461-(level*50)) and clocktimer<(471-(level*50)) then ghostoffset=1024
+		if clocktimer>(481-(level*50)) and clocktimer<(491-(level*50)) then ghostoffset=1024
+		if clocktimer>(501-(level*50)) and clocktimer<(511-(level*50)) then ghostoffset=1024
+		if clocktimer>(521-(level*50)) and clocktimer<(531-(level*50)) then ghostoffset=1024
+		if clocktimer>(541-(level*50)) and clocktimer<(551-(level*50)) then ghostoffset=1024
+		if clocktimer>(561-(level*50)) and clocktimer<(571-(level*50)) then ghostoffset=1024
+		if clocktimer>(581-(level*50)) and clocktimer<(591-(level*50)) then ghostoffset=1024
+end sub
+
+sub do_ghosttilevals
+		; Get the tile values from around the ghost
+		gtilevalabove =gettile(tile(board,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)-0)) NAND %11111111
+		gtilevalbelow =gettile(tile(board,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)+2)) NAND %11111111
+		gtilevalleft  =gettile(tile(board,(ghostx sr 3)-0,(ghosty+ghostboardoffset sr 3)+1)) NAND %11111111
+		gtilevalright =gettile(tile(board,(ghostx sr 3)+2,(ghosty+ghostboardoffset sr 3)+1)) NAND %11111111
+		gtilevalcentre=gettile(tile(board,(ghostx sr 3)+0,(ghosty+ghostboardoffset sr 3)+0)) NAND %11111111
+		if ghosteyesonly
+			gtilevalcentre=gettile(tile(gmap,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)+1)) NAND %11111111
+		end if
+
+		if gtilevalabove>=46 then gtilevalabove=0 ; make ghost ignore pac pills
+		if gtilevalbelow>=46 then gtilevalbelow=0
+		if gtilevalright>=46 then gtilevalright=0
+		if gtilevalleft >=46 then gtilevalleft =0
+
+		dirsavail=0
+		if gtilevalabove=0 then inc dirsavail ; make a count for number of directions available
+		if gtilevalbelow=0 then inc dirsavail ; at ghosts current location
+		if gtilevalleft =0 then inc dirsavail ; if 1, means only 1 dir available
+		if gtilevalright=0 then inc dirsavail ; else must be 2 or more
+
+		if ghostdir=left  and gtilevalleft=0  then dirsavail=0 ; if moving in a direction
+		if ghostdir=right and gtilevalright=0 then dirsavail=0 ; and no blockage then
+		if ghostdir=up    and gtilevalabove=0 then dirsavail=0 ; keep moving in that direction
+		if ghostdir=down  and gtilevalbelow=0 then dirsavail=0 ; - dont allow random choice
+end sub
+
+sub ghost1move
+	if (ghost1x mod 8)=0 and (ghost1y mod 8)=0 ; if on even 8 by 8 boundary then check ghost location
+		if ghostsrunningscared=0 and ghost4eyesonly=0 then setpalentry sprite_palette,1,3,rgb(31,31,0)     ; yellow
+		oldghost1dir=ghost1dir
+		ghost1inmove=0
+		ghostboardoffset=boardoffset sr 4 ;
+
+		ghostdir=ghost1dir : ghostx=ghost1x : ghosty=ghost1y : ghosteyesonly=ghost1eyesonly : do_ghosttilevals
+		g1tilevalabove=gtilevalabove : g1tilevalbelow=gtilevalbelow : g1tilevalleft=gtilevalleft
+		g1tilevalright=gtilevalright : g1tilevalcentre=gtilevalcentre
+
+		;this section kept out of function or subs to allow unique move of ghosts
+		if dirsavail>1 or ghostsrunningscared=1 ; if at intersection with multiple directions, choose a random one
+			while ghost1inmove=0
+				a=random(0,4)
+				if a=up    and g1tilevalabove=0 and oldghost1dir<>down  : ghost1inmove=1 : ghost1dir=up    : end if
+				if a=down  and g1tilevalbelow=0 and oldghost1dir<>up    : ghost1inmove=1 : ghost1dir=down  : end if
+				if a=left  and g1tilevalleft =0 and oldghost1dir<>right : ghost1inmove=1 : ghost1dir=left  : end if
+				if a=right and g1tilevalright=0 and oldghost1dir<>left  : ghost1inmove=1 : ghost1dir=right : end if
+			loop
+		else ; otherwise, if at intersection but with only one direction then choose it
+			if g1tilevalbelow=0 then ghost1dir=down
+			if g1tilevalabove=0 then ghost1dir=up
+			if g1tilevalright=0 then ghost1dir=right
+			if g1tilevalleft =0 then ghost1dir=left
+
+			if oldghost1dir=left  and g1tilevalleft=0  then ghost1dir=left
+			if oldghost1dir=right and g1tilevalright=0 then ghost1dir=right
+			if oldghost1dir=down  and g1tilevalbelow=0 then ghost1dir=down
+			if oldghost1dir=up    and g1tilevalabove=0 then ghost1dir=up
+
+			if abs(ghost1x-gapmanx)>abs((ghost1y-boardoffset)-gapmany)
+					;preference for left/right
+				if ghost1x>=gapmanx and g1tilevalleft =0 and oldghost1dir<>right : ghost1dir=left : end if ; move left
+				if ghost1x<=gapmanx and g1tilevalright=0 and oldghost1dir<>left  : ghost1dir=right : end if ; move right
+			else
+				;preference for up/down
+				if (ghost1y-boardoffset)<=gapmany and g1tilevalbelow=0 and oldghost1dir<>up   : ghost1dir=down : end if ; move down
+				if (ghost1y-boardoffset)>=gapmany and g1tilevalabove=0 and oldghost1dir<>down : ghost1dir=up   : end if ; move up
+			end if
+
+			if g1tilevalabove=45 then ghost1dir=up ; allow ghost out of cage - always biased
+		end if
+
+		if ghost1eyesonly=1 ; if ghost eaten and trying to find home then get use path home tile
+			if g1tilevalcentre=96 then ghost1dir=left
+			if g1tilevalcentre=97 then ghost1dir=right
+			if g1tilevalcentre=98 then ghost1dir=up
+			if g1tilevalcentre=99 then ghost1dir=down
+			if g1tilevalcentre=95 then ghost1eyesonly=0
+			setpalentry sprite_palette,1,3,rgb(000,000,000) ; black - hide ghost coat so only eyes show
+		else
+			setpalentry sprite_palette,1,3,rgb(31,31,000) ; yellow
+		end if
+	end if
+
+	if ghost1x<=7 then ghost1dir=right ; if ghost in tunnel and about to exit screen
+	if ghost1x>=224 then ghost1dir=left ; then flip ghost in the opposite direction
+
+	ghost1offset=0
+	if ghost1dir=left  : ghost1offset=256 : dec ghost1x : end if ; set graphic offset location for ghost
+	if ghost1dir=right : ghost1offset=768 : inc ghost1x : end if ; and move ghost in relevant direction
+	if ghost1dir=up    : ghost1offset=000 : dec ghost1y : end if
+	if ghost1dir=down  : ghost1offset=512 : inc ghost1y : end if
+	if ghostsrunningscared=1  and ghost1eyesonly=0
+		do_ghostoffset : if ghostoffset<>0 then ghost1offset=ghostoffset ; do ghost scared graphic
+	end if
+
+	if animspeed>10 then inc ghost1offset,128 ; pause and animate ghost frame
+	loadsprite ghost1id,ghosts_bmp+ghost1offset+(128*ghostanim),4 ; and set sprite graphic frame
+	positionsprite ghost1id,ghost1x+4,ghost1y+4-boardoffset
+	updatesprites
+end sub
+
+sub ghost2move
+	if (ghost2x mod 8)=0 and (ghost2y mod 8)=0 ; if on even 8 by 8 boundary then check ghost location
+	if ghostsrunningscared=0 and ghost4eyesonly=0 then setpalentry sprite_palette,2,3,rgb(31,0,0)     ; red
+		oldghost2dir=ghost2dir
+		ghost2inmove=0
+		ghostboardoffset=boardoffset sr 4 ;
+
+		ghostdir=ghost2dir : ghostx=ghost2x : ghosty=ghost2y : ghosteyesonly=ghost2eyesonly : do_ghosttilevals
+		g2tilevalabove=gtilevalabove : g2tilevalbelow=gtilevalbelow : g2tilevalleft=gtilevalleft : g2tilevalright=gtilevalright : g2tilevalcentre=gtilevalcentre
+
+		;this section kept out of function or subs to allow unique move of ghosts
+		if dirsavail>1 or ghostsrunningscared=1 ; if at intersection with multiple directions, choose a random one
+			while ghost2inmove=0
+				a=random(0,4)
+				if a=up    and g2tilevalabove=0 and oldghost2dir<>down  : ghost2inmove=1 : ghost2dir=up    : end if
+				if a=down  and g2tilevalbelow=0 and oldghost2dir<>up    : ghost2inmove=1 : ghost2dir=down  : end if
+				if a=left  and g2tilevalleft =0 and oldghost2dir<>right : ghost2inmove=1 : ghost2dir=left  : end if
+				if a=right and g2tilevalright=0 and oldghost2dir<>left  : ghost2inmove=1 : ghost2dir=right : end if
+			loop
+		else ; otherwise, if at intersection but with only one direction then choose it
+			if g2tilevalbelow=0 then ghost2dir=down
+			if g2tilevalabove=0 then ghost2dir=up
+			if g2tilevalright=0 then ghost2dir=right
+			if g2tilevalleft =0 then ghost2dir=left
+
+			if oldghost2dir=left  and g2tilevalleft=0  then ghost2dir=left
+			if oldghost2dir=right and g2tilevalright=0 then ghost2dir=right
+			if oldghost2dir=down  and g2tilevalbelow=0 then ghost2dir=down
+			if oldghost2dir=up    and g2tilevalabove=0 then ghost2dir=up
+
+			if abs(ghost2x-gapmanx)>abs((ghost2y-boardoffset)-gapmany)
+				;preference for up/down
+				if (ghost2y-boardoffset)<=gapmany and g2tilevalbelow=0 and oldghost2dir<>up    : ghost2dir=down : end if ; move down
+				if (ghost2y-boardoffset)>=gapmany and g2tilevalabove=0 and oldghost2dir<>down  : ghost2dir=up   : end if ; move up
+			else
+				;preference for left/right
+				if ghost2x>=gapmanx and g2tilevalleft =0 and oldghost2dir<>right : ghost2dir=left  : end if ; move left
+				if ghost2x<=gapmanx and g2tilevalright=0 and oldghost2dir<>left  : ghost2dir=right : end if ; move right
+			end if
+
+			if g2tilevalabove=45 then ghost2dir=up ; allow ghost out of cage - always biased
+		end if
+
+		if ghost2eyesonly=1
+			if g2tilevalcentre=96 then ghost2dir=left
+			if g2tilevalcentre=97 then ghost2dir=right
+			if g2tilevalcentre=98 then ghost2dir=up
+			if g2tilevalcentre=99 then ghost2dir=down
+			if g2tilevalcentre=95 then ghost2eyesonly=0
+			setpalentry sprite_palette,2,3,rgb(000,000,000) ; black
+		else
+			setpalentry sprite_palette,2,3,rgb(31,000,000) ; red
+		end if
+
+	end if
+
+	if ghost2x<=7 then ghost2dir=right ; if ghost in tunnel and about to exit screen
+	if ghost2x>=224 then ghost2dir=left ; then flip ghost in the opposite direction
+
+	ghost2offset=0
+	if ghost2dir=left  : ghost2offset=256 : dec ghost2x : end if ; set graphic offset location for ghost
+	if ghost2dir=right : ghost2offset=768 : inc ghost2x : end if ; and move ghost in relevant direction
+	if ghost2dir=up    : ghost2offset=000 : dec ghost2y : end if
+	if ghost2dir=down  : ghost2offset=512 : inc ghost2y : end if
+	if ghostsrunningscared=1  and ghost2eyesonly=0
+		do_ghostoffset : if ghostoffset<>0 then ghost2offset=ghostoffset
+	end if
+
+	if animspeed>10 then inc ghost2offset,128
+	loadsprite ghost2id,ghosts_bmp+ghost2offset+(128*ghostanim),4 ; and set sprite graphic frame
+	positionsprite ghost2id,ghost2x+4,ghost2y+4-boardoffset
+	updatesprites
+end sub
+
+sub ghost3move
+	if (ghost3x mod 8)=0 and (ghost3y mod 8)=0 ; if on even 8 by 8 boundary then check ghost location
+	if ghostsrunningscared=0 and ghost4eyesonly=0 then setpalentry sprite_palette,3,3,rgb(31,000,31) ; pink
+		oldghost3dir=ghost3dir
+		ghost3inmove=0
+		ghostboardoffset=boardoffset sr 4 ;
+
+		ghostdir=ghost3dir : ghostx=ghost3x : ghosty=ghost3y : ghosteyesonly=ghost3eyesonly : do_ghosttilevals
+		g3tilevalabove=gtilevalabove : g3tilevalbelow=gtilevalbelow : g3tilevalleft=gtilevalleft : g3tilevalright=gtilevalright : g3tilevalcentre=gtilevalcentre
+
+		;this section kept out of function or subs to allow unique move of ghosts
+			if dirsavail>1 or ghostsrunningscared=1 ; if at intersection with multiple directions, choose a random one
+			while ghost3inmove=0
+				a=random(0,4)
+				if a=up    and g3tilevalabove=0 and oldghost3dir<>down  : ghost3inmove=1 : ghost3dir=up    : end if
+				if a=down  and g3tilevalbelow=0 and oldghost3dir<>up    : ghost3inmove=1 : ghost3dir=down  : end if
+				if a=left  and g3tilevalleft =0 and oldghost3dir<>right : ghost3inmove=1 : ghost3dir=left  : end if
+				if a=right and g3tilevalright=0 and oldghost3dir<>left  : ghost3inmove=1 : ghost3dir=right : end if
+			loop
+		else ; otherwise, if at intersection but with only one direction then choose it
+			if g3tilevalbelow=0 then ghost3dir=down
+			if g3tilevalabove=0 then ghost3dir=up
+			if g3tilevalright=0 then ghost3dir=right
+			if g3tilevalleft =0 then ghost3dir=left
+
+			if oldghost3dir=left  and g3tilevalleft=0  then ghost3dir=left
+			if oldghost3dir=right and g3tilevalright=0 then ghost3dir=right
+			if oldghost3dir=down  and g3tilevalbelow=0 then ghost3dir=down
+			if oldghost3dir=up    and g3tilevalabove=0 then ghost3dir=up
+
+			if abs(ghost3x-gapmanx)>abs((ghost3y-boardoffset)-gapmany)
+				;preference for up/down
+				if (ghost3y-boardoffset)<=gapmany and g3tilevalbelow=0 and oldghost3dir<>up    : ghost3dir=down : end if ; move down
+				if (ghost3y-boardoffset)>=gapmany and g3tilevalabove=0 and oldghost3dir<>down  : ghost3dir=up   : end if ; move up
+			else
+				;preference for left/right
+				if ghost3x>=gapmanx and g3tilevalleft =0 and oldghost3dir<>right : ghost3dir=left  : end if ; move left
+				if ghost3x<=gapmanx and g3tilevalright=0 and oldghost3dir<>left  : ghost3dir=right : end if ; move right
+			end if
+
+			if g3tilevalabove=45 then ghost3dir=up ; allow ghost out of cage - always biased
+		end if
+
+		if ghost3eyesonly=1
+			if g3tilevalcentre=96 then ghost3dir=left
+			if g3tilevalcentre=97 then ghost3dir=right
+			if g3tilevalcentre=98 then ghost3dir=up
+			if g3tilevalcentre=99 then ghost3dir=down
+			if g3tilevalcentre=95 then ghost3eyesonly=0
+			setpalentry sprite_palette,3,3,rgb(000,000,000) ; black
+		else
+			setpalentry sprite_palette,3,3,rgb(31,000,31) ; pink
+		end if
+
+	end if
+
+	if ghost3x<=7 then ghost3dir=right ; if ghost in tunnel and about to exit screen
+	if ghost3x>=224 then ghost3dir=left ; then flip ghost in the opposite direction
+
+	ghost3offset=0
+	if ghost3dir=left  : ghost3offset=256 : dec ghost3x : end if ; set graphic offset location for ghost
+	if ghost3dir=right : ghost3offset=768 : inc ghost3x : end if ; and move ghost in relevant direction
+	if ghost3dir=up    : ghost3offset=000 : dec ghost3y : end if
+	if ghost3dir=down  : ghost3offset=512 : inc ghost3y : end if
+	if ghostsrunningscared=1  and ghost3eyesonly=0
+		do_ghostoffset : if ghostoffset<>0 then ghost3offset=ghostoffset
+	end if
+
+	if animspeed>10 then inc ghost3offset,128
+	loadsprite ghost3id,ghosts_bmp+ghost3offset+(128*ghostanim),4 ; and set sprite graphic frame
+	positionsprite ghost3id,ghost3x+4,ghost3y+4-boardoffset
+	updatesprites
+end sub
+
+sub ghost4move
+	if (ghost4x mod 8)=0 and (ghost4y mod 8)=0 ; if on even 8 by 8 boundary then check ghost location
+		if ghostsrunningscared=0 and ghost4eyesonly=0 then setpalentry sprite_palette,4,3,rgb(000,31,000) ; green
+		oldghost4dir=ghost4dir
+		ghost4inmove=0
+		ghostboardoffset=boardoffset sr 4 ;
+
+		ghostdir=ghost4dir : ghostx=ghost4x : ghosty=ghost4y : ghosteyesonly=ghost4eyesonly : do_ghosttilevals
+		g4tilevalabove=gtilevalabove : g4tilevalbelow=gtilevalbelow : g4tilevalleft=gtilevalleft : g4tilevalright=gtilevalright : g4tilevalcentre=gtilevalcentre
+
+		;this section kept out of function or subs to allow unique move of ghosts
+		if dirsavail>1 or ghostsrunningscared=1 ; if at intersection with multiple directions, choose a random one
+			while ghost4inmove=0
+				a=random(0,4)
+				if a=up    and g4tilevalabove=0 and oldghost4dir<>down  : ghost4inmove=1 : ghost4dir=up    : end if
+				if a=down  and g4tilevalbelow=0 and oldghost4dir<>up    : ghost4inmove=1 : ghost4dir=down  : end if
+				if a=left  and g4tilevalleft =0 and oldghost4dir<>right : ghost4inmove=1 : ghost4dir=left  : end if
+				if a=right and g4tilevalright=0 and oldghost4dir<>left  : ghost4inmove=1 : ghost4dir=right : end if
+			loop
+		else ; otherwise, if at intersection but with only one direction then choose it
+			if g4tilevalbelow=0 then ghost4dir=down
+			if g4tilevalabove=0 then ghost4dir=up
+			if g4tilevalright=0 then ghost4dir=right
+			if g4tilevalleft =0 then ghost4dir=left
+
+			if oldghost4dir=left  and g4tilevalleft=0  then ghost4dir=left
+			if oldghost4dir=right and g4tilevalright=0 then ghost4dir=right
+			if oldghost4dir=down  and g4tilevalbelow=0 then ghost4dir=down
+			if oldghost4dir=up    and g4tilevalabove=0 then ghost4dir=up
+
+			ghost4toggle=1-ghost4toggle
+			if ghost4toggle=0
+				;preference for up/down
+				if (ghost4y-boardoffset)<=gapmany and g4tilevalbelow=0 and oldghost4dir<>up    : ghost4dir=down : end if ; move down
+				if (ghost4y-boardoffset)>=gapmany and g4tilevalabove=0 and oldghost4dir<>down  : ghost4dir=up   : end if ; move up
+			else
+				;preference for left/right
+				if ghost4x>=gapmanx and g4tilevalleft =0 and oldghost4dir<>right : ghost4dir=left  : end if ; move left
+				if ghost4x<=gapmanx and g4tilevalright=0 and oldghost4dir<>left  : ghost4dir=right : end if ; move right
+			end if
+
+			if g4tilevalabove=45 then ghost4dir=up ; allow ghost out of cage - always biased
+
+		end if
+
+		if ghost4eyesonly=1
+			if g4tilevalcentre=96 then ghost4dir=left
+			if g4tilevalcentre=97 then ghost4dir=right
+			if g4tilevalcentre=98 then ghost4dir=up
+			if g4tilevalcentre=99 then ghost4dir=down
+			if g4tilevalcentre=95 then ghost4eyesonly=0
+			setpalentry sprite_palette,4,3,rgb(000,000,000) ; black
+		else
+			setpalentry sprite_palette,4,3,rgb(0,31,0) ; green
+		end if
+	end if
+
+
+	if ghost4x<=7 then ghost4dir=right ; if ghost in tunnel and about to exit screen
+	if ghost4x>=224 then ghost4dir=left ; then flip ghost in the opposite direction
+
+	ghost4offset=0
+	if ghost4dir=left  : ghost4offset=256 : dec ghost4x : end if ; set graphic offset location for ghost
+	if ghost4dir=right : ghost4offset=768 : inc ghost4x : end if ; and move ghost in relevant direction
+	if ghost4dir=up    : ghost4offset=000 : dec ghost4y : end if
+	if ghost4dir=down  : ghost4offset=512 : inc ghost4y : end if
+	if ghostsrunningscared=1 and ghost4eyesonly=0
+		do_ghostoffset : if ghostoffset<>0 then ghost4offset=ghostoffset
+	end if
+
+	if animspeed>10 then inc ghost4offset,128
+	loadsprite ghost4id,ghosts_bmp+ghost4offset+(128*ghostanim),4 ; and set sprite graphic frame
+	positionsprite ghost4id,ghost4x+4,ghost4y+4-boardoffset
+	updatesprites
+end sub
+
+sub init_ghost_positions
+	ghost1x=108 : ghost1y=104 : ghost1dir=0 : ghost4eyesonly=0 ; yellow
+	ghost2x=96  : ghost2y=112 : ghost2dir=1 : ghost4eyesonly=0 ; red
+	ghost3x=120 : ghost3y=112 : ghost3dir=0 : ghost4eyesonly=0 ; pink
+	ghost4x=108 : ghost4y=112 : ghost4dir=0 : ghost4eyesonly=0 ; green
+end sub
+
+sub do_ghostpoints
+			; add points and change ghost into the relevant points on screen
+			score=score+ghostpoints
+			if ghostpoints=1600 then loadsprite ghostid,ghostpoints_bmp+384,4
+			if ghostpoints=800  : ghostpoints=1600 : loadsprite ghostid,ghostpoints_bmp+256,4 : end if
+			if ghostpoints=400  : ghostpoints=800  : loadsprite ghostid,ghostpoints_bmp+128,4 : end if
+			if ghostpoints=200  : ghostpoints=400  : loadsprite ghostid,ghostpoints_bmp+000,4 : end if
+			hidesprite gapman : updatesprites
+			disableinterrupts
+			stopmusic : stopsound : turnsoundoff
+			vblank : turnsoundon
+			disableinterrupts
+			for f=0 to 60 : vblank : playnote 1,64,60000+(f*100),WAVE_DUTY_25 : next
+			enableinterrupts
+
+			; toggle the relevant ghost to eyes only mode
+			if ghostid=ghost1id then ghost1eyesonly=1
+			if ghostid=ghost2id then ghost2eyesonly=1
+			if ghostid=ghost3id then ghost3eyesonly=1
+			if ghostid=ghost4id then ghost4eyesonly=1
+
+			if ghostsrunningscared=1 ; continue with the relevant ghost sound effect
+				playmusic ghostsscared
+			else
+				playmusic ghostsnormal
+			end if
+end sub
+
+sub pachit
+	; check if you have hit a ghost - this flag is used for death if hit and for eating ghosts.
+	dead=0
+	if ghost1x+8>=gapmanx and ghost1x<=gapmanx+8
+		if (ghost1y+8)-boardoffset>=gapmany and ghost1y-boardoffset<=gapmany+8
+			if ghost1eyesonly=0 then dead=1
+		end if
+	end if
+	if ghost2x+8>=gapmanx and ghost2x<=gapmanx+8
+		if (ghost2y+8)-boardoffset>=gapmany and ghost2y-boardoffset<=gapmany+8
+			if ghost2eyesonly=0 then dead=2
+		end if
+	end if
+	if ghost3x+8>=gapmanx and ghost3x<=gapmanx+8
+		if (ghost3y+8)-boardoffset>=gapmany and ghost3y-boardoffset<=gapmany+8
+			if ghost3eyesonly=0 then dead=3
+		end if
+	end if
+	if ghost4x+8>=gapmanx and ghost4x<=gapmanx+8
+		if (ghost4y+8)-boardoffset>=gapmany and ghost4y-boardoffset<=gapmany+8
+			if ghost4eyesonly=0 then dead=4
+		end if
+	end if
+
+	;Must have been killed so show death routine
+	if dead>=1 and ghostsrunningscared=0
+		stopmusic : stopsound : turnsoundoff
+		hidesprite ghost1id : hidesprite ghost2id : hidesprite ghost3id : hidesprite ghost4id : hidesprite fruitsprite
+		for f=12 downto 0
+			disableinterrupts
+			turnsoundon
+			playnote 1,64,60000+(f*100),WAVE_DUTY_25
+			loadsprite gapman,deadpac_bmp+(128*f),4 :loadpal16 sprite_palette,0,deadpac_pal
+			makesprite gapman,gapman : sizesprite gapman,square,size_16
+			colorsprite gapman,0 : positionsprite gapman,gapmanx+4,gapmany+5
+			updatesprites
+			for i=1 to 7 : vblank : next
+		next
+		for i=1 to 15 : vblank : next
+		playnote 1,64,60000+(f*100),WAVE_DUTY_75
+		hidesprite gapman
+		for i=1 to 15 : vblank : next
+		playnote 1,64,60000+(f*100),WAVE_DUTY_75
+		for i=1 to 15 : vblank : next
+
+		; reset a stack of variables
+		init_ghost_positions
+		hidesprite ghost1id : hidesprite ghost2id : hidesprite ghost3id : hidesprite ghost4id
+		boardoffset=96 : gapmandir=0 : gapmaninmove=0 : gapmanx=112 : gapmany=88 : gapmanframe=20
+		scrollpos board,0,boardoffset ; position game board to the bottom
+		dec lives
+		settile tile(board,4,18),84+lives
+		if lives<=0 then settile tile(board,4,18),84
+		updatetiles board
+		positionsprite gapman,gapmanx,gapmany+5
+		loadsprite gapman,gapman_bmp,4 :loadpal16 sprite_palette,0,gapman_pal
+		makesprite gapman,gapman : sizesprite gapman,square,size_16
+		colorsprite gapman,0
+		enableinterrupts
+		stopmusic : playmusic ghostsnormal
+	end if
+
+	; If you have eaten a ghost
+	if ghostsrunningscared=1
+		if (dead=1 and ghost1eyesonly=0) : ghostid=ghost1id : do_ghostpoints : end if
+		if (dead=2 and ghost2eyesonly=0) : ghostid=ghost2id : do_ghostpoints : end if
+		if (dead=3 and ghost3eyesonly=0) : ghostid=ghost3id : do_ghostpoints : end if
+		if (dead=4 and ghost4eyesonly=0) : ghostid=ghost4id : do_ghostpoints : end if
+	end if
+end sub
+
+sub show_level_fruit ; simply show a tiled version of the fruit on the map
+	settile tile(board,25,11),64-(level*2)
+	settile tile(board,26,11),65-(level*2)
+	settile tile(board,25,12),80-(level*2)
+	settile tile(board,26,12),81-(level*2)
+	settile tile(board,28,12),84+level
+end sub
+
+sub show_fruit ; randomly show the sprite version of the fruit on screen
+	if fruit_in_show=0
+		if rnd<50
+			;show fruit
+			fruit_in_show=1
+			loadsprite fruitsprite,fruitsprites_bmp+((level-1)*128),blocks(16,16,4)
+			loadpal16 sprite_palette,5,fruitsprites_pal
+			makesprite fruitsprite,fruitsprite
+			sizesprite fruitsprite,square,size_16
+			colorsprite fruitsprite,5
+			updatesprites
+		end if
+	else
+		inc fruit_in_show
+		positionsprite fruitsprite,112,139-boardoffset
+		if 112+12>=gapmanx and 112<=gapmanx+12 ; and if you are over it then show points for 1/2 a second
+			if (139+12)-boardoffset>=gapmany and 139-boardoffset<=gapmany+12
+				if fruit_taken=0
+					if level=1 : score=score+100  : loadsprite fruitsprite,fruitpoints_bmp+(128*0),4 : end if
+					if level=2 : score=score+300  : loadsprite fruitsprite,fruitpoints_bmp+(128*1),4 : end if
+					if level=3 : score=score+500  : loadsprite fruitsprite,fruitpoints_bmp+(128*2),4 : end if
+					if level=4 : score=score+700  : loadsprite fruitsprite,fruitpoints_bmp+(128*3),4 : end if
+					if level=5 : score=score+1000 : loadsprite fruitsprite,fruitpoints_bmp+(128*4),4 : end if
+					if level=6 : score=score+2000 : loadsprite fruitsprite,fruitpoints_bmp+(128*5),4 : end if
+					if level=7 : score=score+3000 : loadsprite fruitsprite,fruitpoints_bmp+(128*6),4 : end if
+					if level=8 : score=score+5000 : loadsprite fruitsprite,fruitpoints_bmp+(128*7),4 : end if
+				end if
+				fruit_in_show=551 : fruit_taken=1 ; set marker for fruit taken and allow time to show points
+				loadpal16 sprite_palette,5,fruitpoints_pal
+				playnote 2,8,2400,WAVE_DUTY_25 ; make noise
+			end if
+		end if
+
+		if fruit_in_show>600 ; after timer is up (about 6 seconds) then remove the fruit (or points)
+			;remove fruit
+			fruit_in_show=0 : fruit_taken=0
+			hidesprite fruitsprite
+			updatetiles board
+		end if
+	end if
+end sub
+
+;This routine not required any more but simply made a rising and falling sound using the soundchip rather than samples
+;interrupt ghost_sound
+;	if note=soundmin then notedir=1
+;	if note=soundmax then notedir=0
+;	if notedir=1 then inc note
+;	if notedir=0 then dec note
+;	if soundplay=0 then playnote 1,10,note,WAVE_DUTY_75
+;end interrupt
+
+; Entry point
+start:
+
+	graphics 0,true
+	enabletiles gmap,gmap,1,0
+	enabletiles text,text,2,0
+	enabletiles board,board,3,BG_COLOR_16
+	maptiles tile(gmap,0,0),ghostmap,30,32
+	fadeout
+
+	show_title
+
+	while ; main loop
+
+		cleartiles tile(board,0,0),240/8,33
+		CLEARTILES tile(text,0,0),240/8,160/8
+		create_text
+		create_board
+
+		;show intro and wait for key
+		PRINT TILE(text,12,2),"GAP-MAN"
+		PRINT TILE(text,6,9),"PRESS START TO PLAY"
+		print tile(text,5,16),"WRITTEN BY BOOTLEGGER"
+		print tile(text,3,17),"PROGRAMMED IN DRAGONBASIC"
+		print tile(text,0,18),"VISIT  HTTP://WWW.JM-BASIC.COM"
+
+		updatetiles text
+		a=0 : ghostdir=0 : boardoffset=96
+		scrollpos board,0,boardoffset : updatetiles board : vblank
+		fadein
+		while not(key(key_start))
+			inc a
+			scrollpos board,0,boardoffset : updatetiles board : vblank
+			if ghostdir=0 then dec boardoffset
+			if ghostdir=1 then inc boardoffset
+			if ghostdir=0 and boardoffset=8 then ghostdir=1
+			if ghostdir=1 and boardoffset=96 then ghostdir=0
+		loop
+		seed a
+		fadeout
+		; Reset some game data
+		level = 1 : looped=0 : loopedmax=3 	; loopedmax and looped are used to control ghost speed.
+											; after leve 8 then game loops to level one but the ghost get faster.
+											; this will work upto level 23.  Level 16-23 are so fast its impossible.
+		score = 0
+		lives=3
+		extraman=0
+		restore sram
+		hiscore=loadlong ; get hiscore from ram
+
+		while lives>=0 ; main game loop whilst we still have lives left
+			ghostsrunningscared=0
+			soundmin=65300 : soundmax=65330
+			notedir=0 : note=soundmax
+			fruit_in_show=0
+
+			create_board
+			show_level_fruit
+			create_gapman
+			create_ghost1
+			create_ghost2
+			create_ghost3
+			create_ghost4
+
+			; Hide all sprites
+			for i = 0 to 127
+				hidesprite i
+			next
+
+			init_ghost_positions
+
+			speed=0 : ghostpoints=200
+			boardoffset=96 : gapmandir=0 : gapmaninmove=0 : gapmanx=112 : gapmany=88 : gapmanframe=20 : blinkdots=0
+			scrollpos board,0,boardoffset ; position game board to the bottom
+			positionsprite gapman,gapmanx,gapmany+5
+			positionsprite ghost1id,ghost1x+4,ghost1y+4-boardoffset
+			positionsprite ghost2id,ghost2x+4,ghost2y+4-boardoffset
+			positionsprite ghost3id,ghost3x+4,ghost3y+4-boardoffset
+			positionsprite ghost4id,ghost4x+4,ghost4y+4-boardoffset
+			updatesprites
+
+			settile tile(board,4,18),84+lives
+
+			scrollpos text,0,0:updatetiles text
+			cleartiles tile(text,0,0),30,20
+			print tile(text,12,6),"READY!" : updatetiles board : fadein
+			turnsoundon
+			PLAYMUSIC startgame
+			maketimer 60 : 	starttimer : while clocktimer<260 : loop
+			print tile(text,12,6),"      " : updatetiles board
+
+			maketimer 60 ; set up a timer for basic sound and timer counts
+			starttimer
+
+			stopmusic : playmusic ghostsnormal
+
+			;Loop the game code until all dots are eaten
+			while dotsleft>0
+				if lives<0 then dotsleft=0
+				; Wait for a vertical blank then update
+				vblank
+				updatesprites
+				gapmananim
+				blinkpacpills
+				speed=speed+10 : if ghostsrunningscared=1 then speed=speed-5 ; force ghosts to run at half speed when running scared
+				if speed>=10
+					speed=0
+					ghost1move ; move yellow ghost
+					ghost2move ; move red ghost
+					ghost3move ; move pink ghost
+					ghost4move ; move green ghost
+					if looped>=1 ; if over level eight then re-do ghost routine on a specified interval to make them faster
+						dec looped ; 8-15 runs once again every other frame - speed*1.5 : 16-23 runs every frame - double speed
+						if looped=0
+							ghost1move ; move yellow ghost
+							ghost2move ; move red ghost
+							ghost3move ; move pink ghost
+							ghost4move ; move green ghost
+							looped=loopedmax
+						end if
+					end if
+					inc animspeed
+					if animspeed>20 then animspeed=0
+				end if
+				show_fruit
+				; Simply add an extra man if you hit 15000 as a score
+				if extraman=0 and score>=15000
+					extraman=1 : inc lives : settile tile(board,4,18),84+lives : updatetiles board
+				end if
+				pachit
+			loop
+
+			if lives>=0 ; if at this point, either no lives left or level complete - only blink map if level complete
+				blinkmap
+				inc level
+				if level>8 : level=1 : dec loopedmax : looped=loopedmax : end if ; reset level and speed up ghosts
+			end if
+		loop
+		;Game over section - hide all sprite, put map back at the bottom and show game over
+
+		disableinterrupts
+		turnsoundoff
+		hidesprite ghost1id : hidesprite ghost2id : hidesprite ghost3id : hidesprite ghost4id : hidesprite fruitsprite : hidesprite gapman
+		updatesprites
+		boardoffset=96 : scrollpos board,0,boardoffset ; position game board to the bottom
+		print tile(text,10,6),"GAME  OVER" : updatetiles board
+		maketimer 60 : 	starttimer : while clocktimer<130 : loop
+		fadeout
+		; Save hiscore if you have beaten the previous hiscore
+		restore sram
+		hiscore=loadlong
+		if score>hiscore : restore sram : savelong score : end if
+
+	;back to main menu
+	loop
