@@ -45,6 +45,7 @@ clean:
 	rm -f converter converter.exe
 	rm -f dbapi/dbapi.chm
 	$(MAKE) -C $(PIMPMOBILE) clean
+	$(MAKE) -C examples clean
 
 doc:	dbapi/dbapi.chm
 
