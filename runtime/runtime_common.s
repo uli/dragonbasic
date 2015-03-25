@@ -33,7 +33,11 @@ _tin_entry:
 	ldr	r6, irq_handler_p
 	mov	r1, #0x4000000
 	str	r6, [r1, #-4]
+	ldr	r6, waitcnt_val
+	str	r6, [r1, #0x204]
 	bx	r5
+waitcnt_val:
+	.word	0x4317
 irq_handler_p:
 	.word irq_handler
 _tin_entry_p:
