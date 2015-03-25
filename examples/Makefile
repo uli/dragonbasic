@@ -4,6 +4,7 @@ OBJS = \
 	tut_4/tut_4.gba \
 	tut_6/tut_6.gba \
 	tut_7/tut_7.gba \
+	tut_8/tut_8.gba \
 
 all: $(OBJS)
 

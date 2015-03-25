@@ -1,0 +1,314 @@
+; Welcome to tutorial 8 - Rupees!
+
+; This is a rather large tutorial that teaches many
+; things: sprite animation, sprite/sprite collisions,
+; background image mapping and timer interrupts!
+
+#include <gba.dbc>
+
+; Background picture (8-bit)
+
+forest_bmp: #bitmap "forest.pcx"
+forest_pal: #palette "forest.pcx"
+
+; Link (16x256 4-bit)
+
+link_bmp: #bitmap "link.pcx"
+link_pal: #palette "link.pcx"
+
+; Rupee (8x48 4-bit)
+
+rupee_bmp: #bitmap "rupee.pcx"
+rupee_pal: #palette "rupee.pcx"
+
+; Coin sound (8-bit mono)
+
+coin_snd: #sound "coin.wav"
+
+; Let's make some constants
+
+#constant ground 135
+#constant link 0
+#constant rupee 1
+
+; Now we'll define all of our variables
+
+dim size,i,k
+
+; Here we will setup our background layer (0) and load
+; the forest bitmap onto it (tiled) using MAPIMAGE.
+
+sub setup_bg
+
+	; Next let's enable our background
+
+	enabletiles 0,0,1,BG_COLOR_256
+
+	; Let's load our forest tiles into character block 1
+
+	loadtiles 1,0,forest_bmp,blocks(64,160,8)
+	loadpal256 BG_PALETTE,forest_pal
+
+	; Now that we're done loading our background we can
+	; use the function MAPIMAGE to paste the tiles onto
+	; it. MAPIMAGE takes 4 parameters: the tile address
+	; to start at, the base tile value to begin with,
+	; and the width and height (in tiles) of our "image".
+	; Our tiled image needs to be pasted several times,
+	; so we'll use a for loop for that.
+
+	for i = 0 to 30 step 8
+		mapimage tile(0,i,0),0,8,20
+	next
+end sub
+
+; In this routine we will load all of our sprites into
+; RAM and their palettes as well.
+
+sub load_sprites
+
+	; Since we are in a bitmapped mode, video RAM actually
+	; overlaps the RAM available for sprite data. Because
+	; of this, we only have 1/2 the available sprite RAM.
+	; So when we load our sprites, we must do so beginning
+	; at sprite character 512 (instead of 0). If we don't
+	; we'll be writing sprite data to VRAM and the screen
+	; will look all sorts of messed up.
+
+	; We will also use the function BLOCKS to determine how
+	; many 8x8 4-bit blocks of data our image will use. Our
+	; link sprite is 16x256 and 4-bit, so let's compute:
+
+	size = blocks(16,256,4)
+
+	; Now we'll use that with our LOADSPRITE function to
+	; copy the data from ROM to RAM.
+
+	loadsprite 512,link_bmp,size
+
+	; We will also use it to offset where our rupee sprite
+	; data will be. And use BLOCKS again to calculate the
+	; size of our rupee sprite.
+
+	loadsprite 512+size,rupee_bmp,blocks(8,48,4)
+
+	; Now let's copy over the palette data for each of our
+	; 16-color sprites so they use their own.
+
+	loadpal16 sprite_palette,0,link_pal
+	loadpal16 sprite_palette,1,rupee_pal
+end sub
+
+; In this routine we will create our Link sprite
+
+sub make_link
+
+	; Use MAKESPRITE to zero the memory in RAM for
+	; our new sprite, and set it to be Link
+
+	makesprite link,512
+
+	; Set the size of our sprite to 16x32 and position
+	; it at the left edge of the screen.
+
+	sizesprite link,TALL,SIZE_32
+	positionsprite link,0,ground-32
+
+	; Tell the GBA that our sprite is 16-color and what
+	; palette in SPRITE_PALETTE to use.
+
+	colorsprite link,0
+end sub
+
+; Here we will create 4 rupee sprites
+
+sub make_rupees
+
+	; We'll use a FOR loop to create our rupees
+
+	for i = rupee to rupee+3
+
+		; Make the sprite, offset from our link
+		; sprite (zeroing the RAM, too).
+
+		makesprite i,512+size
+
+		; Our rupees are 8x16 and positioned
+		; evenly apart along the "ground".
+
+		sizesprite i,TALL,SIZE_8
+		positionsprite i,i*50,ground-16
+
+		; Tell the GBA that they are 16-color and
+		; that they should use our rupee palette.
+
+		colorsprite i,1
+	next
+end sub
+
+; In this routine we will check to see if Link has "bumped"
+; into any of the 4 rupees.
+
+sub check_get_rupee
+
+	; Loop through each of the rupees
+
+	for i = rupee to rupee+3
+
+		; To check for sprite collisions, we will use the
+		; BUMPSPRITES function. This function will check to
+		; see if the bounding-boxes (sizes) of two sprites
+		; overlap. If they do, it returns true (1), otherwise
+		; it returns false (0). It takes two parameters,
+		; the two sprites that you wish to test for "bumping".
+
+		if bumpsprites(link,i)
+
+			; They collided, so we'll play a coin sound
+
+			playsound coin_snd
+
+			; No hide the rupee so that we can't collide
+			; with it again.
+
+			hidesprite i
+
+		end if
+
+	next
+end sub
+
+; This routine will handle the user input and movement of Link.
+
+sub move_link
+
+	; Check to see if the left or right is pressed.
+
+	select key(KEY_LEFT + KEY_RIGHT)
+
+	case KEY_RIGHT
+
+		; Animate the link sprite, turn on horizontal
+		; flip off and move the sprite 2 pixels right.
+
+		animsprite link,512,512+size-8,8
+		flipsprite link,0,0
+		movesprite link,2,0
+
+		; Now we'll check to see if it is too far off to
+		; the right (offscreen). If so, we'll loop him back
+		; to the left side of the screen
+
+		if spritex(link) < 0-16
+			positionsprite link,-16,spritey(link)
+		end if
+
+	case KEY_LEFT
+
+		; Animate the link sprite, turn on horizontal
+		; flip and move the sprite 2 pixels right.
+
+		animsprite link,512,512+size-8,8
+		flipsprite link,1,0
+		movesprite link,-2,0
+
+		; Now we'll check to see if it is too far off to
+		; the right (offscreen). If so, we'll loop him back
+		; to the left side of the screen
+
+		if spritex(link) < 0-16
+			positionsprite link,239,spritey(link)
+		end if
+
+	default
+
+		; If the user isn't pressing a direction, or is
+		; pressing both then make link just stand still.
+
+		animsprite link,512,512,0 ; Turn off animation
+
+	end select
+
+	; Since Link has moved, we need to see if he has run
+	; into any Rupees...
+
+	check_get_rupee
+end sub
+
+; In this routine we will handle the animating of our
+; four rupees. It is called automatically (by the processor)
+; eight times per second. Because it is an interrupt, it
+; cannot be called like a normal subroutine, so we use
+; the INTERRUPT keyword to declare it.
+
+interrupt animate_rupees
+
+	; Loop through all 4 of our rupees and animate them
+
+	for k = rupee to rupee+3
+
+		; Since as Link picks up each rupee it will be
+		; hidden offscreen, let's check to make sure that
+		; the rupee is still on screen before animating.
+		; If it is still onscreen, we'll use the ANIMSPRITE
+		; routine to animate them.
+
+		;animsprite k,512+size,512+4+size,2
+		if not spritehidden(k) then animsprite k,512+size,512+4+size,2
+	next
+
+	; Just like we use RETURN to exit a subroutine,
+	; we use EXIT to leave and end an INTERRUPT.
+
+exit
+
+; Entry point
+
+start:
+
+	; First, let's set the graphics mode to 3
+	; and enable sprites.
+
+	graphics 0,true
+	turnsoundon
+
+	; Let's call some simple routines to load our
+	; sprites, palettes and create sprites.
+
+	setup_bg
+	load_sprites
+	make_link
+	make_rupees
+
+	; First we will create an "animation" timer. This
+	; timer will allow us to slow down the animation
+	; of our rupees. If you have many different animations,
+	; each wanting to go at different speeds, just set
+	; your timer to fire more often and use CLOCKTIMER
+	; to determine when the next frame should be animated.
+
+	maketimer 8:starttimer
+
+	; Here we will setup our interrupt. We want our rupees
+	; to animate on their own (without us having to call
+	; a subroutine). So we have our timer setup, and now
+	; we use ONTIMER to set the vector to our interrupt
+	; handler: ANIMATE_RUPEES. If we want to later turn off
+	; the interrupt, we would pass 0 or FALSE.
+
+	enableinterrupts:ontimer animate_rupees
+
+	; Loop forever
+
+	while
+
+		; First, let's wait for a vertical blank and
+		; then copy all the updated sprites from RAM.
+
+		vblank:updatesprites
+
+		; Every vertical blank (60 times per second)
+		; we will give the user a change to move Link.
+
+		move_link
+	loop
