@@ -1,0 +1,634 @@
+; Breakout TIN/Dragon BASIC 1.4 sample code
+
+; Copyright (c) 2003 by Jeff Massung
+; All rights reserved.
+
+#title "Breakout"
+
+#include "data.dbc"
+#include <gba.dbc>
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Some background constants
+#constant bg 0			; background layer
+#constant text 1		; text background layer
+#constant board 2		; level/board background layer
+
+; Some sprite constants
+#constant paddle 0		; paddle sprite & character
+#constant ball 5		; ball sprite & character
+#constant gameover 6	; game over sprite & character
+#constant particle 40	; explosion particles (use balls)
+
+; Position constants
+#constant mx 156		; middle x
+#constant my 144		; bottom y
+#constant left_edge 72
+#constant right_edge 232
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Global data
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+dim bg_x,level,last,score,bonus,extra
+dim ix,dx,dy,x,y,t,m,pts,dead,ptr,done
+dim speed,chain,best_chain,paddles_left
+dim blocks_left,i,j,score$,tx,ty,choose
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Game
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Creates the paralax background
+sub create_bg
+	enabletiles bg,bg,1,0
+
+	; Load tile data
+	loadtiles 1,0,bg_bmp,15
+	loadpal16 bg_palette,0,bg_pal
+
+	; Draw map & prioritize
+	maptiles tile(bg,0,0),bg_map,30,20
+	ordertiles bg,1
+
+	; Draw 3 paddles
+	for i = 1 to paddles_left
+		mapimage tile(bg,1,16+i),13,2,1
+	next
+end sub
+
+; Creates the text background
+sub create_text
+	enabletiles text,text,2,0
+
+	; Load tiles after paralax tiles
+	loadfont16 2,font_bmp
+	loadpal16 bg_palette,1,font_pal
+
+	; Color the text
+	for i = 0 to 29
+		for j = 0 to 31
+			colortile tile(text,i,j),1
+		next
+	next
+
+	; Set priority
+	ordertiles text,0
+end sub
+
+; Creates the board & blocks
+sub create_board
+	enabletiles board,board,3,0
+
+	; Load tiles
+	loadtiles 3,0,blocks_bmp,10
+	loadpal16 bg_palette,2,blocks_pal
+
+	; Color the board
+	for i = 9 to 28
+		for j = 2 to 9
+			colortile tile(board,i,j),2
+		next
+	next
+
+	; Set priority
+	ordertiles board,0
+end sub
+
+; Creates the paddle sprite
+sub create_paddle
+	; Load the sprite data
+	loadsprite paddle,paddle_bmp,4
+	loadpal16 sprite_palette,0,paddle_pal
+
+	; Create the sprite
+	makesprite paddle,paddle
+	sizesprite paddle,wide,size_16
+	colorsprite paddle,0
+end sub
+
+; Creates the ball sprite
+sub create_ball
+	; Load the sprite data
+	loadsprite ball,ball_bmp,1
+	loadpal16 sprite_palette,1,ball_pal
+
+	; Create the sprite
+	makesprite ball,ball
+	sizesprite ball,square,size_8
+	colorsprite ball,1
+end sub
+
+; Creates the game over sprite
+sub create_gameover
+	; Load the sprite data
+	loadsprite gameover,gameover_bmp,32
+	loadpal16 sprite_palette,2,gameover_pal
+
+	; Create the sprite
+	makesprite gameover,gameover
+	sizesprite gameover,wide,size_64
+	colorsprite gameover,2
+	hidesprite gameover
+end sub
+
+; Shows the credits
+sub credits
+	; Print the credits offscreen
+	print tile(text,9,20),"Breakout"
+	print tile(text,9,21),"Dragon BASIC"
+	print tile(text,9,23),"Coded by"
+	print tile(text,9,24),"Jeff Massung"
+	print tile(text,9,26),"jma@mfire.com"
+	print tile(text,9,27),"www.simforth.com"
+
+	; Control scrolling speed
+	maketimer 20
+	starttimer
+
+	; Loop until a button is pressed
+	for i = 1 to 224
+		; Continue scrolling
+		waittimer 1:resettimer
+		scroll text,0,1
+		vblank:updatetiles text
+	next
+
+	scrollpos text,0,0:updatetiles text
+	cleartiles tile(text,0,0),30,20
+	stoptimer
+end sub
+
+; Creates the title screen
+sub title
+	; Loop forever
+	while
+		print tile(text,11,5),"B R E A K O U T"
+		print tile(text,11,13),"Start Game"
+		print tile(text,11,15),"Credits"
+
+		; Start with new game
+		print tile(text,9,13),"$"
+		choose = 13
+		done = 0
+
+		while not done
+			select waitkey(key_up + key_down + key_a + key_b + key_start)
+
+			; Code between select & first case always is executed
+			print tile(text,9,choose)," "
+
+			case key_up
+				choose = choose - 2:if choose < 13 then choose = 15
+			case key_down
+				choose = choose + 2:if choose > 15 then choose = 13
+			default
+				; Selection was made
+				done = true
+			end select
+
+			; Redraw the arrow
+			print tile(text,9,choose),"$"
+		loop
+
+		; Clear the menu
+		cleartiles tile(text,0,0),30,20
+
+		; Start the game
+		if choose = 13
+			return
+		else
+			credits
+		end if
+	loop
+end sub
+
+; Loads the next level
+sub load_level
+	level = level + 1
+	blocks_left = 0
+
+	; Reset scroll position to offscreen
+	scrollpos board,0,64
+	updatetiles board
+
+	; Restore the correct label
+	select level
+	case 1
+		ptr = level_1
+	case 2
+		ptr = level_2
+	case 3
+		ptr = level_3
+	case 4
+		ptr = level_4
+	case 5
+		ptr = level_5
+	case 6
+		ptr = level_6
+	case 7
+		ptr = level_7
+	case 8
+		ptr = level_8
+	case 9
+		ptr = level_9
+	default
+		; Increase the speed of the ball
+		speed = speed + 15
+		pts = pts + 5 ; More points per block
+		maketimer speed
+
+		; Restart at level 1
+		ptr = level_1
+		level = 1
+	end select
+
+	; Map the level
+	maptiles tile(board,9,2),ptr,20,8
+
+	; Count the number of blocks
+	for i = 9 to 28 step 2
+		for j = 2 to 9
+			if peek(tile(board,i,j)) nand &3ff
+				blocks_left = blocks_left + 1
+			end if
+		next
+	next
+
+	; Scroll level onto the screen
+	while scrolly(board) > 0
+		scroll board,0,-1
+		vblank:updatetiles board
+	loop
+end sub
+
+; Handles all paddle movement
+sub move_paddle
+	; Move the paddle left
+	if key(key_left)
+		movesprite paddle,-3,0
+
+		; Min position
+		if spritex(paddle) < left_edge
+			positionsprite paddle,left_edge,spritey(paddle)
+		end if
+
+		; Set initial direction of ball travel
+		ix = -1
+	else
+		; Move the paddle right
+		if key(key_right)
+			movesprite paddle,3,0
+
+			; Max position
+			if spritex(paddle) > right_edge - 32
+				positionsprite paddle,right_edge - 32,spritey(paddle)
+			end if
+
+			; Set initial direction of ball travel
+			ix = 1
+		end if
+	end if
+
+	; Move paddle up
+	if key(key_up)
+		if spritey(paddle) > my - 16 then movesprite paddle,0,-1
+	else
+		; Move paddle down
+		if key(key_down)
+			if spritey(paddle) < my then movesprite paddle,0,1
+		end if
+	end if
+end sub
+
+; Moves the paddle offscreen
+sub move_paddle_off
+	hidesprite ball
+
+	; Move the paddle & ball into place
+	while spritex(paddle) > 0
+		vblank:updatesprites
+		movesprite paddle,4,0
+	loop
+end sub
+
+; Lets the user change initial position of paddle
+sub move_paddle_free
+	; Move the paddle & ball into place
+	for i = -32 to mx-16 step 4
+		vblank:updatesprites
+
+		; Move the paddle & ball into position
+		positionsprite paddle,i,my
+		positionsprite ball,i+12,my-8
+	next
+
+	; Radomize initial direction of travel
+	ix = (rnd nand 1) + 1
+	if ix = 2 then ix = -1
+
+	; Loop until the user presses a button
+	while
+		vblank:updatesprites
+
+		; Stop if the user presses 'a' button
+		if key(key_a)
+			; Set the initial ball direction of travel
+			dx = ix:dy = -2
+			x = spritex(ball):y = spritey(ball)
+
+			; Exit subroutine
+			return
+		end if
+
+		move_paddle
+
+		; Put the ball on top of the paddle
+		positionsprite ball,spritex(paddle)+12,spritey(paddle)-8
+	loop
+end sub
+
+; Gives the player an extra paddle
+sub extra_paddle
+	; Extend the new paddle bonus points
+	extra = extra sl 1
+
+	; Limit to 6 paddles total
+	paddles_left = paddles_left + 1
+	if paddles_left > 6 then paddles_left = 6
+
+	; Erase a visible paddle
+	mapimage tile(bg,1,20 - paddles_left),13,2,1
+end sub
+
+; Handles game over code
+sub game_over
+	positionsprite gameover,88,-32
+
+	; Drop the game over sprite
+	while spritey(gameover) < 64
+		vblank:updatesprites
+		movesprite gameover,0,4
+	loop
+
+	; Wait for start button press
+	input key_any
+	hidesprite gameover
+
+	; Start a new game
+	;reset
+end sub
+
+; Makes the paddle fall off the screen
+sub die
+	stoptimer
+	hidesprite ball
+
+	; Play a bad death sound
+	playdrum -1,6,3
+
+	; Move the paddle down
+	while spritey(paddle) >= 0
+		vblank:updatesprites
+		movesprite paddle,0,1
+	loop
+
+	; Erase a visible paddle
+	mapimage tile(bg,1,20 - paddles_left),11,2,1
+
+	; Decrease number of paddle left
+	paddles_left = paddles_left - 1
+	dead = false
+
+	if paddles_left < 0
+		game_over
+	else
+		move_paddle_free
+		starttimer
+	end if
+end sub
+
+; Checks for collision with paddle
+sub check_paddle
+	if x >= spritex(paddle) - 6 and x <= spritex(paddle) + 38
+		if y < spritey(paddle) and y > spritey(paddle) - 10
+			; Check for no ball movement
+			if not dx
+				; Force movement to a side
+				if x + 4 < spritex(paddle) + 16
+					dx = -1
+				else
+					dx = 1
+				end if
+			else
+				; Adjust speed of the ball
+				if x + 4 < spritex(paddle) + 5 then dx = dx - 1
+				if x + 4 > spritex(paddle) + 25 then dx = dx + 1
+
+				; Cap max speed
+				if dx < (-2) then dx = -2
+				if dx > 2 then dx = 2
+			end if
+
+			; Reset bonus points & bounce
+			bonus = pts
+			dy = -2
+			chain = 0
+		end if
+	end if
+end sub
+
+; Break block (update score & sound)
+sub destroy_block
+	playnote 1,4,1200,WAVE_DUTY_50
+
+	; Update score
+	score = score + bonus
+	bonus = bonus + pts
+	chain = chain + 1
+
+	; Record the best chain
+	if chain > best_chain then best_chain = chain
+
+	; Award extra paddle
+	if score >= extra then extra_paddle
+
+	; Erase the block
+	poke t,&2000
+
+	; Erase adjacent block
+	if m nand 1
+		poke t+2,&2000
+	else
+		poke t-2,&2000
+	end if
+
+	; Remove the number of blocks remaining
+	blocks_left = blocks_left - 1
+end sub
+
+; Checks for collision with a block
+sub check_blocks
+	; Left/right blocks
+	if dx <> 0
+		tx = x + dx:if dx > 0 then tx = tx + 6
+		t = tile(board,tx sr 3,y + 4 sr 3)
+		m = peek(t) nand &3ff
+
+		if m
+			; Erase the block
+			destroy_block
+			dx = -dx
+		end if
+	end if
+
+	; Up/down blocks (take dropping into effect)
+	ty = y + dy
+	if dy > 0 then ty = ty + 6
+	t = tile(board,(x + 4) sr 3,ty sr 3)
+	m = peek(t) nand &3ff
+
+	if m
+		; Erase the block
+		destroy_block
+		dy = -dy
+	end if
+end sub
+
+; Handles the movement of the ball
+interrupt move_ball
+	; Move the ball
+	movesprite ball,dx,dy
+
+	; Lookup variables
+	x = spritex(ball)
+	y = spritey(ball)
+
+	; Check collision with paddle & blocks
+	check_paddle
+	check_blocks
+
+	; Check collision with left & right walls
+	if x < left_edge
+		positionsprite ball,left_edge,y
+		dx = -dx
+	else
+		if x > right_edge - 8
+			positionsprite ball,right_edge - 8,y
+			dx = -dx
+		end if
+	end if
+
+	if (y > 157) or (y < 0)
+		dead = true
+	else
+		; Check collision with top & bottom walls
+		if y < 8
+			positionsprite ball,x,8
+			dy = 2
+		end if
+	end if
+end interrupt
+
+; Shows the amount of time remaining
+sub show_stats
+	; Cover up the existing score with 0's
+	print tile(text,2,6),"00000"
+	print tile(text,2,10),"  "
+
+	; Convert score to a string
+	score$ = str$(score)
+
+	; Display the current score & level
+	;print tile(text,2,2),str$(level)
+	print tile(text,2+5-len(score$),6),score$
+
+	; Display the best chain
+	;print tile(text,2,10),str$(best_chain)
+end sub
+
+; Loads the next level
+sub next_level
+	; Stop the timer (halt ball movement)
+	stoptimer
+
+	; Load next level
+	move_paddle_off
+	load_level
+	move_paddle_free
+
+	; Start the game back up
+	starttimer
+end sub
+
+; Entry point
+start:
+	graphics 0,true
+	turnsoundon
+
+	; Reset data
+	level = 0
+	score = 0
+	bonus = 5
+
+	; Set points at which extra paddle
+	extra = 1000
+	pts = 5
+
+	; Reset number of paddles left & beginning speed
+	paddles_left = 3
+	speed = 50
+	dead = false
+	chain = 0
+	best_chain = 0
+
+	; Create the paralax background
+	create_bg
+	create_text
+	create_board
+	create_paddle
+	create_ball
+	create_gameover
+
+	; Hide all sprites
+	for i = 0 to 127
+		hidesprite i
+	next
+
+	; Show the title screen
+	updatesprites:title
+
+	; Set labels that won't change
+	print tile(text,1,1),"Round:"
+	print tile(text,1,5),"Score:"
+	print tile(text,1,9),"Chain:"
+
+	; Start the game
+	load_level
+	move_paddle_free
+
+	; Make a timer to control the ball speed
+	maketimer speed
+	starttimer
+
+	; Setup interrupt for the ball movement
+	enableinterrupts
+	ontimer move_ball
+
+	while
+		; Wait for a vertical blank then update
+		vblank:updatesprites
+
+		; Check for ball death (fell offscreen)
+		if dead then die
+
+		; Allow user input
+		move_paddle
+		show_stats
+
+		; Check for last block destroyed
+		if blocks_left = 0 then next_level
+	loop
