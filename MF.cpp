@@ -221,16 +221,19 @@ const char *Parser::_getNextWord()
 			buf[idx++] = tolower(*tptr++);
 	}
 
-	while (isspace(*tptr))
-		tptr++;
-
 	if (idx == 0)
 		return NULL;
 
-	if (buf[idx - 1] == '"')
+	if (buf[idx - 1] == '"') {
 		text_mode = 1;
-	else
+		assert(isspace(*tptr));
+		tptr++;
+	}
+	else {
 		text_mode = 0;
+		while (isspace(*tptr))
+			tptr++;
+	}
 	buf[idx] = 0;
 
 	return buf;
