@@ -1716,6 +1716,7 @@ bool Parser::parseThumb(const char *word)
 			assert(soff >= -256 && soff < 256);
 			insn |= (soff >> 1) & 0xff;
 		} else {
+short_branch:
 			insn = 0xe000;
 			unsigned int dest = POP_VAL_TYPE(ASM_OFF);
 			DEBUG("asm thumb uncond branch from 0x%x to 0x%x\n", out->addr, dest);
@@ -1724,6 +1725,14 @@ bool Parser::parseThumb(const char *word)
 			insn |= (soff >> 1) & 0x7ff;
 		}
 		code16(insn);
+	} else if (W("jmp")) {
+		/* unconditional branch of arbitrary distance */
+		assert(NOS_TYPE == ASM_OFF);
+		int soff = NOS_VAL - out->addr - 4;
+		if (soff >= -2048 && soff < 2048)
+			goto short_branch;
+		codeAsm(POP_VAL + 1, "r2", "literal");
+		codeAsm("r2", "bx,");
 	} else if (W("bx,")) {
 		unsigned short insn = 0x4700;
 		code16(insn | (POP_REG << 3));
