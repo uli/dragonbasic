@@ -91,9 +91,9 @@ code-thumb playnote ( channel length freq duty -- )
 
 	0 ## r5 cmp,
 	14 #offset le? b,
-	$7 ## r0 mov,
-	8 ## r0 r0 lsl,	\ $700
-	r0 r3 r3 add,
+	$7 ## r2 mov,
+	8 ## r2 r2 lsl,	\ $700
+	r2 r3 r3 add,
 
 	\ set the length of the tone
 	r5 r5 neg,
@@ -117,7 +117,7 @@ code-thumb playnote ( channel length freq duty -- )
 	$62 ## r1 mov,	\ r1 = $62 (channel 1)
 	r5 pop
 	1 ## r5 sub,	\ subs, actually
-	8 #offset eq? b,
+	4 #offset eq? b,
 	$68 ## r1 mov,	\ r1 = $68 (channel 2)
 
 	\ set default values for notes
@@ -126,7 +126,7 @@ code-thumb playnote ( channel length freq duty -- )
 	r4 r1 +( r3 strh,
 	2 ## r1 r1 add,
 	0 ## r5 cmp,
-	8 #offset eq? b,
+	4 #offset eq? b,
 	2 ## r1 add,
 	r4 r1 +( r2 strh,
 
