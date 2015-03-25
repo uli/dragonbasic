@@ -8,8 +8,8 @@ CXXFLAGS = -g -DAPPDIR="\"$(APPDIR)\"" -Wall
 AFLAGS	 = -Iruntime
 
 # options
-CXXFLAGS += -DNDEBUG
-CXXFLAGS += -O2
+#CXXFLAGS += -DNDEBUG
+#CXXFLAGS += -O2
 CXXFLAGS += -DBUG_FOR_BUG
 
 CXX = $(CROSS)g++
@@ -31,6 +31,7 @@ BOBJS = DBC.o.$(PLATFORM)
 MOBJS = MF.o.$(PLATFORM) MF_mappy.o.$(PLATFORM)
 
 all: win linux runtime.gba runpimp.gba
+	$(MAKE) -C examples
 
 win:
 	$(MAKE) _all CROSS=i686-pc-mingw32- PLATFORM=win32
