@@ -25,17 +25,18 @@
 
 
 .global _tin_entry
+.global _tin_entry_p
 .org 0xe0
 _tin_entry:
 	sub	r7, sp, #0x200
-	ldr	r5, tin_entry_p
+	ldr	r5, _tin_entry_p
 	ldr	r6, irq_handler_p
 	mov	r1, #0x4000000
 	str	r6, [r1, #-4]
 	bx	r5
 irq_handler_p:
 	.word irq_handler
-tin_entry_p:
+_tin_entry_p:
 	# will be overwritten by the TIN compiler
 	.word 0xffffffff
 
