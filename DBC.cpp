@@ -554,7 +554,7 @@ void Compiler::compileBasicObject(BasicObject *bobj)
 		doLval(bobj);
 		break;
 	case OBJ_ARR:
-		doLvalNotSub(bobj);
+		doLvalNotSub(bobj, true);
 		break;
 	default:
 		GLB_error(ERR_SYNTAX);
@@ -1407,11 +1407,11 @@ void Compiler::doLval(BasicObject *bobj)
 			GLB_error(ERR_NEED_LVAL, bobj->val.symbolic);
 		callSubroutine(sub);
 	} else {
-		doLvalNotSub(bobj);
+		doLvalNotSub(bobj, false);
 	}
 }
 
-void Compiler::doLvalNotSub(BasicObject *bobj)
+void Compiler::doLvalNotSub(BasicObject *bobj, bool array)
 {
 	if (parser->requireRop(ROP_COLON)) {
 		doLabel(bobj);
@@ -1419,9 +1419,13 @@ void Compiler::doLvalNotSub(BasicObject *bobj)
 		checkNotSegment(SEG_TOP, bobj->val.symbolic);
 		if (is_top_level == true)
 			GLB_error(ERR_UNREACHABLE);
-		if (bobj->vtype == VAR_ARRAY) {
+		if (array) {
+			// Use unoptimized path for array lvalues.
 			doAssign(bobj);
-			emitTin("MOVE ");
+			if (bobj->vtype == VAR_ARRAY)
+				emitTin("MOVE ");
+			else
+				emitTin("SWAP ! ");
 		} else {
 			if (parser->getObjectWithType(OBJ_OP, "=")->val.numeric != OP_EQ)
 				GLB_error(ERR_NOTOKEN, "=");

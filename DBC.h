@@ -409,7 +409,7 @@ public:
 	void doCmdDec();
 	void doLabel(BasicObject *bobj);
 	void doLval(BasicObject *bobj);
-	void doLvalNotSub(BasicObject *bobj);
+	void doLvalNotSub(BasicObject *bobj, bool array);
 	void doRvalFunction(BasicObject *bobj);
 	void doRvalArray(BasicObject *bobj);
 	void doAssign(BasicObject *bobj);
