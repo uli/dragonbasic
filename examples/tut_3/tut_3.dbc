@@ -1,0 +1,177 @@
+; Welcome to tutorial # 3 - If and sprites
+
+; In this tutorial, I will introduce to you the syntax of
+; IF/THEN/ELSE and introduce the various logical operations
+; that can be done. When done you will have completely written
+; a program that will load a sprite into memory and display
+; it on the screen.
+
+; Just like in tutorial 1, lets set the title of the program
+; and include our constants file.
+
+#title "sprites"
+#include "gba.dbc"
+
+; Let's make a simple constant for our dragon sprite
+
+#constant DRAGON 5
+
+; Let's import a big 32x32, 256-color, PNG sprite
+
+dragon_bmp:
+	#bitmap "dragon.png"
+
+; Let's get the 256-color palette, too
+
+dragon_pal:
+	#palette "dragon.png"
+
+; Tell the compiler to start executing here
+start:
+
+; Just like in tutorial 2, let's put the GBA into mode 3. In
+; addition, we need to enable sprites (OBJENABLE) and tell
+; the GBA they are stored in a 1D format (OBJMAP1D).
+
+poke REG_DISPCNT,MODE3 or BG2ENABLE or OBJENABLE or OBJMAP1D
+
+; Just like in tutorial 1, when we loaded the font into tile
+; memory, here we will load our dragon sprite into sprite
+; character memory.
+
+; Here comes a little GBA information. In tiled modes, there
+; are a total of 1024 sprite "characters" available to store
+; sprite data in. However, when in bitmapped mode (like we are)
+; the video memory actually overlaps sprite data, so we only
+; have half the available sprite character (512-1023).
+
+; So now we will load our sprite into memory with LOADSPRITE.
+; We select the character (512) to use, give it the address
+; of our sprite data (dragon_bmp) and tell it how many blocks
+; of data to copy. Just like LOADTILES, blocks are divided into
+; 8x8 16-color blocks. Our sprite is 32x32 and 256-color. That
+; means it will be 16x2 (4x4x2) or 32 blocks in size.
+
+loadsprite 512,dragon_bmp,32
+
+; We also need to load our palette into memory. We are only
+; going to use 1 256-color palette, so we will use the
+; LOADPAL256 function. We want to write to the sprite palette,
+; and write the dragon's palette.
+
+loadpal256 SPRITE_PALETTE,dragon_pal
+
+; Now we are ready to make our sprite. We do this with a
+; series of functions. MAKESPRITE will initialize a sprite
+; with a sprite character. There are 128 sprites available to
+; use, and we will use 5 (our dragon constant). And we will
+; set it to use the sprite character 512 (our dragon data).
+
+makesprite DRAGON,512
+
+; NOTE: all sprites are defaulted to 256 colors. If our
+; dragon was only using a 16-color palette, we would need
+; to call COLORSPRITE in order to set it to 16 colors and
+; tell it which palette to use.
+
+; Now we need to tell the GBA how big our sprite is. We do
+; this with SIZESPRITE. It takes our sprite (DRAGON) as its
+; first argument, followed by a shape and then a size. The
+; shape can be one of 4 values: SQUARE, WIDE, TALL or DOUBLE.
+; DOUBLE is the same as SQUARE, except that it will draw
+; the sprite in double the viewing area. Last is the size of
+; the sprite, which can be: SIZE_8, SIZE_16, SIZE_32 or SIZE_64.
+
+; Our sprite is SQUARE and 32x32.
+
+sizesprite DRAGON,SQUARE,SIZE_32
+
+; Last, we will position our sprite somewhere on the screen
+; with the POSITIONSPRITE function. It takes the sprite number
+; and an X,Y coordinate. We will use the middle of the screen.
+
+positionsprite DRAGON,(240/2)-(32/2),(160/2)-(32/2)
+
+; Everything is all set up, so now let's start our infinite loop
+
+while
+
+	; First thing we need to do is actually display our sprite.
+	; We do this in two steps: wait for a vertical blank and
+	; then copy all of our updated sprite data to OAM RAM.
+	
+	; VBLANK is a function that will halt execution until the
+	; next vertical blank occurs (when nothing is being drawn).
+
+	vblank
+	
+	; UPDATESPRITES copies all our sprite data to OAM RAM.
+	
+	updatesprites
+	
+	; Now we want to know the current position of our dragon,
+	; so we will use the functions SPRITEX and SPRITEY to get
+	; it, and store them into two variables. These will come
+	; in handy later.
+	
+	x = spritex(DRAGON)
+	y = spritey(DRAGON)
+	
+	; Now we want to accept user-input and move the dragon
+	; around on the screen. To do this we need our IF/THEN/ELSE
+	; statements. First we will check to see if the user is
+	; holding down the right arrow on the directional pad. If
+	; so, and the dragon isn't too far right already, we'll move
+	; it to the right some more.
+	
+	if key(KEY_RIGHT) = 0 also x < (239-32)
+		
+		; Since we'll move right, let's face the dragon to the
+		; right. We do this with FLIPSPRITE. Our dragon naturally
+		; faces right, so we want this turned off. FLIPSPRITE
+		; takes three arguments, the sprite (DRAGON) and an X and
+		; Y bit. These are 0 to not flip, and anything else to flip.
+		
+		flipsprite DRAGON,0,0 ; no flipping
+		
+		; Next we will move the sprite a little to the right. We
+		; can do this with MOVESPRITE. MOVESPRITE is exactly the
+		; same as POSITIONSPRITE, except that it adjusts the position
+		; instead of setting it.
+		
+		movesprite DRAGON,1,0 ; 1 pixel to the right
+		
+	; Done
+
+	end if
+
+	; Let's see if the user has the left directional arrow pressed
+	; and the dragon isn't too far to the left.
+
+	if key(KEY_LEFT) = 0 also x > 0
+
+		; Now since we're moving left, let's flip the direction
+		; that our dragon is facing
+		
+		flipsprite DRAGON,1,0
+		
+		; And move it to the left one pixel
+		
+		movesprite DRAGON,-1,0
+		
+	; Done
+	
+	end if
+	
+	; Now let's consider up and down. Well, we don't need to flip
+	; the dragon sprite at all, so we can do everything we need to
+	; on one line. When this is the case, we use the THEN statement
+	; after an IF to tell it to one-line the result.
+	
+	if key(KEY_UP) = 0 also y > 0 then movesprite DRAGON,0,-1
+	if key(KEY_DOWN) = 0 also y < (159-32) then movesprite DRAGON,0,1
+	
+	; That's it, now we'll continue our loop and redraw the screen
+	; by calling UPDATESPRITES.
+
+loop

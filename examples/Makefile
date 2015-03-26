@@ -3,6 +3,7 @@ OBJS = \
 	gapman/gapman2.gba \
 	tut_1/tut_1.gba \
 	tut_2/tut_2.gba \
+	tut_3/tut_3.gba \
 	tut_4/tut_4.gba \
 	tut_6/tut_6.gba \
 	tut_7/tut_7.gba \
