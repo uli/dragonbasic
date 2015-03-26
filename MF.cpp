@@ -519,10 +519,10 @@ void Output::emitBitmap(const char *bmp)
 	FREE_IMAGE_FORMAT fif = FreeImage_GetFileType(bmp, 0);
 
 	if (fif == FIF_UNKNOWN)
-		GLB_error("unknown image format in %s\n", bmp);
+		GLB_error("%s: file not found or unknown image format\n", bmp);
 	FIBITMAP *img = FreeImage_Load(fif, bmp, 0);
 	if (!img)
-		GLB_error("unable to load bitmap %s\n", bmp);
+		GLB_error("%s: failed to load bitmap\n", bmp);
 
 	int width = FreeImage_GetWidth(img);
 	int height = FreeImage_GetHeight(img);
