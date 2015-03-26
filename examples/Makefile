@@ -5,6 +5,7 @@ OBJS = \
 	tut_2/tut_2.gba \
 	tut_3/tut_3.gba \
 	tut_4/tut_4.gba \
+	tut_5/tut_5.gba \
 	tut_6/tut_6.gba \
 	tut_7/tut_7.gba \
 	tut_8/tut_8.gba \

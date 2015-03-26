@@ -1,19 +1,16 @@
 ; Welcome to Tutorial # 5 - Sprite Rotation
 
-; In this tutorial, we will deal with loading
-; mutliple sprites on the screen and rotating
-; them. We'll also use multiply 16-color palettes.
-; You will also be introduced to the GOTO,
-; GOSUB and RETURN statements to affect program.
+; In this tutorial, we will deal with loading mutliple sprites on the screen
+; and rotating them.  We'll also use multiply 16-color palettes.  You will
+; also be introduced to subroutines.
 
-; When done, you will be on your way to making a
-; neat little ASTEROIDS game.
+; When done, you will be on your way to making a neat little ASTEROIDS game.
 
-; First, as always, let's include our constants
+; First, as always, let's include our API file.
 
-#include "gba.dbc"
+#include <gba.dbc>
 
-; Now let's import our sprite data
+; Now let's import our sprite data.
 
 asteroid_small:
 	#bitmap "asteroid_small.png"
@@ -26,210 +23,200 @@ asteroid_small_pal:
 
 asteroid_large_pal:
 	#palette "asteroid_large.png"
-	
-; Let's define a couple rotation angles for use
-; later on. One for small and one for large asteroids.
-; We'll do this in an array.
 
-global angle(2)
+; Let's define a couple of rotation angles for use later on.  One for small
+; and one for large asteroids.  We'll do this in an array.
 
-; Now let's begin our program
+dim angle(2)
 
-start:
+; First, we will define several subroutines used in our main program.
 
-	; Let's define some constant variables
-	mx = RAND_MAX / 240 + 1
-	my = RAND_MAX / 160 + 1
+; In this subroutine, we will create 2 unique sprite rotation matrices - one
+; for the small asteroids and one for the large ones.
 
-	; As usual, let's set the graphics mode (3)
+sub make_rotations
 
-	poke reg_dispcnt,mode3 or bg2enable or objenable or objmap1d
+	; There are 4 built-in rotation matrices in the GBA. We can set any
+	; of these using the MAKEROTATION function.  It takes 4 parameters:
+	; the number of the matrix (0-3), a scale size in the X and Y
+	; directions, and an angle of rotation (0-359).
 
-	; First, just like in our sprite tutorial, we'll
-	; load our sprites into character memory.
+	; We'll create both rotation matrices with no scaling factors (1)
+	; and no rotation yet (angle = 0).
 
-	loadsprite 512,asteroid_small,4
-	
-	; Now we'll learn something new. The GBA has 1024
-	; character sprites available for use. However,
-	; this really is 1024 8x8 (4-bit) blocks of character
-	; data. Our last sprite is at character 512, and
-	; uses 4 blocks. Our next character then must begin
-	; at character 516.
+	; We'll make use of the array of angles we made earlier for each
+	; rotation:
 
-	loadsprite 516,asteroid_large,16
-	
-	; And we'll load our 2 16-color palettes into the
-	; sprite palette RAM area in 16-color indexes# 4 & 5.
-
-	loadpal16 sprite_palette,4,asteroid_small_pal
-	loadpal16 sprite_palette,5,asteroid_large_pal
-	
-	; Next we'll learn a new statement. GOSUB allows
-	; us to branch execution to another area of the
-	; program temporarily, and to come back here when
-	; that section of code is complete.
-	
-	; We'll goto a routine that will create our
-	; rotation matrices.
-	
-	gosub make_rotations
-	
-	; Let's now go to a routine that will create all
-	; of our small asteroids.
-
-	gosub make_small_asteroids
-	
-	; We'll do the same thing again, but to make our
-	; larger asteroids.
-
-	gosub make_large_asteroids
-
-	; Since we've completed setting everything up,
-	; let's use the GOTO statement to branch to our
-	; section of code that will begin running the
-	; program.
-
-	goto run_program
-
-; In this section of code, we will create 2 unique sprite
-; rotation matrices - one for the small asteroids and one
-; for the large ones.
-
-make_rotations:
-
-	; There are 4 built-in rotation matrices in the GBA. We
-	; can set any of these using the MAKEROTATION function.
-	; It takes 4 parameters: the number of the matrix (0-3),
-	; a scale size in the X and Y directions, and an angle
-	; of rotation (0-359).
-	
-	; We'll create both rotation matrices with no scaling
-	; factors (1) and no rotation yet (angle = 0).
-	
-	; We'll make use of the array of angles we made earlier
-	; for each rotation:
-	
 	angle[0] = 0
 	angle[1] = 0
 
-	makerotation 0,1,1,angle[0]
-	makerotation 1,1,1,angle[1]
+	; MAKEROTATION takes a horizontal and vertical scaling factor as its
+	; second and third argument.  It expects these to be fixed-point
+	; (fractional) numbers, so we need to declare them as such by
+	; appending a "#".
 
-	return
-	
-; In this section of code we will create all of our
+	makerotation 0,1#,1#,angle[0]
+	makerotation 1,1#,1#,angle[1]
+
+end sub
+
+; In this subroutine we will create all of our
 ; small asteroids.
 
-make_small_asteroids:
+sub make_small_asteroids
 
-	; The GBA has 128 sprites available for use at
-	; any given time. We'll use 10 of these for small
-	; asteroids. We'll use a FOR loop to create them.
+	; The next line declares a local variable.  Such a variable is only
+	; valid within the bounds of its subroutine.  Local variables keep
+	; the code clean and are also usually faster than globals.
+	; Local variable declarations must come before any other code.
+
+	local i
+
+	; The GBA has 128 sprites available for use at any given time. 
+	; We'll use 10 of these for small asteroids.  We'll use a FOR loop
+	; to create them.
 
 	for i = 0 to 9
-	
-		; If we remember, we put our small asteroids
-		; at character 512. Now we'll make all ten of
-		; these sprites use that character.
-		
+
+		; We remember that we put our small asteroids at character
+		; 512.  Now we make all ten of these sprites use that
+		; character.
+
 		makesprite i,512
 
-		; Initially, all sprites are set to use 1, 256
-		; color palette. We need to tell the GBA that
-		; our sprites are 16-color, and what palette to
-		; use. We use the COLORSPRITE function for this.
-		; The first argument is our sprite, and the
-		; second is the 16-color palette to use. In our
-		; case, we loaded our palette into slot 4.
-		
+		; Initially, all sprites are set to use one 256-color
+		; palette.  We need to tell the GBA that our sprites are
+		; 16-color, and what palette to use.  We use the COLORSPRITE
+		; function for this.  The first argument is our sprite, and
+		; the second is the 16-color palette to use.  In our case,
+		; we loaded our palette into slot 4.
+
 		colorsprite i,4
 
-		; Now we need to tell the GBA the size and shape
-		; of our sprite. Just like in our sprite tutorial
-		; we'll use SIZESPRITE. The only difference now
-		; is that we will use the SIZE_DOUBLE flag. This
-		; will tell the GBA to make our sprite draw in a
-		; 32x32 area instead of a 16x16 area. We do this
-		; because we will be rotating our sprite. If we
-		; don't, the corners of our sprite will get
-		; "clipped", and won't be drawn.
+		; Now we need to tell the GBA the size and shape of our
+		; sprite.  Just like in our sprite tutorial we use
+		; SIZESPRITE.  The only difference now is that we will use
+		; the SIZE_DOUBLE flag.  This will tell the GBA to make our
+		; sprite draw in a 32x32 area instead of a 16x16 area.  We
+		; do this because we will be rotating our sprite.  If we
+		; don't, the corners of our sprite will get "clipped", and
+		; won't be drawn.
 
 		sizesprite i,SQUARE,SIZE_16
 
-		; Next, we'll randomly position our sprite
-		; somewhere on the screen.
-		
-		positionsprite i,rnd/mx,rnd/my
-		
-		; Finally, we want to let the GBA know that this
-		; sprite will be using a rotation matrix for scaling
-		; and rotating of the graphics. We do this by calling
-		; the ROTATESPRITE function. It takes the sprite
-		; and a rotation matrix as parameters.
-		
-		; Remember, there are only 4 rotation matrices, numbered
-		; 0 to 3. If we pass a value less than 0 to this
+		; Next, we randomly position our sprite somewhere on the
+		; screen.
+		; The MOD (modulo) operation ensures that the random numbers
+		; are clamped to the screen's respective dimension.
+
+		positionsprite i, rnd mod 240 ,rnd mod 160
+
+		; Finally, we want to let the GBA know that this sprite will
+		; be using a rotation matrix for scaling and rotating of the
+		; graphics.  We do this by calling the ROTATESPRITE
+		; function.  It takes the sprite and a rotation matrix as
+		; parameters.
+
+		; Remember, there are only four rotation matrices, numbered
+		; 0 to 3.  If we pass a value less than zero to this
 		; function, it will turn off rotation for the sprite.
-		
+
 		; So let's make all of our small asteroids use the first
 		; rotation matrix.
-		
-		rotatesprite i,0
+
+		rotatesprite i, 0
 
 	; Continue our loop
 
 	next
-	
-	; Now that we're done setting up our asteroids, we
-	; can use the RETURN statement to go back to where
-	; we came from with GOSUB.
-	
-	return
 
-; In this section of code we will create all of our
-; large asteroids.
+	; At the end of a subroutine, execution continues after the place
+	; the subroutine has been called from.
 
-make_large_asteroids:
+end sub
 
-	; We'll do the exact same thing for large asteroids
-	; as we did for small. The only differences will be
-	; that they are 32x32, use character 516 and palette
-	; 5 instead of 4. We will also make them use the
-	; second rotation matrix.
+
+; In this subroutine we will create all of our large asteroids.
+
+sub make_large_asteroids
+
+	local i
+
+	; We'll do the exact same thing for large asteroids as we did for
+	; small.  The only differences will be that they are 32x32, use
+	; character 516 and palette 5 instead of 4.  We will also make them
+	; use the second rotation matrix.
 
 	for i = 10 to 19
 
 		makesprite i,516
 		colorsprite i,5
-		sizesprite i,SQUARE,SIZE_32
-		positionsprite i,rnd/mx,rnd/my
+		sizesprite i, SQUARE, SIZE_32
+		positionsprite i, rnd mod 240, rnd mod 160
 		rotatesprite i,1
 
 	next
-	
-	return
-	
-; This is where everything happens.
 
-run_program:
+end sub
+
+; Now let's begin our main program.
+
+start:
+	; As usual, let's set the graphics mode to 3.
+
+	graphics 3,1
+
+	; Just like in our sprite tutorial, we load our sprites into
+	; character memory.
+
+	loadsprite 512,asteroid_small,4
+
+	; Now we learn something new. The GBA has 1024 character sprites
+	; available for use.  However, this really are 1024 8x8 (4-bit)
+	; blocks of character data.  Our last sprite is at character 512,
+	; and uses 4 blocks.  Our next character then must begin at
+	; character 516.
+
+	loadsprite 516,asteroid_large,16
+
+	; And we load our 2 16-color palettes into the
+	; sprite palette RAM area in 16-color indexes# 4 & 5.
+
+	loadpal16 sprite_palette,4,asteroid_small_pal
+	loadpal16 sprite_palette,5,asteroid_large_pal
+
+	; Next, we call a subroutine.  A subroutine is called simply by
+	; stating its name, plus arguments if it has any.  When the
+	; subroutine is finished, execution will resume after the call.
+
+	; Call the routine that will create our rotation matrices.
+
+	make_rotations
+
+	; Let's now call a routine that will create all of our small
+	; asteroids.
+
+	make_small_asteroids
+
+	; We do the same thing again, but to make our larger asteroids.
+
+	make_large_asteroids
 
 	; Let's begin our "forever" loop
 
 	while
-		
-		; Here we will actually rotate our sprites. Since
-		; we have already set up our matrices, and told the
-		; GBA which sprites use which rotation matrix, this
-		; will be suprisingly simple!
-		
-		; All we need to do is re-create the rotation matrix
-		; with the new angle. We want the small asteroids
-		; to spin one direction, and the large asteroids to
-		; rotate another.
 
-		angle[0] = angle[0] - 4
-		angle[1] = angle[1] + 4
+		; Here we will actually rotate our sprites. Since we have
+		; already set up our matrices, and told the GBA which
+		; sprites use which rotation matrix, this will be
+		; suprisingly simple!
+
+		; All we need to do is re-create the rotation matrix with
+		; the new angle.  We want the small asteroids to spin one
+		; direction, and the large asteroids to rotate another.
+
+		angle[0] = angle[0] - 4	; four degrees less
+		angle[1] = angle[1] + 4 ; four degrees more
 
 		; Make sure they stay between 0 and 359
 
@@ -238,11 +225,12 @@ run_program:
 
 		; Recreate each of the two rotation matrices.
 
-		makerotation 0,1,1,angle[0]
-		makerotation 1,1,1,angle[1]
-		
+		makerotation 0,1#,1#,angle[0]
+		makerotation 1,1#,1#,angle[1]
+
 		; Wait for a vertical blank and update the sprites.
 
 		vblank
 		updatesprites
+
 	loop
