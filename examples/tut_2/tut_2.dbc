@@ -1,0 +1,108 @@
+; Welcome to tutorial # 2 - Program Flow
+
+; In this tutorial, I will introduce to you the syntax of
+; program flow and execution. You will end by making a
+; a graphics demonstration in mode 3 with some random numbers
+; thrown in for good measure.
+
+; Just like in tutorial 1, lets set the title of the program
+; and include our constants file.
+
+#title "demo"
+#include "gba.dbc"
+
+; Since we will just start right in with the program, there
+; is no need for a "start" label.
+
+; The first thing we will do is set the graphics mode to
+; mode 3. This is a bitmapped mode, and not a tile mode. This
+; means we will have access to all the pixels in video ram.
+
+; Just like in tutorial 1, we will tell the GBA it should be
+; in mode 3 by setting the display control register.
+
+poke REG_DISPCNT,MODE3 or BG2ENABLE ; Also enable background 2
+
+; Now that we are in mode 3 let's set some global variables
+; to some constant values to help with random number generation
+
+mx = (RAND_MAX/240)+1
+my = (RAND_MAX/160)+1
+
+; Next we will enter into a while loop. We want this loop to
+; execute forever, so there are no arguments to the WHILE
+; statement.
+
+while
+
+	; Since we are in mode 3, let's make sure the screen in clear.
+	; We do this by using the CLS function. It takes the address
+	; of video RAM we want to erase and a color as arguments.
+	; Both SCREEN and BLACK are defined in GBA.DBC.
+
+	cls SCREEN,BLACK
+
+	; Now we will enter into another while loop, and continue
+	; execution until the user presses the A button on the
+	; GBA. We can check the A button with the KEY function. It
+	; will return the state of all keys that we pass as arguments.
+	; A value of 0 means that the key is pressed, and 1 for released.
+	
+	while key(KEY_A)
+	
+		; Now we will draw random triangles on the screen. We do
+		; this with two functions: TRIANGLE - draws the triangle,
+		; and RND - generate a random number. The TRIANGLE function
+		; needs a screen address, three sets of X,Y coodinates and
+		; finally a 15-bit color.
+		
+		; RND/mx will generate a random number from 0-239.
+		; RND/my will generate a random number from 0-159.
+
+		triangle SCREEN,rnd/mx,rnd/my,rnd/mx,rnd/my,rnd/mx,rnd/my,rnd
+		
+	; Continue the while loop with a LOOP statement
+
+	loop
+	
+	; Now we'll clear the screen again, this time yellow
+	
+	cls SCREEN,YELLOW
+	
+	; Now we'll draw a circle in the middle of the screen with the
+	; CIRCLE function. It needs a screen address, X,Y coordinates,
+	; a radius and a 15-bit color.
+	
+	circle SCREEN,120,80,40,RED
+	
+	; Next we'll use a FOR loop to render scanlines over the display
+	; with the LINE function. A FOR loop has 4 main parts:
+	; 	o A counter (i)
+	;	o A starting value (1)
+	;	o A direction (TO/DOWNTO)
+	;	o A goal (159)
+	;	o A step value (3)
+	; By default, the step value is 1 for TO and -1 for DOWNTO.
+
+	for i = 1 to 159 step 3
+	
+		; The LINE function needs a screen address, two sets of
+		; X,Y coordinates and a color.
+
+		line SCREEN,0,i,239,i,DARKBLUE
+		
+	; Continue executing the FOR loop
+
+	next
+	
+	; Before we continue our loop, we will wait for the controller
+	; to change states. Since we knew the state of the controller
+	; after the user pressed A, we can use that state to compare
+	; against. We do this with the INPUT function. It waits to
+	; continue execution until the state passed changes in some way.
+	
+	input KEY_A
+	
+; Continue the program loop
+
+loop
