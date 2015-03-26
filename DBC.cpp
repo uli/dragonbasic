@@ -1428,6 +1428,10 @@ void Compiler::doLvalNotSub(BasicObject *bobj, bool array)
 	if (parser->requireRop(ROP_COLON)) {
 		doLabel(bobj);
 	} else {
+		if (!var_head->findByIdent(bobj->val.symbolic) &&
+		    !sub_args_head->findByIdent(bobj->val.symbolic) &&
+		    !sub_locals_head->findByIdent(bobj->val.symbolic))
+			GLB_error(ERR_UNK_IDENT, bobj->val.symbolic);
 		checkNotSegment(SEG_TOP, bobj->val.symbolic);
 		if (is_top_level == true)
 			GLB_error(ERR_UNREACHABLE);
