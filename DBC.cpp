@@ -412,6 +412,12 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 	// function.  We need to do this here because the local declarations
 	// have to be emitted before the actual function body.
 	while (parser->checkNextBasicObjType(OBJ_EOL)) {
+		// Consume any additional EOLs.  This is necessary so the
+		// compiler won't stumble over empty lines or comments before
+		// the local declarations.
+		while (parser->retrieveNextBasicObject()->next->otype == OBJ_EOL) {
+			parser->consumeNextBasicObj();
+		}
 		BasicObject *loc = parser->retrieveNextBasicObject()->next;
 		assert(loc);
 		if (loc->otype == OBJ_CMD && loc->val.numeric == CMD_LOCAL) {
