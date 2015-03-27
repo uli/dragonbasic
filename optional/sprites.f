@@ -16,7 +16,7 @@
 
 \ returns the current frame character of a sprite
 : spriteframe ( n -- char )
-	sprite 2 # + peek $fc00 # com and ;
+	sprite 4 # + peek $fc00 # com and ;
 
 \ create a new sprite
 code-thumb makesprite ( sprite n -- )
