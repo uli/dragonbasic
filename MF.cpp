@@ -1707,8 +1707,12 @@ bool Parser::parseThumb(const char *word)
 		if (NOS_TYPE == ASM_COND) {
 			insn = 0xd000;
 			CODE_TCOND;
-			unsigned int dest = POP_VAL_TYPE(ASM_OFF);
-			assert(TOS_TYPE == ASM_OFF);
+			unsigned int dest = POP_VAL;
+			assert(TOS_TYPE == ASM_RELOC || TOS_TYPE == ASM_OFF);
+			if (TOS_TYPE == ASM_RELOC) {
+				asm_relocs[dest].reloc = RELOC_8;
+				dest = out->addr;
+			}
 			DEBUG("asm thumb cond branch from 0x%x to 0x%x\n", out->addr, dest);
 			int soff = dest - out->addr - 4;
 			assert(soff >= -256 && soff < 256);
