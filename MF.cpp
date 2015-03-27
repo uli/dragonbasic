@@ -1938,10 +1938,33 @@ void Parser::parseAsm(const char *word)
 		DEBUGN("\n");
 #endif
 	} else if (W("l:")) {
-		asm_labels[lsp].label = strdup(getNextWord());
+		const char *label = getNextWord();
+		asm_labels[lsp].label = strdup(label);
 		asm_labels[lsp++].addr = out->addr;
 		DEBUG("asm label %s at 0x%x\n", asm_labels[lsp - 1].label,
 		      out->addr);
+
+		// Resolve forward references to this label, if any.
+		for (int i = 0; i < rsp; i++) {
+			if (asm_relocs[i].label &&
+			    !strcmp(asm_relocs[i].label, label)) {
+				switch (asm_relocs[i].reloc) {
+				case RELOC_8:
+					out->reloc8(asm_relocs[i].addr, out->addr);
+					break;
+				case RELOC_10:
+					out->reloc10(asm_relocs[i].addr, out->addr);
+					break;
+				case RELOC_24:
+					out->reloc24(asm_relocs[i].addr, out->addr);
+					break;
+				default:
+					abort();
+				}
+				delete asm_relocs[i].label;
+				asm_relocs[i].label = NULL;
+			}
+		}
 	} else if (isNum(word)) {
 		unsigned int imm = TIN_parseNum(word);
 		PUSH_ASM(ASM_IMM, imm);
