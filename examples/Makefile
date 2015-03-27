@@ -16,7 +16,7 @@ OBJS = \
 all: $(OBJS)
 
 clean:
-	rm -f */*.gba
+	rm -f */*.gba */*.sym
 
 $(OBJS): %.gba: %.dbc
-	cd $(@D); ../../dbc $(<F) $(@F)
+	cd $(@D); ../../dbc -sym $(<F) $(@F)
