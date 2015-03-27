@@ -67,11 +67,11 @@ code-thumb stopmusic ( -- )
 	
 	\ turn off timer 0 overflow interrupt
 	v2 $3e #( w ldrh,		\ $4000200
-	$c0 ## v1 mov,
+	$8 ## v1 mov,
 	v1 w bic,
 	v2 $3e #( w strh,		\ $4000200
 	
-	\ stop dma 1 and timer 0
+	\ stop dma 1 and reset timer 0
 	0 ## w mov,
 	v0 0@ w str,			\ $40000c4
 	v0 $3c #( w str,		\ $4000100 (timers)
