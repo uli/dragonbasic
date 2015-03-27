@@ -2689,10 +2689,23 @@ handle_const:
 		end_str++;
 #endif
 		end_str = (end_str + 3) & ~3;
+		out->addSym(".byt:0001");
 		out->emitByte(strlen(str));
+
+		char dbgsym[10];
+		sprintf(dbgsym, ".asc:%04X", (unsigned int)strlen(str));
+		out->addSym(dbgsym);
+
 		out->emitString(str, strlen(str));
+
+		unsigned int pad_start = out->addr;
 		while (out->addr < end_str)
 			out->emitByte(0);
+		if (out->addr > pad_start) {
+			sprintf(dbgsym, ".byt:%04X", out->addr - pad_start);
+			out->addSym(dbgsym, pad_start);
+		}
+
 		if (thumb)
 			out->reloc10(skip, out->addr);
 		else
