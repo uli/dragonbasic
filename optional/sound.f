@@ -82,6 +82,16 @@ end-code
 
 \ play a single note out channel 1 or 2
 code-thumb playnote ( channel length freq duty -- )
+	\ check for sweep control
+	\ if = 0 then set bit 3
+	\ hardware need that sometime
+	$4000060 r4 LITERAL
+	r4 0@ r3 ldrh,
+	0 ## r3 cmp,
+	6 #offset ne? b,
+	8 ## r3 mov,
+	r4 0@ r3 strh,
+
 	\ load arguments
 	r4 r5 pop
 
