@@ -47,6 +47,7 @@ bool option_multiboot;
 bool option_debug;
 bool option_optimize;
 bool option_mod;
+bool option_sym;
 
 void GLB_error(enum error_t error_code, ...);
 void GLB_failWithMbox(const char *msg, const char *func, int line);
@@ -2034,6 +2035,9 @@ int GLB_parseOneOption(int optind, char **argv)
 		} else if (!strcasecmp(argv[optind] + 1, "mod")) {
 			option_mod = true;
 			next = optind + 1;
+		} else if (!strcasecmp(argv[optind] + 1, "sym")) {
+			option_sym = true;
+			next = optind + 1;
 		} else {
 			if (!strcasecmp(argv[optind] + 1, "debug")) {
 				option_debug = true;
@@ -2079,6 +2083,7 @@ void GLB_runMF(const char *lpFileName, const char *outfile)
 	const char *odbg;
 	const char *oopt;
 	const char *omod;
+	const char *osym;
 	char options[256];
 
 	if (option_optimize)
@@ -2097,7 +2102,11 @@ void GLB_runMF(const char *lpFileName, const char *outfile)
 		omod = "-mod ";
 	else
 		omod = "";
-	sprintf(options, "%s%s%s%s", omod, omb, odbg, oopt);
+	if (option_sym)
+		osym = "-sym ";
+	else
+		osym = "";
+	sprintf(options, "%s%s%s%s%s", omod, omb, odbg, oopt, osym);
 	GLB_runProgramWithArgs("mf" EXE, options, lpFileName, outfile,
 			       !option_debug);
 }
