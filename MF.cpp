@@ -798,6 +798,26 @@ void Output::reloc10(unsigned int addr, unsigned int target)
 	fseek(fp, cur, SEEK_SET);
 }
 
+void Output::reloc8(unsigned int addr, unsigned int target)
+{
+	unsigned short insn;
+	long cur = ftell(fp);
+	fseek(fp, addr - 0x8000000, SEEK_SET);
+	fread(&insn, 1, 2, fp);
+
+	insn &= 0xff00;
+	int off = target - addr - 4;
+	assert(abs(off) < 256);
+	insn |= (off >> 1) & 0xff;
+
+	DEBUG("reloc8 from 0x%x to 0x%x insn 0x%x\n", addr, target, insn);
+
+	fseek(fp, addr - 0x8000000, SEEK_SET);
+	fwrite(&insn, 1, 2, fp);
+	fseek(fp, cur, SEEK_SET);
+}
+
+
 void Parser::code(unsigned int insn)
 {
 	assert(!thumb);

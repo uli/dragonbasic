@@ -90,7 +90,9 @@ public:
 	void emitPalette(const char *bmp);
 	void patch16(unsigned int addr, unsigned short val);
 	void patch32(unsigned int addr, unsigned int val);
+	// XXX: These two do completely different things...
 	void reloc8(Literal *lit);
+	void reloc8(unsigned int addr, unsigned int target);
 	void reloc10(unsigned int addr, unsigned int target);
 	void reloc12(Literal *lit);
 	void reloc24(unsigned int addr, unsigned int target);
