@@ -2266,6 +2266,7 @@ parse_next:
 		currently_naked = word[1] == 'n';
 		const char *ident = getNextWord();
 		sym = symbols.appendNew(out->addr, ident);
+		out->addSym(ident);
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 		if (!strcmp(ident, "start")) {
 			// Runtime assumes that "start" is an ARM word, so we
