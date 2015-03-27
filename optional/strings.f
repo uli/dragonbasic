@@ -144,11 +144,11 @@ code-thumb /hex ( a u -- )
 	
 	\ test for 0
 	0 ## tos cmp,
-	32 #offset eq? b,	\ A
+	__last_digit eq? b,
 	
 	l: __loop
 	16 ## tos cmp,
-	28 #offset lt? b,	\ A
+	__last_digit lt? b,
 	
 	1 ## v0 add,		\ 1 more digit
 	$f ## v1 mov,
@@ -158,24 +158,25 @@ code-thumb /hex ( a u -- )
 	
 	\ 0-9 or A-F?
 	$a ## a cmp,
-	8 #offset lt? b,	\ C
+	__digit_dec lt? b,
 	
 	\ A-F
 	$a ## a sub,
 	$41 ## a add,
-	4 #offset b,		\ B
+	__push_char b,
 	
 	\ 0-9
-\ C
+l: __digit_dec
 	$30 ## a add,
-\ B
-	a push 				\ as a hex character
+
+l: __push_char
+	a push			\ as a hex character
 	__loop b,
 	
-\ A
+l: __last_digit
 	\ 0-9 or A-F?
 	$a ## tos cmp,
-	8 #offset lt? b,	\ D
+	__last_digit_dec lt? b,
 	
 	\ A-F
 	$a ## tos sub,
@@ -183,7 +184,7 @@ code-thumb /hex ( a u -- )
 	pop-string b,
 	
 	\ 0-9
-\ D
+l: __last_digit_dec
 	$30 ## tos add,
 	
 	\ finish
