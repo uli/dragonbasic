@@ -179,6 +179,10 @@ end-code
 : str$ ( n -- a ) a! 256 # r-alloc dup a@ /str ;
 : hex$ ( n -- a ) a! 256 # r-alloc dup a@ /hex ;
 
+\ convert between numbers and characters
+: chr$ ( n -- a ) 4 # r-alloc swap 8 # n* 1 # + OVER ! ;
+: asc ( a -- n ) 1 # + peekb ;
+
 \ transfer bytes from one address to address in A
 code-thumb -> ( from count -- a ) ( A: to -- to+count )
 	w pop

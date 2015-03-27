@@ -16,6 +16,10 @@ PROTOTYPE SUB		RESIZE(string$,length)
 PROTOTYPE FUNCTION	STR$(n)
 PROTOTYPE FUNCTION	HEX$(n)
 
+; Converting between numbers and characters
+PROTOTYPE FUNCTION	CHR$(n)
+PROTOTYPE FUNCTION	ASC(string$)
+
 ; Copying, comparing and printing
 PROTOTYPE SUB		MOVE(dest$,source$)
 PROTOTYPE FUNCTION	COMPARE(string1$,string2$)
