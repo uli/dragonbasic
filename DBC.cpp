@@ -2399,7 +2399,8 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_SUB, cur_line);
 	} else if (!strcasecmp(token_name, "prototype")) {
 		bobj = new BasicObject(CMD_PROTOTYPE, cur_line);
-	} else if (!strcasecmp(token_name, "dim")) {
+	} else if (!strcasecmp(token_name, "dim") ||
+		   !strcasecmp(token_name, "global")) {
 		bobj = new BasicObject(CMD_DIM, cur_line);
 	} else if (!strcasecmp(token_name, "local")) {
 		bobj = new BasicObject(CMD_LOCAL, cur_line);
