@@ -61,8 +61,8 @@ _tin_entry_p:
 irq_handler:
 	push	{r4-r11, lr}
 	mov	r9, #0x4000000
-	orr	r9, r9, #0x200
-	ldrh	r10, [r9, #2]
+	orr	r8, r9, #0x200
+	ldrh	r10, [r8, #2]
 	mov	r8, #0x3000000
 	orr	r8, r8, #0x600
 
@@ -88,7 +88,8 @@ irq_handler:
 	tst	r10, #0x0020
 	ldrne	pc, [r8, #40]
 
-	strh	r10, [r9, #2]
+	orr	r8, r9, #0x200
+	strh	r10, [r8, #2]
 	pop	{r4-r11, lr}
 _empty:
 	bx	lr
