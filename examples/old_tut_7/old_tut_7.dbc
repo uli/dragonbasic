@@ -1,101 +1,89 @@
 ; Welcome to tutorial # 7 - BLIT'ing and bitmapped text
 
-; In this tutorial you will learn about creating your
-; own font, creating a function to display dynamic
-; text in a bitmapped (3 or 5) mode and using the
-; SELECT/CASE statements.
-
-; When done, we'll see one of the greatest 70's bands
-; on the screen in mode 3 :)
-
-; First, as always, let's include our constants
-
 #title "tutorial 7"
-#include "../gba.dbc"
 
-; One by one, import 8x8, 16-bit graphics
+; In this tutorial you will learn about using your own font, creating a
+; subroutine to display dynamic text in a bitmapped (3 or 5) mode and using
+; the SELECT/CASE statements.
 
-CH_A: #bitmap "A.PNG"
-CH_B: #bitmap "B.PNG"
+; When done, we'll see one of the greatest 70's bands on the screen in mode
+; 3 :)
 
-; Set our font, which consists of only 2 characters
+; First, as always, let's include our API.
 
-#font "AB"
+#include <gba.dbc>
 
-; We create our function to BLIT dynamic text anywhere
-; on the screen in a bitmapped mode.
+; One by one, import 8x8, 16-bit graphics.
 
-function BLIT_Text(str,x,y)
+CH_A: #bitmap "A.png"
+CH_B: #bitmap "B.png"
 
-	; The first 2-bytes of any string are its length.
-	; We can use the PEEK function to get the length
-	; of our string.
+; We create our function to BLIT dynamic text anywhere on the screen in a
+; bitmapped mode.
 
-	len = peek(str)
+sub BLIT_Text(str$,x,y)
+	local i
 
 	; Now we will loop through every character
 
-	for i = 1 to len
+	for i = 0 to len(str$) - 1
 
-		; Next we'll use the SELECT/CASE statement
-		; to determine what character we want to display.
+		; Next we'll use the SELECT/CASE statement to determine what
+		; character we want to display.
 		
-		; Using SELECT/CASE is just like an IF statement,
-		; only you can compare against multiple values
-		; instead of using IF/ELSE/IF/ELSE, etc.
+		; Using SELECT/CASE is just like an IF statement, only you
+		; can compare against multiple values instead of using
+		; IF/ELSE/IF/ELSE, etc.
 		
-		; Each character in our string occupies 2 bytes
-		; of ROM data. This is because the GBA can't read
-		; 1 byte at a time, and done for speed. We can
-		; use the PEEK function to get the next character
-		; in the string, offset by our loop variable: I.
+		; We can use the MID$() function to get the I'th character
+		; in the string, and we convert it to a number (its ASCII
+		; code) using ASC().
 
 		; SELECT statements begin with SELECT <expression>
 
-		select peek(str+(i sl 1))
+		select asc(mid$(str$, i, 1))
 		
-		; Inside a select statement, we use CASE statements
-		; to compare our expression against another expression.
-		; Here we will be comparing against the values in our
-		; font that we made.
+		; Inside a select statement, we use CASE statements to
+		; compare our expression against another expression.  Here
+		; we will be comparing with the ASCII values of characters.
 
-		case 0 ; A
+		case 65 ; A
 
 			; Now that we know what character is to be
 			; displayed, we can use the BLIT function to
 			; actually display it.
 
 			; BLIT takes 6 parameters. First is our screen
-			; buffer address, followed by the address where
-			; our graphic is located. Next is the (x,y)
-			; coordinates that we want to BLIT to, and last
-			; is the width and height (in pixels) of our
-			; graphic.
+			; buffer address, followed by the address where our
+			; graphic is located.  Next is the (x,y) coordinates
+			; that we want to BLIT to, and last is the width and
+			; height (in pixels) of our graphic.
 
-			blit SCREEN,CH_A,x,y,8,8
+			blit CH_A,x,y,8,8
 
-		case 1 ; B
+		case 66 ; B
 
 			; Just like for "A", except now we'll blit "B".
 
-			blit SCREEN,CH_B,x,y,8,8
+			blit CH_B,x,y,8,8
 
-			; All select statements end with END SELECT
+			; All select statements end with END SELECT.
 
 		end select
 
-		; Increment the "position" we will draw to
+		; Increment the "position" we will draw to.
 
 		x = x + 8
 
-		; Handle screen wrap around (160 for mode 5)
+		; Handle screen wrap around.  A mode 3 screen is 240 pixels
+		; wide.
 
 		if x >= 240
-			y = y + 8
+			y = y + 8	; go to next line
 			x = 0
 		end if
 	next
-end function
+end sub
 
 ; Start the program here
 
@@ -110,7 +98,3 @@ start:
 	; coordinates we want to render to.
 	
 	BLIT_Text "ABBA",30,24
-	
-	; End of program
-	
-	end
