@@ -34,6 +34,8 @@ code-thumb keys ( -- n )
 	$4000130 v1 LITERAL
 	v1 0@ tos ldrh,
 	tos tos mvn,
+	$3ff v1 LITERAL
+	v1 tos and,
 	ret
 end-code
 
