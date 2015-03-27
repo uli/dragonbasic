@@ -151,6 +151,9 @@ void Literal::code(Output *out)
 	while (tail && tail->next)
 		tail = tail->next;
 	Literal *lit = tail;
+	if (lit)
+		out->addSym(".pool");
+	unsigned int start_addr = out->addr;
 	while (lit) {
 		// Check if this value has already been encoded earlier.
 		bool already_coded = false;
@@ -185,6 +188,12 @@ void Literal::code(Output *out)
 		}
 
 		lit = lit->prev;
+	}
+
+	if (out->addr > start_addr) {
+		char dbgsym[10];
+		sprintf(dbgsym, ".dbl:%04X", out->addr - start_addr);
+		out->addSym(dbgsym, start_addr);
 	}
 
 	while (next) {
