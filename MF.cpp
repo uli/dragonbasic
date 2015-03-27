@@ -2759,9 +2759,15 @@ handle_const:
 		codeAsm("r0", "0@", "r5", "str,");
 		codeAsm("r0", "pop");
 	} else if (W("variable")) {
-		sym = symbols.appendNew(out->addr, getNextWord());
+		const char *ident = getNextWord();
+
+		out->addSym(ident, out->vaddr);
+		out->addSym(".dbl:0004", out->vaddr);
+
+		sym = symbols.appendNew(out->addr, ident);
 		sym->is_addr = true;
 		sym->lit_addr = out->vaddr;
+
 		out->vaddr += 4;
 	} else if (W("create")) {
 		out->alignDword();
