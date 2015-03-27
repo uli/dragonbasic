@@ -2301,6 +2301,10 @@ parse_next:
 			cur_icode = 0;
 		asm_mode = false;
 		literals.code(out);
+		for (int i = 0; i < rsp; i++) {
+			if (asm_relocs[i].label)
+				GLB_error("unresolved symbol %s\n", asm_relocs[i].label);
+		}
 		lsp = 0;
 		rsp = 0;
 		invalR5();
