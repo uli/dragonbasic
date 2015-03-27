@@ -93,15 +93,20 @@ code-thumb pop-string ( x -- )
 	__pop b,
 end-code
 
-\ convert an unsigned integer to a base 10 string
+\ convert a signed integer to a base 10 string
 code-thumb /str ( a u -- )
 	w pop
-	1 ## v0 mov, \ length
+
+	1 ## v0 mov,		\ length
 	
+	0 ## v1 mov,		\ reset negative flag
+	v1 v3 mov,
+
 	\ force absolute value
 	0 ## tos cmp,
-	4 #offset pl? b,
+	6 #offset pl? b,
 	tos tos neg,
+	tos v3 mov,		\ set negative flag
 	
 	\ test for 0
 	0 ## tos cmp,
@@ -111,13 +116,23 @@ code-thumb /str ( a u -- )
 	
 	l: __loop
 	10 ## tos cmp,
-	6 #offset ge? b,
+
+	18 #offset ge? b,
 	$30 ## tos add,
+
+	v3 v1 mov,
+	0 ## v1 cmp,
+	pop-string eq? b,	\ positive number
+
+	tos push
+	1 ## v0 add,
+	45 ## tos mov,		\ negative number, add '-'
 	pop-string b,
+
 	1 ## v0 add,
 	10 ## a mov,
 	6 swi, 			\ divide by 10
-	$30 ## a add, \ store remainder
+	$30 ## a add,		\ store remainder
 	a push 			\ as a decimal character
 	__loop b,
 end-code
