@@ -208,6 +208,12 @@ public:
 		unsigned int	addr;
 	} asm_labels[32];
 	int lsp;
+	struct {
+		const char *label;
+		unsigned int addr;
+		unsigned int reloc;
+	} asm_relocs[32];
+	int rsp;
 	unsigned int asm_stack[32][2];
 	char asm_text[32][64];
 	int asp;

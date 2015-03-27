@@ -861,7 +861,15 @@ enum asm_words {
 	ASM_COND = 3,
 	ASM_IMM = 4,
 	ASM_AMODE = 5,
+	ASM_RELOC = 6,
 };
+
+enum asm_relocs {
+	RELOC_8 = 0,
+	RELOC_10 = 1,
+	RELOC_24 = 2,
+};
+
 enum asm_regs {
 	REG_TOS = 0,
 	REG_A = 1,
@@ -2249,6 +2257,7 @@ parse_next:
 		asm_mode = false;
 		literals.code(out);
 		lsp = 0;
+		rsp = 0;
 		invalR5();
 	} else if (asm_mode) {
 		parseAsm(word);
@@ -3035,6 +3044,7 @@ Parser::Parser()
 	symbols.next = 0;
 	literals.next = 0;
 	lsp = 0;
+	rsp = 0;
 	asp = 0;
 	lpsp = 0;
 	thumb = false;
