@@ -63,6 +63,11 @@ irq_handler:
 	mov	r9, #0x4000000
 	orr	r8, r9, #0x200
 	ldrh	r10, [r8, #2]
+
+	ldrh	r8, [r9, #-8]
+	orr	r8, r8, r10
+	strh	r8, [r9, #-8]
+
 	mov	r8, #0x3000000
 	orr	r8, r8, #0x600
 
