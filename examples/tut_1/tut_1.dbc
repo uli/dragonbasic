@@ -112,7 +112,7 @@ start:
 	print tile(0,2,8), hex$(4096)
 	; print numbers
 	print tile(0,2,9), str$(abs(-1234))
-	print tile(0,10,9), str$(abs(-1234))
+	print tile(0,10,9), str$(-1234)
 	print tile(0,2,10), str$(sqrt(500))
 	; print a fixed-point number (need to convert it to integer first)
 	print tile(0,10,10), str$(int(fsqrt#(500.0)))
