@@ -2072,15 +2072,18 @@ void Parser::codeBranch(unsigned int dest, const char *cond, const char *mnem)
 void Parser::codeToThumb(bool save_lr)
 {
 	if (!thumb) {
+		out->addSym(".arm");
 		if (save_lr) {
 			codeAsm("r0", "push");
 			codeAsm("1", "##", "pc", "r0", "add,");
 			codeAsm("r0", "bx,");
 			thumb = true;
+			out->addSym(".thumb");
 			codeAsm("r0", "pop");
 		} else {
 			codeAsm("1", "##", "pc", "lr", "add,");
 			codeAsm("lr", "bx,");
+			out->addSym(".thumb");
 			thumb = true;
 		}
 	}
@@ -2096,6 +2099,7 @@ void Parser::codeToArm()
 		codeAsm("pc", "bx,");
 		thumb = false;
 		out->alignDword();
+		out->addSym(".thumb");
 	}
 }
 
@@ -2272,6 +2276,7 @@ parse_next:
 		} else {
 			thumb = true;
 			sym->thumb = true;
+			out->addSym(".thumb");
 		}
 		if (!currently_naked) {
 			sym->has_prolog = true;
