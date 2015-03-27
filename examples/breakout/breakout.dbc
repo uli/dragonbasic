@@ -543,11 +543,11 @@ sub show_stats
 	score$ = str$(score)
 
 	; Display the current score & level
-	;print tile(text,2,2),str$(level)
+	print tile(text,2,2),str$(level)
 	print tile(text,2+5-len(score$),6),score$
 
 	; Display the best chain
-	;print tile(text,2,10),str$(best_chain)
+	print tile(text,2,10),str$(best_chain)
 end sub
 
 ; Loads the next level
