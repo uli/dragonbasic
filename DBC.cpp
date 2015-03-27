@@ -820,7 +820,13 @@ void Compiler::doCommand(BasicObject *bobj)
 		doCmdData(2);
 		break;
 	case CMD_READ:
-		doCmdRead();
+		doCmdRead(4);
+		break;
+	case CMD_READB:
+		doCmdRead(1);
+		break;
+	case CMD_READH:
+		doCmdRead(2);
 		break;
 	case CMD_RESTORE:
 		doCmdRestore();
@@ -1139,14 +1145,19 @@ void Compiler::doCmdData(unsigned int size)
 	} while (had_unary_minus || parser->requireRop(ROP_COMMA));
 }
 
-void Compiler::doCmdRead()
+void Compiler::doCmdRead(unsigned int size)
 {
 	BasicObject *bobj;
 
 	checkNotSegment(SEG_TOP, "READ");
 	emitTin(">A ");
 	do {
-		emitTin("@A ");
+		switch (size) {
+		case 4: emitTin("@A ");	break;
+		case 2: emitTin("H@A "); break;
+		case 1: emitTin("C@A "); break;
+		default: abort();
+		}
 		bobj = parser->consumeNextBasicObj();
 		doRval(bobj);
 		emitTin("! ");
@@ -2432,6 +2443,10 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_TYPE, cur_line);
 	} else if (!strcasecmp(token_name, "read")) {
 		bobj = new BasicObject(CMD_READ, cur_line);
+	} else if (!strcasecmp(token_name, "readb")) {
+		bobj = new BasicObject(CMD_READB, cur_line);
+	} else if (!strcasecmp(token_name, "readh")) {
+		bobj = new BasicObject(CMD_READH, cur_line);
 	} else if (!strcasecmp(token_name, "restore")) {
 		bobj = new BasicObject(CMD_RESTORE, cur_line);
 	} else if (!strcasecmp(token_name, "data")) {

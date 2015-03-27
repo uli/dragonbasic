@@ -167,6 +167,8 @@ enum cmd_t {
 	CMD_LOCAL = 33,
 	CMD_DATAB,
 	CMD_DATAH,
+	CMD_READB,
+	CMD_READH,
 };
 
 struct LoopStackEntry {
@@ -393,7 +395,7 @@ public:
 	void doCmdReturn(bool epilog);
 	void doCmdMap();
 	void doCmdData(unsigned int size);
-	void doCmdRead();
+	void doCmdRead(unsigned int size);
 	void doCmdRestore();
 	void doCmdSub();
 	void doCmdFunction();
