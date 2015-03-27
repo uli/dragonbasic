@@ -99,7 +99,7 @@ code-thumb rotatepal16 ( pal index -- )
 	r0 r1 +( r3 ldrh,
 	r0 r1 +( r2 strh,
 	r3 r2 mov,
-	$1e ## r1 cmp,
+	$1c ## r1 cmp,
 	__loop lt? b,
 	
 	\ done
