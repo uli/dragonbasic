@@ -1,22 +1,72 @@
 ; Welcome to Tutorial # 9 - Mapping & Mosaic!
 
-; In this tutorial you will learn how to use the
-; MAPTILES and MAPIMAGE functions to display a map
-; on the screen in mode 0. You will also use timers
-; to control speed and use the new mosaic functions
-; to fade out one map and fade in another.
-
-; Let's include our constants file
-
 #title "Tutorial 9"
-#include "../gba.dbc"
 
-; Let's import a couple PCX files that are the
-; tileset we will use for our maps
+; In this tutorial you will learn how to use the MAPTILES and MAPIMAGE
+; functions to display a map on the screen in mode 0.  You will also use
+; timers to control speed and use the new mosaic functions to fade out one
+; map and fade in another.
 
-tiles: #bitmap "tiles.pcx"
-shop: #bitmap "shop.pcx"
-house: #bitmap "house.pcx"
+; Let's include our API file
+
+#include <gba.dbc>
+
+; Let's import a couple PCX files that are the tileset we will use for our
+; maps.
+
+tiles:	#bitmap "tiles.pcx"
+shop:	#bitmap "shop.pcx"
+house:	#bitmap "house.pcx"
+
+; Our maps are 30x20.
+
+map_1: ; Map # 1
+	map 0,0,0,0,0,0,3,4,3,4,3,4,3,4,3,4,3,4,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,0,3,4,3,4,3,4,5,5,5,5,3,4,5,5,5,5,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,0,5,5,5,5,5,5,0,0,0,0,3,4,0,0,0,0,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,6,0,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,6,7,0,0,6,7,0,0,0,0,0,0,0,0,0,0,0,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,7,6,0,0,7,6,0,0,0,0,0,6,0,0,6,7,0,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,6,0,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,0,3,4,0,0,0,0,3,4,1,1,0,0,0,0,0,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,4,3,4,3,4,1,1,1,1,1,1,0,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,5,1,1,1,1,1,1,0,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,6,0,8,8
+	map 0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,9,9
+	map 0,0,0,0,0,0,0,0,0,0,1,1,8,2,2,2,8,0,0,7,0,0,0,0,0,0,0,0,2,2
+	map 0,0,0,0,0,0,0,0,0,0,1,1,9,2,2,2,9,0,0,0,0,0,0,0,0,0,0,0,2,2
+	map 1,1,1,1,1,1,1,1,1,1,1,1,8,2,2,2,8,6,7,0,0,0,0,8,8,8,2,2,2,2
+	map 1,1,1,1,1,1,1,1,1,1,1,1,9,2,2,2,9,7,6,0,0,0,0,9,9,9,2,2,2,2
+	map 0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,0,0,0,0,8,8,8,2,2,2,2,2,2
+	map 0,0,6,7,0,0,0,0,6,7,0,0,9,9,9,9,9,0,0,0,0,9,9,9,2,2,2,2,2,2
+	map 0,0,7,6,0,0,0,0,7,6,0,0,0,0,0,0,0,0,0,8,8,8,2,2,2,2,2,2,2,2
+	map 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,9,9,2,2,2,2,2,2,2,2
+
+map_2: ; Map # 2
+	map 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,4,3,4,3,4,3,4,0,0,0,0,0
+	map 0,7,0,0,0,0,0,0,0,6,0,0,0,0,0,5,5,5,5,5,5,5,5,3,4,0,0,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,4,3,4,3
+	map 0,0,0,0,0,6,7,0,0,0,0,8,8,8,8,8,8,8,8,0,0,0,0,5,5,5,5,5,5,5
+	map 0,0,0,0,0,7,6,0,0,0,0,9,9,9,9,9,9,9,9,0,0,0,0,0,0,1,1,1,1,1
+	map 0,0,0,0,0,0,0,0,0,8,8,8,2,2,2,2,2,2,8,8,8,0,0,0,0,1,1,1,1,1
+	map 0,0,0,0,0,0,0,0,0,9,9,9,2,2,2,2,2,2,9,9,9,0,0,0,0,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,8,2,2,2,2,2,2,2,2,2,2,8,0,0,0,0,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,9,2,2,2,2,2,2,2,2,2,2,9,0,0,0,0,1,1,0,0,0
+	map 0,0,7,0,0,0,0,0,0,8,2,2,2,2,7,6,2,2,2,2,8,0,0,0,0,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,9,2,2,2,2,6,7,2,2,2,2,9,0,6,0,0,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,8,2,2,2,2,2,2,2,2,2,2,8,0,0,0,0,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,9,2,2,2,2,2,2,2,2,2,2,9,0,0,0,0,1,1,0,0,0
+	map 0,0,0,6,7,0,0,0,0,8,8,8,2,2,2,2,2,2,8,8,8,0,0,0,0,1,1,0,0,0
+	map 0,0,0,7,6,0,0,0,0,9,9,9,2,2,2,2,2,2,9,9,9,0,0,0,0,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,8,8,8,1,1,8,8,8,0,0,0,0,0,0,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,9,9,9,1,1,9,9,9,0,0,0,0,0,0,1,1,7,6,0
+	map 0,0,0,0,0,0,0,6,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,6,7,0
+	map 0,0,6,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0
+	map 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+; Declare an iterator.
+
+dim i
 
 ; Here is where our program will begin
 
@@ -28,99 +78,91 @@ start:
 	graphics 0,0
 	enabletiles 0,0,1,BG_COLOR_256
 	
-	; Load up the tiles into the character block
+	; Load up the tiles into the character block. The second parameter
+	; to LOADTILES specifies the tile offset within the character block.
 	
-	loadtiles charblock(1),tiles,20
-	loadtiles charblock(1)+tileoffset(20),shop,72
-	loadtiles charblock(1)+tileoffset(92),house,48
+	loadtiles 1,0,tiles,20
+	loadtiles 1,20,shop,72
+	loadtiles 1,92,house,48
 	
-	; Make the palette
+	; Make the palette. This loads a pre-defined standard palette.
 	
 	makepalette BG_PALETTE
 	
-	; Next we will load the map we have in ROM onto
-	; the screen with MAPTILES. MAPTILES takes a destination
-	; tile address and a source address, and copies an area
-	; of data.
+	; Next we load the map we have in ROM onto the screen with MAPTILES.
+	; MAPTILES takes a destination tile address and a source address,
+	; and copies an area of data.
 
 	maptiles tile(0,0,0),map_1,30,20
 	
-	; Now we will draw 2 shops onto the map by using
-	; the MAPIMAGE function. MAPIMAGE is only slightly
-	; different from MAPTILES, in that instead of a source
-	; address, it uses a base tile index as its source
-	; parameter. It moves left to right, top to bottom,
-	; each step it will increment the base tile index to
-	; render. This is perfect for lone images (like our
-	; shop, that we want to render to a map.
+	; We draw two shops onto the map by using the MAPIMAGE function.
+	; MAPIMAGE is only slightly different from MAPTILES, in that instead
+	; of a source address it uses a base tile index as its source
+	; parameter.  It moves left to right, top to bottom, and with each
+	; step it increments the base tile index to render.  This is perfect
+	; for isolated images--like our shop--that we want to render to a
+	; map.
 
 	mapimage tile(0,4,8),10,6,6
 	mapimage tile(0,22,4),46,6,4
 
-	; Next we'll use the ENABLEMOSAIC function
-	; to toggle on the mosaic bit for a background
-	; layer. All bitmapped modes (3,4 and 5) use
-	; background 2 by default, so we will enable
-	; mosaic on that background
+	; Next we use the MOSAICTILES function to switch on the mosaic bit
+	; for a background layer 0.
 
-	enablemosaic 0
+	mosaictiles 0,1
 	
-	; Next, let's wait for the user to press or
-	; release any button on the controller.
+	; We wait for the user to press or release any button on the
+	; controller.
 
 	input KEY_ANY
 
-	; Now let's define a simple timer to fire once
-	; every 1/8 of a second and get it ticking.
+	; Now we define a simple timer to fire once every 1/8 of a second
+	; and get it ticking.
 	
 	maketimer 8
 	starttimer
 	
-	; Now we will begin to do our mosaic effect.
-	; The GBA has two, built-in mosaic effects, one
-	; for backgrounds and the other for sprites.
-	; We are worried about the background one for
+	; Now we will begin to do our mosaic effect.  The GBA has two
+	; built-in mosaic effects, one for backgrounds, and the other for
+	; sprites.  We are concern ourselves with the background one for
 	; this tutorial.
 	
-	; The mosaic is a kind of "zoom" or pixelation
-	; effect that will be applied to the screen. The
-	; scaling can be done in both the X and the Y,
-	; and has a range of 0-15.
+	; The mosaic is a pixelation effect that will be applied to the
+	; screen.  The amount of pixelation can be specified separately for
+	; each dimension and has a range of 0-15.
 	
-	; We want to slowly increment the scaling of the
-	; mosaic on the background across the entire
-	; range, so we will enter into a FOR loop.
+	; We want to slowly increment the scaling of the mosaic on the
+	; background across the entire range, so we will enter into a FOR
+	; loop.
 
 	for i = 0 to 15
 	
-		; Because we want to actually see the mosaic
-		; effect take place, we need to use a timer
-		; to slow things down. We already have our
-		; timer set up, all we need to do is wait
+		; Because we want to actually see the mosaic effect take
+		; place, we need to use a timer to slow things down.  We
+		; already have our timer set up, all we need to do is wait
 		; and reset it when done waiting.
 
 		waittimer 1
 		resettimer
 		
-		; Now we actually get to the mosaic effect.
-		; This is done with the MOSAIC function. It
-		; takes 4 parameters, 2 for background and
-		; 2 for sprites. Each is a scaling in the X
-		; and Y directions (x first). Since we only
-		; want to scale the background, we only
-		; need to edit the first two parameters.
+		; Now we actually get to the mosaic effect.  This is done
+		; with the MOSAIC function.  It takes four parameters, two
+		; for background and two for sprites.  Each set of
+		; parameters specifies the amount of pixelation in the x and
+		; y directions (x first).  Since we only want to pixelate
+		; the background, we only need to modify the first two
+		; parameters.
 
 		mosaic i,i,0,0
 	next
 
-	; Now we'll map the data from our next map to prepare
-	; it to be faded back into focus.
+	; Now we'll map the data from our next map to prepare it to be faded
+	; back into focus.
 
 	maptiles tile(0,0,0),map_2,30,20
 	
-	; Just like we increased to fade out the mosaic
-	; effect. Now we will decrease to fade in the new
-	; screen.
+	; Just like we increased the mosaic effect to "fade out" the
+	; previous map, we now decrease it to "fade in" the new image.
 	
 	for i = 15 downto 0
 	
@@ -134,50 +176,3 @@ start:
 		mosaic i,i,0,0
 	next
 
-end ; -- END OF CODE --
-
-; Our maps are 30x20
-
-map_1: ; Map # 1
-	data 0,0,0,0,0,0,3,4,3,4,3,4,3,4,3,4,3,4,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,0,3,4,3,4,3,4,5,5,5,5,3,4,5,5,5,5,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,0,5,5,5,5,5,5,0,0,0,0,3,4,0,0,0,0,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,6,0,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,6,7,0,0,6,7,0,0,0,0,0,0,0,0,0,0,0,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,7,6,0,0,7,6,0,0,0,0,0,6,0,0,6,7,0,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,6,0,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,0,3,4,0,0,0,0,3,4,1,1,0,0,0,0,0,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,4,3,4,3,4,1,1,1,1,1,1,0,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,5,1,1,1,1,1,1,0,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,6,0,8,8
-	data 0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,9,9
-	data 0,0,0,0,0,0,0,0,0,0,1,1,8,2,2,2,8,0,0,7,0,0,0,0,0,0,0,0,2,2
-	data 0,0,0,0,0,0,0,0,0,0,1,1,9,2,2,2,9,0,0,0,0,0,0,0,0,0,0,0,2,2
-	data 1,1,1,1,1,1,1,1,1,1,1,1,8,2,2,2,8,6,7,0,0,0,0,8,8,8,2,2,2,2
-	data 1,1,1,1,1,1,1,1,1,1,1,1,9,2,2,2,9,7,6,0,0,0,0,9,9,9,2,2,2,2
-	data 0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,0,0,0,0,8,8,8,2,2,2,2,2,2
-	data 0,0,6,7,0,0,0,0,6,7,0,0,9,9,9,9,9,0,0,0,0,9,9,9,2,2,2,2,2,2
-	data 0,0,7,6,0,0,0,0,7,6,0,0,0,0,0,0,0,0,0,8,8,8,2,2,2,2,2,2,2,2
-	data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,9,9,2,2,2,2,2,2,2,2
-	
-map_2: ; Map # 2
-	data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,4,3,4,3,4,3,4,0,0,0,0,0
-	data 0,7,0,0,0,0,0,0,0,6,0,0,0,0,0,5,5,5,5,5,5,5,5,3,4,0,0,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,4,3,4,3
-	data 0,0,0,0,0,6,7,0,0,0,0,8,8,8,8,8,8,8,8,0,0,0,0,5,5,5,5,5,5,5
-	data 0,0,0,0,0,7,6,0,0,0,0,9,9,9,9,9,9,9,9,0,0,0,0,0,0,1,1,1,1,1
-	data 0,0,0,0,0,0,0,0,0,8,8,8,2,2,2,2,2,2,8,8,8,0,0,0,0,1,1,1,1,1
-	data 0,0,0,0,0,0,0,0,0,9,9,9,2,2,2,2,2,2,9,9,9,0,0,0,0,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,8,2,2,2,2,2,2,2,2,2,2,8,0,0,0,0,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,9,2,2,2,2,2,2,2,2,2,2,9,0,0,0,0,1,1,0,0,0
-	data 0,0,7,0,0,0,0,0,0,8,2,2,2,2,7,6,2,2,2,2,8,0,0,0,0,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,9,2,2,2,2,6,7,2,2,2,2,9,0,6,0,0,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,8,2,2,2,2,2,2,2,2,2,2,8,0,0,0,0,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,9,2,2,2,2,2,2,2,2,2,2,9,0,0,0,0,1,1,0,0,0
-	data 0,0,0,6,7,0,0,0,0,8,8,8,2,2,2,2,2,2,8,8,8,0,0,0,0,1,1,0,0,0
-	data 0,0,0,7,6,0,0,0,0,9,9,9,2,2,2,2,2,2,9,9,9,0,0,0,0,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,8,8,8,1,1,8,8,8,0,0,0,0,0,0,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,9,9,9,1,1,9,9,9,0,0,0,0,0,0,1,1,7,6,0
-	data 0,0,0,0,0,0,0,6,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,6,7,0
-	data 0,0,6,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0
-	data 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
