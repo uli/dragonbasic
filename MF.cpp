@@ -2804,6 +2804,14 @@ handle_const:
 			codeAsm("r1", "0@", "r0", "ldrb,");
 			codeAsm("1", "##", "r1", "add,");
 		}
+	} else if (W("h@a")) {
+		codeAsm("r0", "push");
+		if (!thumb)
+			codeAsm("r1", "2", "(#", "r0", "ldrh,");
+		else {
+			codeAsm("r1", "0@", "r0", "ldrh,");
+			codeAsm("2", "##", "r1", "add,");
+		}
 	} else if (W("r@")) {
 		codeAsm("r0", "push");
 		codeAsm("r6", "r0", "mov,");
