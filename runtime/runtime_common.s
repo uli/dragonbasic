@@ -29,6 +29,20 @@
 .org 0xe0
 _tin_entry:
 	sub	r7, sp, #0x200
+
+	// Set user interrupt vectors to NOP so there won't be any bad
+	// surprises when enabling interrupts.
+	adr	r5, _empty
+	mov	r1, #0x3000000
+	orr	r1, r1, #0x600
+	str	r5, [r1, #0x10]
+	str	r5, [r1, #0x14]
+	str	r5, [r1, #0x18]
+	str	r5, [r1, #0x1c]
+	str	r5, [r1, #0x20]
+	str	r5, [r1, #0x24]
+	str	r5, [r1, #0x28]
+
 	ldr	r5, _tin_entry_p
 	ldr	r6, irq_handler_p
 	mov	r1, #0x4000000
@@ -76,6 +90,7 @@ irq_handler:
 
 	strh	r10, [r9, #2]
 	pop	{r4-r11, lr}
+_empty:
 	bx	lr
 
 .global _tin_wlit
