@@ -107,7 +107,7 @@ code-thumb (wallpaper) ( a-source a-dest size -- )
 	$40000d0 v0 LITERAL	\ REGISTERS + $d0
 	
 	\ setup DMA transfer
-	$95000000 a movi
+	$80000000 a movi
 	a tos tos add,
 	v0 $4 #( v2 str,	\ REGISTERS + $d4
 	v0 $8 #( v1 str,	\ REGISTERS + $d8
