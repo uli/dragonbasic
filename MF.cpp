@@ -2245,7 +2245,9 @@ parse_next:
 			thumb = true;
 		else
 			thumb = false;
-		sym = symbols.appendNew(out->addr, getNextWord());
+		const char *ident = getNextWord();
+		out->addSym(ident);
+		sym = symbols.appendNew(out->addr, ident);
 		DEBUG("===start %s %s at 0x%x\n", word, sym->word, sym->addr);
 		sym->thumb = thumb;
 		asm_mode = true;
