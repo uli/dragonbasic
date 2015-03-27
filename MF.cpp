@@ -2782,6 +2782,12 @@ handle_const:
 			GLB_error("create without reserve\n");
 		sym->is_addr = true;
 		sym->lit_addr = out->vaddr;
+
+		out->addSym(sym->word, out->vaddr);
+		char dbgsym[10];
+		sprintf(dbgsym, ".dbl:%04X", 4 * size);
+		out->addSym(dbgsym, out->vaddr);
+
 		out->vaddr += 4 * size;
 	} else if (W("data:")) {
 		out->alignDword();
