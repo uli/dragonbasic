@@ -109,11 +109,10 @@ code-thumb rotatepal16 ( pal index -- )
 end-code
 
 code-thumb rotatepal256 ( pal -- )
-	5 ## r0 r0 lsl,
 	2 ## r0 add, \ skip index 0
 	0 ## r1 mov,
 	$200 r4 movi
-	2 ## r4 r4 sub,
+	4 ## r4 r4 sub,
 	r0 r1 +( r2 ldrh,
 	
 	\ loop until all 255 are rotated
