@@ -811,7 +811,13 @@ void Compiler::doCommand(BasicObject *bobj)
 		doCmdMap();
 		break;
 	case CMD_DATA:
-		doCmdData();
+		doCmdData(4);
+		break;
+	case CMD_DATAB:
+		doCmdData(1);
+		break;
+	case CMD_DATAH:
+		doCmdData(2);
 		break;
 	case CMD_READ:
 		doCmdRead();
@@ -1100,7 +1106,7 @@ void Compiler::doCmdMap()
 	} while (parser->requireRop(ROP_COMMA));
 }
 
-void Compiler::doCmdData()
+void Compiler::doCmdData(unsigned int size)
 {
 	const char *minus;
 	BasicObject *bobj;
@@ -1108,6 +1114,13 @@ void Compiler::doCmdData()
 
 	had_unary_minus = false;
 	checkNotSegment(SEG_INTR | SEG_SUB, "DATA");
+	const char *comma;
+	switch (size) {
+	case 1: comma = "B,"; break;
+	case 2: comma = "H,"; break;
+	case 4: comma = ","; break;
+	default: abort();
+	}
 	do {
 		bobj = parser->consumeNextBasicObj();
 		if (bobj->otype == OBJ_NUM) {
@@ -1116,7 +1129,7 @@ void Compiler::doCmdData()
 			else
 				minus = "";
 			had_unary_minus = false;
-			emitTin("%s$%x , ", minus, bobj->val.numeric);
+			emitTin("%s$%x %s ", minus, bobj->val.numeric, comma);
 		} else {
 			if (had_unary_minus || bobj->otype != OBJ_OP ||
 			    bobj->val.numeric != OP_MINUS)
@@ -2423,6 +2436,10 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_RESTORE, cur_line);
 	} else if (!strcasecmp(token_name, "data")) {
 		bobj = new BasicObject(CMD_DATA, cur_line);
+	} else if (!strcasecmp(token_name, "datab")) {
+		bobj = new BasicObject(CMD_DATAB, cur_line);
+	} else if (!strcasecmp(token_name, "datah")) {
+		bobj = new BasicObject(CMD_DATAH, cur_line);
 	} else if (!strcasecmp(token_name, "map")) {
 		bobj = new BasicObject(CMD_MAP, cur_line);
 	} else if (!strcasecmp(token_name, "interrupt")) {
