@@ -33,11 +33,13 @@ code-thumb makepalette ( pal -- )
 	\ blue loop
 	l: __blue
 	r1 r2 +( r4 ldrh,
+	10 ## r4 r4 lsl,
 	10 ## r3 mov,
 	
 	\ green loop
 	l: __green
 	r1 r3 +( r5 ldrh,
+	5 ## r5 r5 lsl,
 	10 ## r6 mov,
 	
 	\ red loop
@@ -45,9 +47,7 @@ code-thumb makepalette ( pal -- )
 	r1 r6 +( r7 ldrh,
 	
 	\ create 15-bit color
-	5 ## r5 r5 lsl,
 	r5 r7 orr,
-	10 ## r4 r4 lsl,
 	r4 r7 orr,
 	r0 0@ r7 strh,
 	2 ## r0 add,
