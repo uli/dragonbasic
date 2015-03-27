@@ -2002,7 +2002,20 @@ void Parser::parseAsm(const char *word)
 				return;
 			}
 		}
-		GLB_error("unknown asm word %s\n", word);
+
+		// No label found.  We expect it to be resolved later.
+
+		// We push an ASM_RELOC on the stack.  It contains the
+		// relocation index that allows the instruction implementation
+		// to set the appropriate reloc type.
+		PUSH_ASM(ASM_RELOC, rsp);
+
+		// Remember that there will be an instruction at out->addr
+		// that needs to be relocated to "word" once the latter is
+		// defined.
+		asm_relocs[rsp].label = strdup(word);
+		asm_relocs[rsp].addr = out->addr;
+		rsp++;
 	}
 }
 
