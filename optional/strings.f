@@ -148,7 +148,7 @@ code-thumb /hex ( a u -- )
 	
 	l: __loop
 	16 ## tos cmp,
-	__last_digit lt? b,
+	__last_digit lo? b,
 	
 	1 ## v0 add,		\ 1 more digit
 	$f ## v1 mov,
