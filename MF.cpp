@@ -3036,6 +3036,28 @@ Output::Output(unsigned int code_addr, unsigned int var_addr)
 	vaddr = var_addr;
 	fp = NULL;
 	use_pimp = false;
+	sym_fp = NULL;
+}
+
+void Output::openSymFile(const char *name)
+{
+	sym_fp = fopen(name, "w");
+	if (!sym_fp)
+		GLB_error("failed to create SYM file %s\n", name);
+}
+
+void Output::closeSymFile(void)
+{
+	if (sym_fp)
+		fclose(sym_fp);
+}
+
+void Output::addSym(const char *sym, unsigned int addr)
+{
+	if (addr == (unsigned int)-1)
+		addr = this->addr;
+	if (sym_fp)
+		fprintf(sym_fp, "%08X %s\n", addr, sym);
 }
 
 bool clean_exit = false;
@@ -3051,6 +3073,7 @@ static void clean_up(void)
 int main(int argc, char **argv)
 {
 	int rt_size;
+	bool option_symfile = false;
 
 	FreeImage_Initialise();
 	Parser par;
@@ -3072,6 +3095,10 @@ int main(int argc, char **argv)
 			out.use_pimp = true;
 			argc--;
 			argv++;
+		} else if (!strcmp(argv[1], "-sym")) {
+			option_symfile = true;
+			argc--;
+			argv++;
 		} else {
 			break;
 		}
@@ -3080,6 +3107,15 @@ int main(int argc, char **argv)
 	outfile = strdup(argv[2]);
 	atexit(clean_up);
 	out.openOutFile(argv[2]);
+
+	if (option_symfile) {
+		char *sym_name = strdup(argv[2]);
+		char *ext = strrchr(sym_name, '.');
+		if (!ext)
+			GLB_error("could not find extension of %s\n", argv[2]);
+		sprintf(ext, ".sym");
+		out.openSymFile(sym_name);
+	}
 
 	/* copy runtime to output */
 	OS_getAppDir(hdr);
@@ -3100,6 +3136,7 @@ int main(int argc, char **argv)
 
 	out.fixCartHeader();
 	out.closeOutFile();
+	out.closeSymFile();
 	clean_exit = true;
 	FreeImage_DeInitialise();
 	return 0;

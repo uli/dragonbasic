@@ -101,10 +101,17 @@ public:
 	void closeOutFile(void);
 	void alignDword();
 
-	FILE *fp;
+	void openSymFile(const char *name);
+	void closeSymFile(void);
+	void addSym(const char *sym, unsigned int addr = -1);
+
+	bool use_pimp;
 	unsigned int addr;
 	unsigned int vaddr;
-	bool use_pimp;
+
+private:
+	FILE *fp;
+	FILE *sym_fp;
 };
 
 class Literal {
