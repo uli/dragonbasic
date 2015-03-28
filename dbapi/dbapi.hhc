@@ -840,6 +840,229 @@
         </object></li>
       </ul>
     </li>
+
+    <li>
+      <object type="text/sitemap">
+        <param name="Name" value="TIMER">
+        <param name="Local" value="TIMER.htm">
+      </object>
+
+      <ul>
+        <li><object type="text/sitemap">
+          <param name="Name" value="CLOCKTIMER">
+          <param name="Local" value="Timer_CLOCKTIMER.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="MAKETIMER">
+          <param name="Local" value="Timer_MAKETIMER.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="RESETTIMER">
+          <param name="Local" value="Timer_RESETTIMER.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="STARTTIMER">
+          <param name="Local" value="Timer_STARTTIMER.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="STOPTIMER">
+          <param name="Local" value="Timer_STOPTIMER.htm">
+        </object></li>
+      </ul>
+    </li>
+
+    <li>
+      <object type="text/sitemap">
+        <param name="Name" value="KEYWORDS">
+        <param name="Local" value="KEYWORDS.htm">
+      </object>
+
+      <ul>
+        <li><object type="text/sitemap">
+          <param name="Name" value="AND">
+          <param name="Local" value="Keywords_AND.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="CASE">
+          <param name="Local" value="Keywords_CASE.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="DATA">
+          <param name="Local" value="Keywords_DATA.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="DEFAULT">
+          <param name="Local" value="Keywords_DEFAULT.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="DIM">
+          <param name="Local" value="Keywords_DIM.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="DOWNTO">
+          <param name="Local" value="Keywords_DOWNTO.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="ELSE">
+          <param name="Local" value="Keywords_ELSE.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="END">
+          <param name="Local" value="Keywords_END.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="EXIT">
+          <param name="Local" value="Keywords_EXIT.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="FOR">
+          <param name="Local" value="Keywords_FOR.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="FUNCTION">
+          <param name="Local" value="Keywords_FUNCTION.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="IF">
+          <param name="Local" value="Keywords_IF.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="INTERRUPT">
+          <param name="Local" value="Keywords_INTERRUPT.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="LOOP">
+          <param name="Local" value="Keywords_LOOP.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="MAP">
+          <param name="Local" value="Keywords_MAP.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="MOD">
+          <param name="Local" value="Keywords_MOD.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="NAND">
+          <param name="Local" value="Keywords_NAND.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="NEXT">
+          <param name="Local" value="Keywords_NEXT.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="NOT">
+          <param name="Local" value="Keywords_NOT.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="NOR">
+          <param name="Local" value="Keywords_NOR.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="OR">
+          <param name="Local" value="Keywords_OR.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="READ">
+          <param name="Local" value="Keywords_READ.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="RESET">
+          <param name="Local" value="Keywords_RESET.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="RESTORE">
+          <param name="Local" value="Keywords_RESTORE.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="RETURN">
+          <param name="Local" value="Keywords_RETURN.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="REPEAT">
+          <param name="Local" value="Keywords_REPEAT.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="SELECT">
+          <param name="Local" value="Keywords_SELECT.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="SL">
+          <param name="Local" value="Keywords_SL.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="SR">
+          <param name="Local" value="Keywords_SR.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="STEP">
+          <param name="Local" value="Keywords_STEP.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="SUB">
+          <param name="Local" value="Keywords_SUB.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="THEN">
+          <param name="Local" value="Keywords_THEN.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="TO">
+          <param name="Local" value="Keywords_TO.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="UNTIL">
+          <param name="Local" value="Keywords_UNTIL.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="WHILE">
+          <param name="Local" value="Keywords_WHILE.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="XOR">
+          <param name="Local" value="Keywords_XOR.htm">
+        </object></li>
+      </ul>
+    </li>
   </ul>
 </body>
 </html>
