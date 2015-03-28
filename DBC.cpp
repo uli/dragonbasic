@@ -2071,7 +2071,7 @@ int GLB_parseOneOption(int optind, char **argv)
 					if (!strcasecmp(argv[optind] + 1, "v"))
 						GLB_exitWithMbox(
 							"DBC/MF version %s",
-							"1.4.5");
+							DB_VERSION);
 					GLB_error(ERR_UNKNOWN_CFLAG,
 						  argv[optind]);
 				}

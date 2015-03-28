@@ -1,10 +1,12 @@
+VERSION = 2.0
+
 DEVKITPRO ?= $(HOME)/devkitPro
 PIMPMOBILE = ./pimpmobile_r1
 
 # only used on Linux
 APPDIR ?= $(shell pwd)
 
-CXXFLAGS = -g -DAPPDIR="\"$(APPDIR)\"" -Wall
+CXXFLAGS = -g -DDB_VERSION="\"$(VERSION)\"" -DAPPDIR="\"$(APPDIR)\"" -Wall
 AFLAGS	 = -Iruntime
 
 # options
