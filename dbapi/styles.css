@@ -1,0 +1,83 @@
+.sub {
+	background-color: #99CCFF;
+	color: black;
+	font-family: ms sans serif;
+	font-size: 14px;
+	border-width: 0;
+	border-right-width: 1;
+	border-bottom-width: 1;
+	border-style: solid;
+	border-color: gray;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+}
+
+.sections {
+	font-family: courier new;
+	font-size: 24px;
+ font-weight: 800;
+}
+
+.section {
+	font-family: courier new;
+	font-size: 12px;
+ font-weight: 800;
+}
+.header {
+	background-color: #CCCCCC;
+	color: black;
+	font-family: arial;
+	font-size: 12px;
+	font-weight: 800;
+	vertical-align: middle;
+	text-align: left;
+}
+
+.plist {
+
+	border-width: 2;
+	border-style: solid;
+	border-color: gray;
+	cell-spacing: none;
+}
+
+.meaning {
+	color: black;
+	font-family: arial;
+	font-size: 10px;
+	vertical-align: top;
+	text-align: left;
+	border-width: 2;
+	border-style: solid;
+	border-color: gray;
+}
+
+.param {
+	color: black;
+	font-family: arial;
+	font-weight: 800;
+	font-size: 12px;
+	vertical-align: top;
+	text-align: left;
+	border-width: 2;
+	border-style: solid;
+	border-color: gray;
+}
+
+pre {
+	background-color: #CCCCCC;
+  color: black;
+  font-family: courier new;
+}
+
+.api {
+	color: blue;
+	text-decoration: underline;
+}
+
+.keyword {
+	color: black;
+	font-weight: 800;
+	text-decoration: underline;
+}
