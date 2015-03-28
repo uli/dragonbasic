@@ -166,7 +166,7 @@
 
         <li><object type="text/sitemap">
           <param name="Name" value="TITLE">
-          <param name="Local" value="DIRECTIVES_TITLE.htm">
+          <param name="Local" value="Directives_TITLE.htm">
         </object></li>
       </ul>
     </li>
