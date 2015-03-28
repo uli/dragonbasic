@@ -1747,11 +1747,25 @@ short_branch:
 		unsigned short insn;
 		unsigned int rd = POP_REG;
 		if (POP_TYPE == ASM_REG) {
-			insn = 0x4600;
 			unsigned int rs = TOS_VAL;
-			insn |= rs << 3;
-			insn |= rd & 7;
-			insn |= (!!(rd & 8)) << 7;
+			if (rs > 7 || rd > 7) {
+				insn = 0x4600;
+				insn |= rs << 3;
+				insn |= rd & 7;
+				insn |= (!!(rd & 8)) << 7;
+			} else {
+				// So gas assembles "mov r0, r1" to a
+				// Thumb.2 insn, but objdump disassembles
+				// that as "adds r0, r1, #0", whereas it
+				// disassembles Thumb.1 insn "lsls r0, r1,
+				// #0" as "mov r0, r1", which NO$GBA
+				// disassembles as lsls.  The ARM ARM
+				// doesn't even comment on what a canonical
+				// Thumb movs might be...
+				insn = 0x1c00;
+				insn |= rs << 3;
+				insn |= rd << 0;
+			}
 		} else if (TOS_TYPE == ASM_AMODE &&
 			   POP_TYPE == ASM_IMM) {
 			assert(rd < REG_R8);
