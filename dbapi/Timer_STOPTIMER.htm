@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>STOPTIMER</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">Dragon BASIC, online at <a href=
+  "http://db.zhilaware.starfusion.org/index" target=
+  "\&quot;_blank\&quot;">Official Website</a></p>
+
+  <blockquote>
+    <p class="sections">STOPTIMER</p>
+
+    <p class="text">Stops the user-defined timer from firing.</p>
+
+    <p class="section">Arguments</p>
+
+    <p class="test">No arguments</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Halts the user-defined timer. <i>Note: this
+    will not reset the timer to 0. You must use RESETTIMER to do
+    this.</i></p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; create an interrupt for the timer</font>
+<a class="keyword" href="interrupt.htm">interrupt</a> my_timer_int
+    <b><font color="red">stoptimer</font></b> <font color=
+"green">; stop the timer</font>
+    <a class="keyword" href="exit.htm">exit</a>
+
+start:
+    <font color="green">; create a timer and let it go</font>
+    <a class="api" href="maketimer.htm">maketimer</a> 10
+    <a class="api" href="starttimer.htm">starttimer</a>
+
+    <font color=
+"green">; in 1/10 of a second it will stop automatically&hellip;</font>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "c_Timer.htm">TIMER</a> functions.</p>
+</body>
+</html>

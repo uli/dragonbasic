@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>WAITTIMER</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">Dragon BASIC, online at <a href=
+  "http://db.zhilaware.starfusion.org/index" target=
+  "\&quot;_blank\&quot;">Official Website</a></p>
+
+  <blockquote>
+    <p class="sections">MAKETIMER ticks</p>
+
+    <p class="text">Waits until the timer has fired so many
+    times.</p>
+
+    <p><b>waittimer</b></p>
+
+    <table class="plist">
+      <tr>
+        <td width="150px" class="header">Parameter</td>
+
+        <td width="100%" class="header">Meaning</td>
+      </tr>
+
+      <tr>
+        <td class="param">ticks</td>
+
+        <td class="meaning">the number of fires to wait for</td>
+      </tr>
+    </table>
+
+    <p class="section">Results</p>
+
+    <p class="text">Halts program execution (except interrupts)
+    until CLOCKTIMER returns &gt;= ticks. This will not necessarily
+    be the total number of ticks waited unless preceeded with a
+    call to RESETTIMER.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; create a timer and wait for 3 seconds</font>
+<a class="api" href="maketimer.htm">maketimer</a> 1
+<a class="api" href="starttimer.htm">starttimer</a>
+<b><font color="red">waittimer</font></b> 3
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "c_Timer.htm">TIMER</a> functions.</p>
+</body>
+</html>

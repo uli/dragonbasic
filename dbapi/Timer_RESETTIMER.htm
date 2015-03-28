@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>RESETTIMER</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">Dragon BASIC, online at <a href=
+  "http://db.zhilaware.starfusion.org/index" target=
+  "\&quot;_blank\&quot;">Official Website</a></p>
+
+  <blockquote>
+    <p class="sections">RESETTIMER</p>
+
+    <p class="text">Resets the current fire count to 0.</p>
+
+    <p class="section">Arguments</p>
+
+    <p class="test">No arguments</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">The total number of times the user-defined
+    timer has fired is reset to 0.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color=
+"green">; create a timer that fires 20 times a second</font>
+<a class="api" href="maketimer.htm">maketimer</a> 20
+<a class="api" href="starttimer.htm">starttimer</a>
+
+<font color=
+"green">; every time 10 fires have occurred, reset the timer</font>
+<a class="keyword" href="while.htm">while</a>
+    <a class="keyword" href="if.htm">if</a> <a class="api" href=
+"clocktimer.htm">clocktimer</a> &gt;= 10 <a class="keyword" href=
+"then.htm">then</a> <b><font color="red">resettimer</font></b>
+<a class="keyword" href="loop.htm">loop</a>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "c_Timer.htm">TIMER</a> functions.</p>
+</body>
+</html>
