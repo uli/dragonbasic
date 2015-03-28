@@ -11,7 +11,7 @@ AFLAGS	 = -Iruntime
 
 # options
 #CXXFLAGS += -DNDEBUG
-#CXXFLAGS += -O2
+CXXFLAGS += -O2
 CXXFLAGS += -DBUG_FOR_BUG
 
 CXX = $(CROSS)g++
