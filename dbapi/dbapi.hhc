@@ -613,8 +613,8 @@
         </object></li>
 
         <li><object type="text/sitemap">
-          <param name="Name" value="UDPATESPRITES">
-          <param name="Local" value="Sprites_UDPATESPRITES.htm">
+          <param name="Name" value="UPDATESPRITES">
+          <param name="Local" value="Sprites_UPDATESPRITES.htm">
         </object></li>
       </ul>
     </li>
