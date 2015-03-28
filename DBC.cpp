@@ -232,7 +232,7 @@ void GLB_exitWithMbox(const char *msg, ...)
 #ifdef __WIN32__
 	MessageBoxA(0, Text, "Dragon BASIC", 0x40u);
 #else
-	fputs(Text, stderr);
+	fprintf(stderr, "%s\n", Text);
 #endif
 	exit(0);
 }
