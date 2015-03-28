@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>STEP</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">STEP [expr]</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Sets the step value for a FOR loop.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Overrides the default step value in a FOR loop
+    with [expr]. <i>Note: if DOWNTO is used, make sure that [expr]
+    is a negative value.</i></p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; sum the odd numbers from 1 to 100</font>
+sum = 0
+<a class="keyword" href="for.htm">for</a> x = 1 <a class="keyword"
+href="to.htm">to</a> 100 <b><font color="red">step</font></b> 2
+    sum = sum + x
+<a class="keyword" href="next.htm">next</a> 
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

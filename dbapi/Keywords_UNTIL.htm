@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>LOOP</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">UNTIL expression</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Terminates a REPEAT...UNTIL</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Closes the compiler clause of a REPEAT..UNTIL.
+    Must be matched with a REPEAT statement.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; create a loop</font>
+<b>repeat</b>
+    <font color=
+"green">; wait for vertical blank then run game code</font>
+    <a class="api" href="vblank.htm">vblank</a>
+    run_game_code
+<b><font color="red">until </font></b><font color=
+"#000000">x = 8</font> <font color="green">; run again</font>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

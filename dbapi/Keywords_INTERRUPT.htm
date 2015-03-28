@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>INTERRUPT</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">INTERRUPT name</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Creates a new interrupt service routine.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Defines name as the label pointing to a new
+    ISR. It can then be used with any of the ON&hellip; functions.
+    Interrupt routines should be extremely short and fast! If an
+    interrupt handler is too long, your program may begin to
+    experience problems. <i>Note: INTERRUPT routines must be
+    matched with EXIT.</i></p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; create a new interrupt routine</font>
+<b><font color="red">interrupt</font></b> refresh
+    <a class="api" href="updatesprites.htm">updatesprites</a>
+    <a class="keyword" href="exit.htm">exit</a>
+
+start:
+    <font color=
+"green">; set refresh to be called automatically every vblank</font>
+    <a class="api" href="onvblank.htm">onvblank</a> refresh
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

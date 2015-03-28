@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>END</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">END &amp;optional [keyword]</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Used to end the program or a code segment.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">[keyword] is used to terminate a block of
+    code.</p>
+
+    <p>Valid keywords:</p>
+
+    <ul>
+      <li>IF</li>
+
+      <li>FUNCTION</li>
+
+      <li>SELECT</li>
+
+      <li>SUB</li>
+    </ul>
+
+    <p class="section">Example</p>
+    <pre>
+<font color=
+"green">; create a function that will set the graphics mode</font>
+<a class="keyword" href="function.htm">function</a> init
+    <a class="api" href="graphics.htm">graphics</a> 0,true
+<b><font color="red">end</font></b> <a class="keyword" href=
+"function.htm">function</a>
+
+<font color="green">; create a simple program</font>
+start:
+    <a class="keyword" href="if.htm">if</a> x = 1
+        <font color="green">; do something</font>
+    <b><font color="red">end</font></b> <a class="keyword" href=
+"if.htm">if</a>
+
+    <a class="keyword" href="select.htm">select</a> x
+    <a class="keyword" href="case.htm">case</a> 1
+        <font color="green">; do something</font>
+    <a class="keyword" href="case.htm">case</a> 2
+        <font color="green">; do something</font>
+    <b><a href="default.htm"><font color=
+"#000000">default</font></a></b>
+        <font color="#009900">; <font color=
+"#006600">do something</font></font>
+    <b><font color="red">end</font></b> <a class="keyword" href=
+"select.htm">select</a>
+
+<b>while</b>
+
+<b>loop   </b><font color="#006600">; end program</font>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

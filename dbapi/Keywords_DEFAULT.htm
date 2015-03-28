@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>ELSE</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">DEFAULT ...</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">SELECT &hellip; END SELECT clause to execute if
+    all other CASE statements fail.</p>
+
+    <p class="section">Results</p>
+
+    <p>When used inside a SELECT &hellip; END SELECT clause,
+    &hellip; following DEFAULT will execute only if all other CASE
+    [expr] statements fail.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; see what level we want to load</font>
+<a class="keyword" href="select.htm">select</a> level
+<a class="keyword" href="case.htm">case</a> 1
+    addr_ptr = level1!
+<a class="keyword" href="case.htm">case</a> 2
+    addr_ptr = level2!
+<b><font color="red">default</font></b> <font color=
+"green">; any other level</font>
+    level_not_made_yet
+<a class="keyword" href="end.htm">end</a> <a class="keyword" href=
+"select.htm">select</a>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header 
+  {       
+  background-color: #99CCFF;
+  color: black;
+  font-family: ms sans serif;
+  font-size: 2;
+  border-width: 0;
+  border-right-width: 1;
+  border-bottom-width: 1;       
+  border-style: solid;
+  border-color: gray;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-bottom: 5px;
+  }
+  pre
+  {
+  background-color: #CCCCCC;
+  color: black;
+  font-family: courier new;
+  }
+  a 
+  {
+  color: blue;  
+  text-decoration: underline;
+  }
+  </style>
+
+  <title>Dragon BASIC Help :: INPUT :: INPUT</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="header"><font size="2"><b>DATA n1 &amp;optional ,n2
+  &amp;optional ...</b></font></p>
+
+  <blockquote>
+    <p class="section"><b>Description</b></p>
+
+    <p class="text">DATA can be used to write constants into
+    ROM.</p>
+
+    <p class="section"><b>Results</b></p>
+
+    <p class="text">Compiles n1,n2,&hellip; into the ROM with
+    32-bit data.each value.</p>
+
+    <p class="section"><b>Example</b></p>
+    <pre>
+
+<font color="green">; create some data</font>
+my_data:
+    <b><font color="red">data</font></b> 1,2,3,4,5
+
+
+
+<font color="green">; create an array</font>
+<a class="keyword" href="dim.htm">dim</a> x(5)
+
+start:
+    <font color="green">; restore and read the data</font>
+    <a class="keyword" href="restore.htm">restore</a> my_data
+    <a class="keyword" href="for.htm">for</a> k = 0 <a class=
+"keyword" href="to.htm">to</a> 5
+        <a class="keyword" href="read.htm">read</a> x[k]
+    <a class="keyword" href="next.htm">next</a> 
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

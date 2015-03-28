@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>RETURN</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">RETURN &amp;optional [expr]</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">RETURN is used from within a subroutine or
+    FUNCTION to exit either. When used inside a function, it has
+    the option of returning a value for the function.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">When used inside a subroutine, it halts
+    execution of the subroutine and returns to the subroutine that
+    called it (with GOSUB).</p>
+
+    <p>When used inside a FUNCTION, it can optionally return a
+    value ([expr]).</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color=
+"green">; create a subroutine to update all sprites</font>
+update:
+    <a class="api" href="vblank.htm">vblank</a>
+    <a class="api" href="updatesprites.htm">updatesprites</a>
+    <b><font color="red">return</font></b>
+
+<font color=
+"green">; create a function to return the sum of two numbers</font>
+<a class="keyword" href="function.htm">function</a> add(n1,n2)
+    <b><font color="red">return</font></b> n1+n2
+<a class="keyword" href="end.htm">end</a> <a class="keyword" href=
+"function.htm">function</a>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

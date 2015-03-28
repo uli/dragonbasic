@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>FOR</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">FOR var=[expr] to|downto [goal] &amp;optional step
+  [n]</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Begins a FOR loop.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Compiles a FOR loop. Sets the counter variable
+    'var' to [expr]. If the keyword TO is used, then the loop
+    continues executing until var &gt; [goal]. If DOWNTO is used,
+    execution continues until va &lt; [goal].</p>
+
+    <p>An optional STEP parameter is allowed. If specified, then
+    var is incremented by [n] each iteration. Otherwise, [n]
+    defaults to 1 for TO and -1 for DOWNTO.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color=
+"green">; loop through all the indices of a loop, skipping every other one</font>
+<b><font color="red">for</font></b> x = 0 <a class="keyword" href=
+"to.htm">to</a> 99 <a class="keyword" href="step.htm">step</a> 2
+    <font color="green">; do something with list[x]</font>
+<a class="keyword" href="next.htm">next</a> 
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>WHILE</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">WHILE &amp;optional [expr]</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Begins a WHILE &hellip; LOOP clause.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Begins a loop to be terminated with LOOP. If
+    [expr] is present, the loop will only execute while [expr] is
+    true; [expr] is evaluated every iteration of the loop. If
+    [expr] is not present, an infinite loop is created.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; create an infinite game loop</font>
+<b><font color="red">while</font></b>
+    <font color=
+"green">; inside the game loop, create a loop that happens</font>
+    <font color=
+"green">; while the player is pressing the -B- button</font>
+    <b><font color="red">while</font></b> <a class="api" href=
+"key.htm">key</a>(key_b)
+        <font color="green">; do something</font>
+    <a class="keyword" href="loop.htm">loop</a>
+<a class="keyword" href="loop.htm">loop</a>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

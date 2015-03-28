@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>READ</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">RESTORE</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">The data pointer is set by RESTORE.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Once the data pointer has been set with
+    RESTORE, data may be READ from the ROM into variables.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; create some data</font>
+my_data:
+    <a class="keyword" href="data.htm">data</a> 1,2,3,4,5
+
+
+<font color="green">; create an array</font>
+<a class="keyword" href="dim.htm">dim</a> x(5)
+
+start:
+    <font color="green">; restore and read the data</font>
+    <font color="#FF0000"><b>restore</b></font> my_data
+    <a class="keyword" href="for.htm">for</a> k = 0 <a class=
+"keyword" href="to.htm">to</a> 5
+        <b><font color="#333333">read</font></b> x[k]
+    <a class="keyword" href="next.htm">next</a> 
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

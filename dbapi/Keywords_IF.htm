@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>IF</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">IF [expr] ... end if</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Begins a conditional block of code.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">If [expr] evaluates to true (non-zero) then the
+    code following the IF statement is executed. IF statements are
+    terminated with END IF.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color=
+"green">; test if the -A- button is pressed if so, clear the screen</font>
+<b><font color="red">if</font></b> <a class="api" href=
+"key.htm">key</a>(key_a)
+    <a class="api" href="cls.htm">cls</a> <a class="api" href=
+"screen.htm">screen</a>,black
+<a class="keyword" href="end.htm">end</a> <b><font color=
+"red">if</font></b>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

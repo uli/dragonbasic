@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+
+  <style type="text/css">
+.header 
+  {       
+  background-color: #99CCFF;
+  color: black;
+  font-family: ms sans serif;
+  font-size: 2;
+  border-width: 0;
+  border-right-width: 1;
+  border-bottom-width: 1;       
+  border-style: solid;
+  border-color: gray;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-bottom: 5px;
+  }
+  pre
+  {
+  background-color: #CCCCCC;
+  color: black;
+  font-family: courier new;
+  }
+  a 
+  {
+  color: blue;  
+  text-decoration: underline;
+  }
+  </style>
+
+  <title>Dragon BASIC Help :: INPUT :: INPUT</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="header"><font size="2"><b>MAP n1 &amp;optional ,n2
+  &amp;optional ...</b></font></p>
+
+  <blockquote>
+    <p class="section"><b>Description</b></p>
+
+    <p class="text">MAP can be used to write constants into
+    ROM.</p>
+
+    <p class="section"><b>Results</b></p>
+
+    <p class="text">Compiles n1,n2,&hellip; into the ROM with
+    16-bit data each value.</p>
+
+    <p class="section"><b>Example</b></p>
+    <pre>
+<font color="green">; create some data</font>
+my_map:
+    <b><font color=
+"#FF0000">map</font></b> 1,2,3,4,5,6  <font color=
+"#009900">; must be even before other code</font>
+    <b><font color=
+"#FF0000">map</font></b> 1,2,3,4,5,6  <font color=
+"#009900">; here we have 12 so it's ok.</font>
+
+start:
+    <font color="green">; some code here then</font>
+   <font color="#0000FF">maptiles tile</font>(8,0,0),my_map,6,2
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

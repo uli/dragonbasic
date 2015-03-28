@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>EXIT</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">EXIT</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Exits an interrupt service routine.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Closes the code block of the current ISR and
+    returns program execution back to Dragon BASIC's interrupt
+    handler.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color="green">; create a new interrupt routine</font>
+<a class="keyword" href="interrupt.htm">interrupt</a> refresh
+    <a class="api" href="updatesprites.htm">updatesprites</a>
+    <b><font color="red">exit</font></b>
+
+start:
+    <font color=
+"green">; set refresh to be called automatically every vblank</font>
+    <a class="api" href="onvblank.htm">onvblank</a> refresh
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>

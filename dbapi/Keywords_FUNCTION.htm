@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+
+  <title>FUNCTION</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+  <p class="sub">FUNCTION name &amp;optional ([arg1,arg2,...])</p>
+
+  <blockquote>
+    <p class="section">Description</p>
+
+    <p class="text">Declares a new function.</p>
+
+    <p class="section">Results</p>
+
+    <p class="text">Creates a new function in ROM with name.
+    Optionally, parameters can be passed to the function to make
+    use of.</p>
+
+    <p class="section">Example</p>
+    <pre>
+<font color=
+"green">; create a function to sum a list of numbers</font>
+<b><font color="red">function</font></b> sum_array(list,count)
+    total = 0 <font color="green">; &lt;-- total is global</font>
+    <a class="keyword" href="for.htm">for</a> x = 0 <a class=
+"keyword" href="to.htm">to</a> count - 1
+        total = total + list[x]
+    <a class="keyword" href="next.htm">next</a>
+    <a class="keyword" href="return.htm">return</a> total
+<a class="keyword" href="end.htm">end</a> <b><font color=
+"red">function</font></b>
+</pre>
+  </blockquote>
+
+  <p class="text">Back to <a class="api" href=
+  "Keywords.htm">Keywords</a></p>
+</body>
+</html>
