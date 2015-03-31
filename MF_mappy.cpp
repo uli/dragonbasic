@@ -23,7 +23,7 @@
 //  ulrich.hecht@gmail.com
 
 
-
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "MF.h"
@@ -142,6 +142,25 @@ static int first_nonzero(int a,int b) {
 	return a? a : b;
 }
 
+class AnimBlocks {
+public:
+        void reset() { aptr = 0; }
+        void add(unsigned int _x, unsigned int _y, unsigned int _anim) {
+                x[aptr] = _x;
+                y[aptr] = _y;
+                anim[aptr++] = _anim;
+        }
+
+        int aptr;
+        unsigned int x[256];
+        unsigned int y[256];
+        unsigned int anim[256];
+};
+AnimBlocks anim_blocks;
+
+unsigned int anim_addr = 0;
+unsigned int block_idcs_addr = 0;
+
 static void DecodeBODY(short *body,int tagLen, Output *out) {
 	int i;
 	if (!Header || !Blocks) {
@@ -149,6 +168,7 @@ static void DecodeBODY(short *body,int tagLen, Output *out) {
 		return;
 	}
 
+	anim_blocks.reset();
 	tagLen >>= 1;
 	for (i=0; i<tagLen; i++) {
 		//char x;
@@ -156,9 +176,53 @@ static void DecodeBODY(short *body,int tagLen, Output *out) {
 			out->emitByte(first_nonzero(Blocks[body[i]].bgoff, Blocks[body[i]].fgoff));
 		}
 		else {
-			out->emitByte(0);
+		        anim_blocks.add(i % Header->mapwidth,
+		                        i / Header->mapwidth,
+                                        -body[i] - 1);
+			out->emitByte(0);	// dummy value
 		}
 	}
+}
+
+static void DecodeANDT(void *andt, int tagLen, Output *out)
+{
+        ANISTR *end_as = ((ANISTR*)((char*)andt + tagLen));
+        ANISTR *as;
+        unsigned int *anim_block_idcs = (unsigned int*)andt;
+        unsigned int *end_anim_block_idcs;
+
+        anim_addr = out->addr;
+
+        as = end_as - 1;
+        while (as->antype != AN_END) {
+                if (as->antype != AN_LOOPF)
+                        GLB_error("unsupported animation type %d\n", as->antype);
+                out->emitWord(as->antype);
+                out->emitWord(as->andelay);
+                out->emitWord(as->anstartoff - 1);
+                out->emitWord(as->anendoff - 1);
+                as--;
+        }
+        end_anim_block_idcs = (unsigned int *)as;
+
+        block_idcs_addr = out->addr;
+        for (int i = 0; i < end_anim_block_idcs - anim_block_idcs; i++)
+                out->emitWord(first_nonzero(Blocks[anim_block_idcs[i]].bgoff,
+                                            Blocks[anim_block_idcs[i]].fgoff));
+}
+
+static void CodeAnim(Output *out)
+{
+        GLB_warning("anim blocks at 0x%x\n", out->addr);
+        for (int i = 0; i < anim_blocks.aptr; i++) {
+                out->emitWord(anim_blocks.x[i]);
+                out->emitWord(anim_blocks.y[i]);
+                // frame countdown and current offset in EWRAM
+                out->emitDword(out->vaddr);
+                out->vaddr += 4;
+                out->emitDword(anim_addr + anim_blocks.anim[i] * 8);
+        }
+        out->emitDword(-1);
 }
 
 static int GetWord(FILE *f) {	// big-endian word
@@ -173,6 +237,8 @@ int Decode(const char *filename,Output *out) {
 	FILE *f = fopen(filename,"rb");
 	int totalSize;
 	int tag;
+
+	anim_blocks.reset();
 
 	if (!f)
 		GLB_error("'%s' - file not found\n",filename);
@@ -202,6 +268,7 @@ int Decode(const char *filename,Output *out) {
 	unsigned int layers_addr = out->addr;
 	out->emitWord(0);
 	int layers = 0;
+	unsigned int anim_ptr = 0;
 
 	while ((tag = GetWord(f)) != -1) {
 		int tagLen = GetWord(f);
@@ -241,8 +308,21 @@ int Decode(const char *filename,Output *out) {
 			out->patch32(map_ptr, out->addr);
 			map_ptr = out->addr;
 			out->emitDword(0);
+			anim_ptr = out->addr;
+			out->emitDword(0);
 			fprintf(stderr, "layer at 0x%x\n", out->addr);
 			DecodeBODY((short *)block,tagLen,out);
+                        if (anim_addr) {
+                                out->alignDword();
+                                out->patch32(anim_ptr, out->addr);
+                                assert(block_idcs_addr);
+                                out->emitDword(block_idcs_addr);
+                                CodeAnim(out);
+                        }
+		}
+		else if (tag == FOURCC('A','N','D','T')) {
+		        out->alignDword();
+		        DecodeANDT(block, tagLen, out);
 		}
 		else {
 			GLB_warning("code %x (%d bytes) skipped\n",tag,tagLen);
