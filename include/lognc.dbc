@@ -1,0 +1,5 @@
+;;; lognc.dbc: logging functions for NO$GBA
+
+#REQUIRES "LOGNC.F"
+
+PROTOTYPE SUB       LOG(string$)
