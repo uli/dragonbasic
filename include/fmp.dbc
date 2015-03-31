@@ -274,6 +274,14 @@ SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, heigh
 	loop
 END SUB
 
+FUNCTION FMPTILEADDR(fmp)
+	RETURN peekw(fmp + 4)
+END FUNCTION
+
+FUNCTION FMPPALADDR(fmp)
+	RETURN peekw(fmp)
+END FUNCTION
+
 FUNCTION FMPWIDTH(fmp)
 	RETURN peekb(fmp + 14)
 END FUNCTION
