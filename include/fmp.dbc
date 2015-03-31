@@ -21,7 +21,7 @@
 ;  Ulrich Hecht
 ;  ulrich.hecht@gmail.com
 
-SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, map_x, map_y, width, height)
+SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
 	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
 	LOCAL x, y		; 16x16 FMP tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
@@ -29,6 +29,8 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, map_x, 
 	LOCAL line_block	; first screen block (SCx) of current line
 	LOCAL cell		; tile index
 	LOCAL line_ptr		; first tile index of current line
+
+	char_block = charblock(char_block)
 
 	width = width - 1	; thanks, BASIC :(
 	height = height - 1
@@ -44,7 +46,7 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, map_x, 
 			dest_x = x * 2 + start_x
 			block = line_block + dest_x / 32
 			xx = dest_x and 31
-			cell = peekb(line_ptr + x) * 4
+			cell = peekb(line_ptr + x) * 4 + char_block
 			settile tile(block, xx, yy), cell
 			settile tile(block, xx+1, yy), cell+1
 			settile tile(block, xx, yy+1), cell+2
@@ -53,13 +55,15 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, map_x, 
 	NEXT
 END SUB
 
-SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, start_x, start_y, map_x, map_y, width, height)
+SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
 	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
 	LOCAL x, y		; 16x16 FMP tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
 	LOCAL block		; screen block (SCx)
 	LOCAL line_block	; first screen block (SCx) of current line
 	LOCAL line_ptr		; first tile index of current line
+
+	char_block = charblock(char_block)
 
 	width = width - 1	; thanks, BASIC :(
 	height = height - 1
@@ -75,7 +79,7 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, start_x, start_y, map_x, ma
 			dest_x = x + start_x
 			block = line_block + dest_x / 32
 			xx = dest_x and 31
-			settile tile(block, xx, yy), peekb(line_ptr + x)
+			settile tile(block, xx, yy), char_block + peekb(line_ptr + x)
 		NEXT
 	NEXT
 END SUB
@@ -111,14 +115,14 @@ FUNCTION FMPLAYERADDR(fmp, layer)
 	RETURN layer_ptr
 END FUNCTION
 
-SUB FMPMAPTILES(fmp, layer, screen_block, start_x, start_y, map_x, map_y, width, height)
+SUB FMPMAPTILES(fmp, layer, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
 	LOCAL layer_ptr
 
 	layer_ptr = fmplayeraddr(fmp, layer)
 	; choose mapping routine based on tile size
 	IF fmptilesize(fmp) = 16
-		fmpmaptiles16x16 layer_ptr + 8, fmpwidth(fmp), screen_block, start_x, start_y, map_x, map_y, width, height
+		fmpmaptiles16x16 layer_ptr + 8, fmpwidth(fmp), screen_block, char_block, start_x, start_y, map_x, map_y, width, height
 	ELSE
-		fmpmaptiles8x8 layer_ptr + 8, fmpwidth(fmp), screen_block, start_x, start_y, map_x, map_y, width, height
+		fmpmaptiles8x8 layer_ptr + 8, fmpwidth(fmp), screen_block, char_block, start_x, start_y, map_x, map_y, width, height
 	END IF
 END SUB
