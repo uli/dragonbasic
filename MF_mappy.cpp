@@ -213,7 +213,6 @@ static void DecodeANDT(void *andt, int tagLen, Output *out)
 
 static void CodeAnim(Output *out)
 {
-        GLB_warning("anim blocks at 0x%x\n", out->addr);
         for (int i = 0; i < anim_blocks.aptr; i++) {
                 out->emitWord(anim_blocks.x[i]);
                 out->emitWord(anim_blocks.y[i]);
