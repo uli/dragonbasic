@@ -45,7 +45,7 @@ and a lot of new features have been added:
   libsndfile
 - support for MOD and XM music files using pimpmobile
 - support for loading Mappy FMP files (supports 8x8 or 16x16 tiles and
-  layers, but not animations)
+  layers, as well as animations)
 
 ### BASIC Language
 
