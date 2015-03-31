@@ -96,6 +96,10 @@ FUNCTION FMPTILES(fmp)
 	RETURN peek(fmp + 16)
 END FUNCTION
 
+FUNCTION FMPTILESIZE(fmp)
+	RETURN peekb(fmp + 12)
+END FUNCTION
+
 FUNCTION FMPLAYERADDR(fmp, layer)
 	LOCAL layer_ptr
 	; find address of map data
@@ -112,7 +116,7 @@ SUB FMPMAPTILES(fmp, layer, screen_block, start_x, start_y, map_x, map_y, width,
 
 	layer_ptr = fmplayeraddr(fmp, layer)
 	; choose mapping routine based on tile size
-	IF peekb(fmp + 12) = 16
+	IF fmptilesize(fmp) = 16
 		fmpmaptiles16x16 layer_ptr + 8, fmpwidth(fmp), screen_block, start_x, start_y, map_x, map_y, width, height
 	ELSE
 		fmpmaptiles8x8 layer_ptr + 8, fmpwidth(fmp), screen_block, start_x, start_y, map_x, map_y, width, height
