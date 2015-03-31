@@ -84,7 +84,7 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_
 	NEXT
 END SUB
 
-SUB FMPANIM16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height)
+SUB FMPANIMATE16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height)
 	local anim_ptr		; pointer to animated block description
 	local anim		; pointer to animation description
 	local block_map_ptr	; points to "animation frames to tiles" map
@@ -181,7 +181,7 @@ SUB FMPANIM16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height
 	loop
 END SUB
 
-SUB FMPANIM8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height)
+SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height)
 	local anim_ptr		; pointer to animated block description
 	local anim		; pointer to animation description
 	local block_map_ptr	; points to "animation frames to tiles" map
@@ -305,13 +305,13 @@ FUNCTION FMPLAYERADDR(fmp, layer)
 	RETURN layer_ptr
 END FUNCTION
 
-SUB FMPANIM(fmp, layer, sb, cb, x, y, map_x, map_y, width, height)
+SUB FMPANIMATE(fmp, layer, sb, cb, x, y, map_x, map_y, width, height)
 	LOCAL layer_ptr
 	layer_ptr = fmplayeraddr(fmp, layer)
 	if fmptilesize(fmp) = 16
-		fmpanim16x16 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
+		fmpanimate16x16 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
 	else
-		fmpanim8x8 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
+		fmpanimate8x8 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
 	end if
 END SUB
 
