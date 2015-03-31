@@ -305,6 +305,16 @@ FUNCTION FMPLAYERADDR(fmp, layer)
 	RETURN layer_ptr
 END FUNCTION
 
+SUB FMPANIM(fmp, layer, sb, cb, x, y, map_x, map_y, width, height)
+	LOCAL layer_ptr
+	layer_ptr = fmplayeraddr(fmp, layer)
+	if fmptilesize(fmp) = 16
+		fmpanim16x16 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
+	else
+		fmpanim8x8 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
+	end if
+END SUB
+
 SUB FMPMAPTILES(fmp, layer, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
 	LOCAL layer_ptr
 
