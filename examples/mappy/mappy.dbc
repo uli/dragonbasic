@@ -1,0 +1,143 @@
+; Example of how to use Mappy FMP maps.
+
+; This example allows to switch between two maps using button A and to scroll
+; them around using the D-pad.
+
+; Import the maps:
+
+; A map with 8x8 tiles, one layer, and animations.
+test: #map "test8x8.fmp"
+; Same map with 16x16 tiles.
+;test: #map "test.fmp"
+; A map with 16x16 tiles, two layers, without animations.
+mansion: #map "mansion.fmp"
+; Same map with 8x8 tiles.
+;mansion: #map "mansion_8x8.fmp"
+
+#include <gba.dbc>
+; Include the FMP handling functions.
+#include <fmp.dbc>
+
+; For certain emulators (VBA and NO$GBA, currently) it is possible to send
+; debug output to a console window using the LOG subroutine.  To make that
+; work we have to #include the matching log include file.  For NO$GBA that
+; is "lognc.dbc", for VBA it's "logvba.dbc".
+#include <lognc.dbc>
+
+; The character and screen blocks we want to use for our backgrounds.
+DIM cblock, sblock
+
+; This subroutine clears up the backgrounds, loads the map's character data
+; and palette, and then draws the map to the screen.
+SUB loadmap(fmp)
+	LOCAL i
+
+	; Erase screen blocks of BG0 and BG1 (eight screen blocks overall).
+	FOR i = sblock TO sblock+7
+		cleartiles tile(i, 0, 0), 32, 32
+	NEXT
+
+	; Load the FMP map's tiles to character block "cblock".  We need to
+	; multiply the tile number by 2 because 256-color tiles take up
+	; twice as much space as 16-color tiles.
+	loadtiles charblock(cblock), 0, fmptileaddr(fmp), fmptiles(fmp) * 2
+
+	; Load the FMP map's palette.
+	loadpal256 BG_PALETTE, fmppaladdr(fmp)
+
+	; The FMPLAYERS() function tells us how many layers the FMP map has.
+	FOR i = 0 TO fmplayers(fmp)-1
+		; We write each map layer to the screen blocks of a different
+		; background, so we have to add "i * 4" to the starting
+		; screen block.
+		fmpmaptiles fmp, i, sblock + i * 4, cblock, _
+			    0, 0, 0, 0, _
+			    fmpwidth(fmp), fmpheight(fmp)
+		; We stack the backgrounds from the bottom, so the earlier
+		; layers will be underneath the later ones.
+		ordertiles i, 3 - i
+		; Reset the background's position.
+		scrollpos i, 0, 0
+		updatetiles i
+	NEXT
+END SUB
+
+; Instead of the "start:" label it is also possible to specify the start of
+; the program as a subroutine.  This has the distinct advantage of allowing
+; us to use local variables.
+SUB start
+	LOCAL current_map
+	LOCAL i
+	LOCAL dx, dy
+
+	; Start with the mansion map.
+	current_map = mansion
+
+	; Use the LOG subroutine to print debug output to the emulator
+	; console.
+	log "Huhu!"
+
+	; The character block we will load our graphics to.
+	cblock = 2
+	; The screen block that the backgrounds will use.
+	sblock = 9
+
+	log "Here we go again..."
+
+	; Mode 0 without sprites.
+	graphics 0,0
+
+	; Enable BG0, 256 colors, sized 512x512 pixels.
+	; This mode takes up 2x2 screen blocks, i.e. 4 in total.
+	enabletiles 0,sblock,0,TEXT_512x512 or BG_COLOR_256
+	; Same for BG1, but it has its screen blocks after those
+	; of BG0 (hence "+4").
+	enabletiles 1,sblock+4,0,TEXT_512x512 or BG_COLOR_256
+
+	; Load the initial map.
+	loadmap current_map
+
+	WHILE
+		vblank
+
+		; See if we have to scroll.
+		dx = 0
+		dy = 0
+		IF key(KEY_LEFT)
+			dx = -1
+		ELSE IF key(KEY_RIGHT)
+			dx = 1
+		END IF
+
+		IF key(KEY_UP)
+			dy = -1
+		ELSE IF key(KEY_DOWN)
+			dy = 1
+		END IF
+
+		; See if we need to load the other map.
+		IF key(KEY_A)
+			; Switch the map.
+			IF current_map = test
+				current_map = mansion
+			ELSE
+				current_map = test
+			END IF
+			; Load the new map.
+			loadmap current_map
+			; If the A key is still pressed, we wait until it
+			; has been released.
+			IF key(KEY_A) THEN input KEY_A
+		END IF
+
+		FOR i = 0 TO fmplayers(current_map)-1
+			scroll i, dx, dy
+			; Animate the FMP map.  The parameters are the same
+			; as those of fmpmaptiles.
+			fmpanimate current_map, i, sblock+i*4, cblock, _
+				   0, 0, 0, 0, _
+				   fmpwidth(current_map), fmpheight(current_map)
+			updatetiles i
+		NEXT
+	LOOP
+END SUB
