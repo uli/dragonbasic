@@ -974,8 +974,9 @@ enum asm_arm_ops {
 	OP_LDM = 0x08100000,
 	OP_STM = 0x08000000,
 
-	OP_LDRH = 0x001000b0,
-	OP_STRH = 0x000000b0,
+	OP_LDRH  = 0x001000b0,
+	OP_LDRSH = 0x001000f0,
+	OP_STRH  = 0x000000b0,
 };
 
 enum asm_thumb_ops {
@@ -1376,6 +1377,12 @@ bool Parser::parseArm(const char *word)
 		code(insn);
 	} else if (W("ldrh,")) {
 		unsigned int insn = OP_LDRH;
+		CODE_COND;
+		CODE_RD;
+		insn |= arm10CodeAddr();
+		code(insn);
+	} else if (W("ldrsh,")) {
+		unsigned int insn = OP_LDRSH;
 		CODE_COND;
 		CODE_RD;
 		insn |= arm10CodeAddr();
