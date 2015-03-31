@@ -21,7 +21,7 @@
 ;  Ulrich Hecht
 ;  ulrich.hecht@gmail.com
 
-SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, width, height)
+SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, map_x, map_y, width, height)
 	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
 	LOCAL x, y		; 16x16 FMP tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
@@ -32,6 +32,8 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, width, 
 
 	width = width - 1	; thanks, BASIC :(
 	height = height - 1
+
+	inc map_ptr, map_x + map_y * map_width
 
 	FOR y = 0 TO height
 		dest_y = y * 2 + start_y
@@ -51,7 +53,7 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, start_x, start_y, width, 
 	NEXT
 END SUB
 
-SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, start_x, start_y, width, height)
+SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, start_x, start_y, map_x, map_y, width, height)
 	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
 	LOCAL x, y		; 16x16 FMP tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
@@ -61,6 +63,8 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, start_x, start_y, width, he
 
 	width = width - 1	; thanks, BASIC :(
 	height = height - 1
+
+	inc map_ptr, map_x + map_y * map_width
 
 	FOR y = 0 TO height
 		dest_y = y + start_y
@@ -92,20 +96,25 @@ FUNCTION FMPTILES(fmp)
 	RETURN peek(fmp + 16)
 END FUNCTION
 
-SUB FMPMAPTILES(fmp, layer, screen_block, start_x, start_y, width, height)
-	LOCAL map_ptr
-
+FUNCTION FMPLAYERADDR(fmp, layer)
+	LOCAL layer_ptr
 	; find address of map data
-	map_ptr = peekw(fmp + 8)	; first layer
+	layer_ptr = peekw(fmp + 8)	; first layer
 	WHILE layer > 0
-		map_ptr = peekw(map_ptr) ; next layer
+		layer_ptr = peekw(layer_ptr) ; next layer
 		dec layer
 	LOOP
+	RETURN layer_ptr
+END FUNCTION
 
+SUB FMPMAPTILES(fmp, layer, screen_block, start_x, start_y, map_x, map_y, width, height)
+	LOCAL layer_ptr
+
+	layer_ptr = fmplayeraddr(fmp, layer)
 	; choose mapping routine based on tile size
 	IF peekb(fmp + 12) = 16
-		fmpmaptiles16x16 map_ptr + 4, fmpwidth(fmp), screen_block, start_x, start_y, width, height
+		fmpmaptiles16x16 layer_ptr + 8, fmpwidth(fmp), screen_block, start_x, start_y, map_x, map_y, width, height
 	ELSE
-		fmpmaptiles8x8 map_ptr + 4, fmpwidth(fmp), screen_block, start_x, start_y, width, height
+		fmpmaptiles8x8 layer_ptr + 8, fmpwidth(fmp), screen_block, start_x, start_y, map_x, map_y, width, height
 	END IF
 END SUB
