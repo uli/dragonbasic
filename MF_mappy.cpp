@@ -47,6 +47,18 @@ typedef struct {	/* Structure for data blocks */
 	unsigned char unused3 : 1;
 } BLKSTR;
 
+#define AN_END -1			/* Animation types, AN_END = end of anims */
+#define AN_NONE 0			/* No anim defined */
+#define AN_LOOPF 1		/* Loops from start to end, then jumps to start etc */
+#define AN_LOOPR 2		/* As above, but from end to start */
+#define AN_ONCE 3			/* Only plays once */
+#define AN_ONCEH 4		/* Only plays once, but holds end frame */
+#define AN_PPFF 5			/* Ping Pong start-end-start-end-start etc */
+#define AN_PPRR 6			/* Ping Pong end-start-end-start-end etc */
+#define AN_PPRF 7			/* Used internally by playback */
+#define AN_PPFR 8			/* Used internally by playback */
+#define AN_ONCES 9		/* Used internally by playback */
+
 typedef struct { /* Animation control structure */
 	signed char antype;	/* Type of anim, AN_? */
 	signed char andelay;	/* Frames to go before next frame */
