@@ -9,9 +9,6 @@
 
 #REQUIRES "CORE.F"
 
-; Debugging function - works on VGBA only!
-PROTOTYPE SUB       LOG(string$)
-
 ; CORE memory functions
 PROTOTYPE FUNCTION	PEEK(address)
 PROTOTYPE FUNCTION	PEEKB(address)

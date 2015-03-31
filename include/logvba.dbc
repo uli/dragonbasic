@@ -1,0 +1,5 @@
+;;; logvba.dbc: logging functions for VBA
+
+#REQUIRES "LOGVBA.F"
+
+PROTOTYPE SUB       LOG(string$)

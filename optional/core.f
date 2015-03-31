@@ -25,9 +25,6 @@ icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 :n f* ( n1 n2 -- n3 ) * 8 # a/ ;
 :n f/ ( n1 n2 -- n3 ) a! 8 # n* 6 swi ;
 
-\ send a string to the VBA console
-:n log ( a -- ) 1+ $ff swi drop ;
-
 \ the restore data pointer
 variable .idata
 
