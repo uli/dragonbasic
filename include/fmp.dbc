@@ -84,6 +84,103 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_
 	NEXT
 END SUB
 
+SUB FMPANIM16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height)
+	local anim_ptr		; pointer to animated block description
+	local anim		; pointer to animation description
+	local block_map_ptr	; points to "animation frames to tiles" map
+	local blockx, blocky	; position of animated block
+	; local typ		; type of animation
+	local reload		; animation timer reload value
+	local first, last	; first and last frame of animation
+	local count_ptr		; pointer to current animation timer
+	local count		; value of current animation timer
+	local cur_block_ptr	; pointer to current animation frame's map tile
+	local cur_block		; current animation frame's map tile
+	local effective_sb	; screen block the current tile must go to
+	local trblk		; hardware tile index
+	local dtile		; destination tile address
+
+	; get hardware address for map character block
+	cb = charblock(cb)
+
+	block_map_ptr = peekw(peekw(layer_ptr + 4))
+
+	; get data for first animated block
+	anim_ptr = peekw(layer_ptr + 4) + 4
+	blockx = peek(anim_ptr)
+	blocky = peek(anim_ptr + 2)
+
+	; loop until animated block end marker
+	while (blockx <> &ffff)
+		; check if this block is visible
+		; XXX: we need some sort of CONTINUE...
+		if blockx >= map_x and blockx < map_x+width and _
+		   blocky >= map_y and blocky < map_y+height
+			count_ptr = peekw(anim_ptr + 4)
+			count = peek(count_ptr)
+			; typ = peek(anim)
+
+			dec count
+
+			if count <= 0
+				; time for next frame
+
+				; get animation data
+				anim = peekw(anim_ptr + 8)
+				reload = peek(anim + 2)
+				first = peek(anim + 4)
+				last = peek(anim + 6)
+
+				; anim block map index for current frame
+				cur_block_ptr = count_ptr + 2
+				cur_block = peek(cur_block_ptr)
+
+				; XXX: This is initialization, would need to
+				; be done only once.
+				if cur_block < first then cur_block = first
+
+				; translate animation block index to hardware tile
+				trblk = cb + peek(block_map_ptr + cur_block * 2) * 4
+
+				; add/subtract screen/map offsets
+				inc blockx, x-map_x
+				inc blocky, y-map_y
+
+				; calculate hardware screen block for this
+				; particular block's coordinates (maps may
+				; be larger than one screen block)
+				effective_sb = sb + blocky / 16 * 2 + blockx / 16
+
+				; calculate block position within effective screen block
+				blockx = (blockx and 15) * 2
+				blocky = (blocky and 15) * 2
+
+				; draw four hardware tiles
+				dtile = tile(effective_sb, blockx, blocky)
+				settile dtile, trblk
+				settile dtile+2, trblk+1	; XXX: dtile+1 for rotscale BG
+				dtile = tile(effective_sb, blockx, blocky+1)
+				settile dtile, trblk+2
+				settile dtile+2, trblk+3	; XXX: likewise
+
+				; switch to next frame
+				inc cur_block
+				if cur_block > last then cur_block = first
+				poke cur_block_ptr, cur_block
+
+				; restart timer
+				count = reload
+			end if
+
+			poke count_ptr, count
+		end if
+
+		anim_ptr = anim_ptr + 12
+		blockx = peek(anim_ptr)
+		blocky = peek(anim_ptr + 2)
+	loop
+END SUB
+
 FUNCTION FMPWIDTH(fmp)
 	RETURN peekb(fmp + 14)
 END FUNCTION
