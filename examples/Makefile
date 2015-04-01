@@ -3,6 +3,7 @@ OBJS = \
 	gapman/gapman2.gba \
 	mappy/mappy.gba \
 	old_tut_4/old_tut_4.gba \
+	old_tut_7/old_tut_7.gba \
 	tut_1/tut_1.gba \
 	tut_2/tut_2.gba \
 	tut_3/tut_3.gba \
