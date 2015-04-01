@@ -2875,7 +2875,7 @@ handle_const:
 		if (thumb) {
 			codeBranch(out->addr + 4, "ne?", "b,");
 			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "jmp");
+			codeBranch(out->addr, "b,");
 		} else {
 			loop_stack[lpsp++] = out->addr;
 			codeBranch(out->addr, "eq?", "b,");
@@ -2921,7 +2921,7 @@ do_ifwhile:
 		if (thumb) {
 			codeBranch(out->addr + 4, cond, "b,");
 			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "jmp");
+			codeBranch(out->addr, "b,");
 		} else {
 			loop_stack[lpsp++] = out->addr;
 			codeBranch(out->addr, cond, "b,");
