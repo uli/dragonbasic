@@ -2627,13 +2627,7 @@ handle_const:
 			} else if (isWordN(0, "*") ||
 				   isWordN(0, "and")) {
 				const char *word = getNextWord();
-				if (can_immrot(num)) {
-					codeAsm(num, "r5", "movi");
-				} else {
-					literals.prependNew(num, out->addr, thumb);
-					codeAsm("pc", "0", "#(", "r5", "ldr,");
-				}
-				setR5(num);
+				loadR5(num);
 				if (W("*"))
 					codeAsm("r5", "r0", "mul,");
 				else if (W("and"))
