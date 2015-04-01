@@ -2802,9 +2802,8 @@ handle_const:
 		codeAsm("r2", "pop");
 		codeAsm("r0", "r2", "r0", "sub,");
 	} else if (W("*")) {
-		invalR5();
-		codeAsm("r5", "pop");
-		codeAsm("r5", "r0", "mul,");
+		codeAsm("r2", "pop");
+		codeAsm("r2", "r0", "mul,");
 	} else if (W("a!")) {
 		codeAsm("r0", "r1", "mov,");
 		codeAsm("r0", "pop");
