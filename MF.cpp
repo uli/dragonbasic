@@ -3034,12 +3034,7 @@ do_ifwhile:
 			} else if (getNextWordIf("!")) {
 				DEBUG("litstore\n");
 				if (!thumb && small_offset) {
-					if (!r5_const || r5 != (sym->lit_addr & 0xff000000)) {
-						r5 = sym->lit_addr & 0xff000000;
-						r5_const = true;
-						codeAsm(r5, "##", "r5", "mov,");
-					} else
-						DEBUG("ls1 skip r5 load of 0x%x\n", sym->lit_addr & 0xff000000);
+					loadR5(sym->lit_addr & 0xff000000);
 					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
 				} else {
 					if (!r5_const || r5 != sym->lit_addr) {
