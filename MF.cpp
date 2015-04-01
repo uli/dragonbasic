@@ -2249,9 +2249,6 @@ void Parser::parseAll()
 	const char *cond;
 
 parse_next:
-	if (r5_const)
-		DEBUG("r5 now at 0x%x\n", r5);
-
 	if (thumb && out->addr - word_start > 0x380 && literals.next) {
 		unsigned int branch = out->addr;
 		code16(0);
@@ -3009,7 +3006,6 @@ do_ifwhile:
 		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
 		if (sym->is_addr) {
 			if (getNextWordIf("@")) {
-				DEBUG("litload\n");
 				codeAsm("r0", "push");
 				if (!thumb && small_offset) {
 					loadR5(sym->lit_addr & 0xff000000);
@@ -3019,7 +3015,6 @@ do_ifwhile:
 					codeAsm("r5", "0@", "r0", "ldr,");
 				}
 			} else if (getNextWordIf("!")) {
-				DEBUG("litstore\n");
 				if (!thumb && small_offset) {
 					loadR5(sym->lit_addr & 0xff000000);
 					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "str,");
