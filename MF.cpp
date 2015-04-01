@@ -2650,9 +2650,8 @@ handle_const:
 					getNextWord();
 					if (getNextWordIf("@")) {
 						if (!skip_push && getNextWordIf("+")) {
-							invalR5();
-							codeAsm("r6", num, "#(", "r5", "ldr,");
-							codeAsm("r5", "r0", "r0", "add,");
+							codeAsm("r6", num, "#(", "r2", "ldr,");
+							codeAsm("r2", "r0", "r0", "add,");
 						} else {
 							// If a local store precedes,
 							// we don't have to push R0.
