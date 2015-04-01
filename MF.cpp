@@ -2419,9 +2419,8 @@ parse_next:
 		if (getNextWordIf("a!")) {
 			codeAsm("r1", "pop");
 		} else if (getNextWordIf("-")) {
-			invalR5();
-			codeAsm("r5", "pop");
-			codeAsm("r5", "r0", "r0", "sub,");
+			codeAsm("r2", "pop");
+			codeAsm("r2", "r0", "r0", "sub,");
 		} else if (getNextWordIf("over")) {
 			invalR5();
 			codeAsm("sp", "0@", "r5", "ldr,");
