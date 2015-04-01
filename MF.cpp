@@ -3028,13 +3028,7 @@ do_ifwhile:
 					loadR5(sym->lit_addr & 0xff000000);
 					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
 				} else {
-					if (!r5_const || r5 != sym->lit_addr) {
-						literals.prependNew(sym->lit_addr, out->addr, thumb);
-						r5 = sym->lit_addr;
-						r5_const = true;
-						codeAsm("pc", "0", "#(", "r5", "ldr,");
-					} else
-						DEBUG("ll2 skip r5 load of 0x%x\n", sym->lit_addr);
+					loadR5(sym->lit_addr);
 					codeAsm("r5", "0@", "r0", "ldr,");
 				}
 			} else if (getNextWordIf("!")) {
