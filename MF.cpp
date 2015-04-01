@@ -2575,10 +2575,7 @@ handle_const:
 						codeAsm(num, "##", "r0",
 							"r0", op);
 					} else {
-						r5_const = true;
-						r5 = num;
-						literals.prependNew(num, out->addr, true);
-						codeAsm("pc", "0", "#(", "r5", "ldr,");
+						loadR5(num);
 						codeAsm("r5", "r0", "r0", op);
 					}
 
