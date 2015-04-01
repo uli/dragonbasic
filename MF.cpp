@@ -2941,9 +2941,8 @@ handle_const:
 		    W("=")) &&
 		   (getNextWordIf("while") || getNextWordIf("if"))) {
 		cond = op2cond(word, !thumb);
-		invalR5();
-		codeAsm("r5", "pop");
-		codeAsm("r0", "r5", "cmp,");
+		codeAsm("r2", "pop");
+		codeAsm("r0", "r2", "cmp,");
 do_ifwhile:
 		codeAsm("r0", "pop");
 		if (thumb) {
