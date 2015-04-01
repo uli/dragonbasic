@@ -2499,9 +2499,8 @@ parse_next:
 			codeAsm("r0", "r0", "mvn,");
 		}
 	} else if (W("and")) {
-		invalR5();
-		codeAsm("r5", "pop");
-		codeAsm("r5", "r0", "and,");
+		codeAsm("r2", "pop");
+		codeAsm("r2", "r0", "and,");
 	} else if (W("or")) {
 		invalR5();
 		codeAsm("r5", "pop");
