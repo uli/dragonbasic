@@ -2849,9 +2849,8 @@ handle_const:
 		codeAsm("r0", "push");
 		codeAsm("r6", "r0", "mov,");
 	} else if (W("!")) {
-		invalR5();
-		codeAsm("r5", "pop");
-		codeAsm("r0", "0@", "r5", "str,");
+		codeAsm("r2", "pop");
+		codeAsm("r0", "0@", "r2", "str,");
 		codeAsm("r0", "pop");
 	} else if (W("variable")) {
 		const char *ident = getNextWord();
