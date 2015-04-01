@@ -173,6 +173,7 @@ public:
 	void invalR5() {
 		r5_const = false;
 	}
+	void loadR5(unsigned int num);
 
 private:
 	// These numbers reflect the instruction groups as defined in the

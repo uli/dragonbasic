@@ -2209,6 +2209,30 @@ const char *op2cond(const char *word, bool invert)
 	abort();
 }
 
+void Parser::loadR5(unsigned int num)
+{
+
+	if (!r5_const || r5 != num) {
+		if (r5_const && num > r5 && num - r5 < 0x100) {
+			DEBUG("loaded r5 with 0x%x by adding 0x%x\n", num, num - r5);
+			codeAsm(num - r5, "##", "r5", "add,");
+		} else if (r5_const && num < r5 && r5 - num < 0x100) {
+			DEBUG("loaded r5 with 0x%x by subbing 0x%x\n", num, r5 - num);
+			codeAsm(r5 - num, "##", "r5", "sub,");
+		} else if (can_immrot(num)) {
+			DEBUG("loaded r5 with 0x%x using movi\n", num);
+			codeAsm(num, "r5", "movi");
+		} else {
+			DEBUG("loaded r5 with 0x%x using ldr pc\n", num);
+			literals.prependNew(num, out->addr, thumb);
+			codeAsm("pc", "0", "#(", "r5", "ldr,");
+		}
+		setR5(num);
+	} else {
+		DEBUG("loaded r5 NOT, already at 0x%x\n", num);
+	}
+}
+
 void Parser::parseAll()
 {
 	const char *word;
