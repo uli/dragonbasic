@@ -2555,6 +2555,18 @@ handle_const:
 					} else
 						codeAsm(num, "##", "r0", "r0", "lsl,");
 				}
+			} else if (num < 64 && isWordN(0, "+") && isWordN(1, "peek")) {
+				getNextWord();
+				getNextWord();
+				codeAsm("r0", num, "#(", "r0", "ldrh,");
+			} else if (num < 128 && isWordN(0, "+") && isWordN(1, "peekw")) {
+				getNextWord();
+				getNextWord();
+				codeAsm("r0", num, "#(", "r0", "ldr,");
+			} else if (num < 32 && isWordN(0, "+") && isWordN(1, "peekb")) {
+				getNextWord();
+				getNextWord();
+				codeAsm("r0", num, "#(", "r0", "ldrb,");
 			} else if (isWordN(0, "+") ||
 				   isWordN(0, "-")) {
 				const char *op;
