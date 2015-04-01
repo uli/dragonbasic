@@ -2547,10 +2547,9 @@ handle_const:
 					codeAsm(num, "##", "r0", "r0", "asr,");
 			} else if (getNextWordIf("n*")) {
 				if (!thumb && getNextWordIf("+")) {
-					invalR5();
-					codeAsm("r5", "pop");
+					codeAsm("r2", "pop");
 					codeAsm("r0");
-					codeAsm(num, "#lsl", "r5", "r0",
+					codeAsm(num, "#lsl", "r2", "r0",
 						"add,");
 				} else {
 					if (!thumb) {
