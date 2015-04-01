@@ -2677,9 +2677,7 @@ handle_const:
 					if (isWordN(0, "over") && isWordN(1, "!")) {
 						getNextWord();
 						getNextWord();
-						r5_const = true;
-						r5 = num;
-						codeAsm(num, "##", "r5", "mov,");
+						loadR5(num);
 						codeAsm("r0", "0@", "r5", "str,");
 					} else if ((isWordN(0, "=") ||
 						    isWordN(0, "<=") ||
