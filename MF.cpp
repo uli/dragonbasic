@@ -2422,9 +2422,8 @@ parse_next:
 			codeAsm("r2", "pop");
 			codeAsm("r2", "r0", "r0", "sub,");
 		} else if (getNextWordIf("over")) {
-			invalR5();
-			codeAsm("sp", "0@", "r5", "ldr,");
-			codeAsm("r5", "push");
+			codeAsm("sp", "0@", "r2", "ldr,");
+			codeAsm("r2", "push");
 			codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
 			codeAsm("r2", "r3", "pop");
