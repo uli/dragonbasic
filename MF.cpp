@@ -2588,20 +2588,7 @@ handle_const:
 				/* nop */
 			} else if (getNextWordIf("com")) {
 				if (getNextWordIf("and")) {
-					codeAsm("r0", "push");
-					if ((thumb && num < 256) ||
-					    (!thumb && can_immrot(num))) {
-						codeAsm(num, "##", "r0",
-							"mov,");
-					} else {
-						r5_const = true;
-						r5 = num;
-						literals.prependNew(num, out->addr, thumb);
-						codeAsm("pc", "0", "#(", "r5", "ldr,");
-					}
-
-					invalR5();
-					codeAsm("r5", "pop");
+					loadR5(num);
 					codeAsm("r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
 					codeAsm("r0", "push");
