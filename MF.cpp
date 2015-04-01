@@ -2502,9 +2502,8 @@ parse_next:
 		codeAsm("r2", "pop");
 		codeAsm("r2", "r0", "and,");
 	} else if (W("or")) {
-		invalR5();
-		codeAsm("r5", "pop");
-		codeAsm("r5", "r0", "orr,");
+		codeAsm("r2", "pop");
+		codeAsm("r2", "r0", "orr,");
 	} else if ((sym = getSymbol(word)) && sym->is_const) {
 		num = sym->lit_addr;
 		goto handle_const;
