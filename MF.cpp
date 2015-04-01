@@ -2433,10 +2433,9 @@ parse_next:
 			if (!thumb)
 				codeAsm("sp", "r0", "r0", "swp,");
 			else {
-				invalR5();
-				codeAsm("r5", "pop");
+				codeAsm("r2", "pop");
 				codeAsm("r0", "push");
-				codeAsm("r5", "r0", "mov,");
+				codeAsm("r2", "r0", "mov,");
 			}
 		}
 	} else if (W("dup")) {
