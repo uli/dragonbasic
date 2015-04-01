@@ -2449,10 +2449,9 @@ parse_next:
 			codeAsm("sp", "0@", "r2", "ldr,");
 			codeAsm("r2", "r0", "r0", "sub,");
 		} else if (getNextWordIf("!")) {
-			invalR5();
-			codeAsm("r5", "pop");
-			codeAsm("r5", "0@", "r0", "str,");
-			codeAsm("r5", "r0", "mov,");
+			codeAsm("r2", "pop");
+			codeAsm("r2", "0@", "r0", "str,");
+			codeAsm("r2", "r0", "mov,");
 		} else if (isWordN(0, "@") && isWordN(1, "+")) {
 			getNextWord();
 			getNextWord();
