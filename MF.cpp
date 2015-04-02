@@ -2438,6 +2438,18 @@ parse_next:
 	} else if (W("dup")) {
 		if (getNextWordIf("a!")) {
 			codeAsm("r0", "r1", "mov,");
+		} else if (isWordN(0, "@") &&
+			   isWordN(1, "1+") &&
+			   isWordN(2, "swap") &&
+			   isWordN(3, "!")) {
+			getNextWord();
+			getNextWord();
+			getNextWord();
+			getNextWord();
+			codeAsm("r0", "0@", "r2", "ldr,");
+			codeAsm(1, "##", "r2", "add,");
+			codeAsm("r0", "0@", "r2", "str,");
+			codeAsm("r0", "pop");
 		} else {
 			codeAsm("r0", "push");
 		}
