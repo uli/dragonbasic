@@ -82,7 +82,7 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_
 			dest_x = x + start_x
 			block = line_block + dest_x / 32
 			xx = dest_x and 31
-			settile tile(block, xx, yy), char_block + peekb(line_ptr + x)
+			fastsettile tile(block, xx, yy), char_block + peekb(line_ptr + x)
 		NEXT
 	NEXT
 END SUB
