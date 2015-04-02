@@ -29,6 +29,7 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, star
 	LOCAL line_block	; first screen block (SCx) of current line
 	LOCAL cell		; tile index
 	LOCAL line_ptr		; first tile index of current line
+	LOCAL tile_addr
 
 	char_block = charblock(char_block)
 
@@ -47,10 +48,12 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, star
 			block = line_block + dest_x / 32
 			xx = dest_x and 31
 			cell = peekb(line_ptr + x) * 4 + char_block
-			settile tile(block, xx, yy), cell
-			settile tile(block, xx+1, yy), cell+1
-			settile tile(block, xx, yy+1), cell+2
-			settile tile(block, xx+1, yy+1), cell+3
+			tile_addr = tile(block, xx, yy)
+			fastsettile tile_addr, cell
+			fastsettile tile_addr+2, cell+1
+			tile_addr = tile(block, xx, yy+1)
+			fastsettile tile_addr, cell+2
+			fastsettile tile_addr+2, cell+3
 		NEXT
 	NEXT
 END SUB
