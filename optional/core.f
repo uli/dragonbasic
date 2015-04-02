@@ -86,21 +86,23 @@ code-thumb erase ( a u -- )
 	w w eor,
 	tos tos tst,
 	
+	\ if <= 0 then return
+	__exit le? b,
+
 	\ loop
 	l: __erase
-	
-	\ if <= 0 then return
-	8 #offset gt? b,
-	tos pop
-	ret
-	
+
 	\ erase
 	v0 0@ w strh,
 	2 ## v0 add,
 	
 	\ decrement and loop
 	2 ## tos sub,	\ subs, actually
-	__erase b,
+	__erase gt? b,
+
+	l: __exit
+	tos pop
+	ret
 end-code
 
 \ set the graphics mode
