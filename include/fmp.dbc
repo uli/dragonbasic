@@ -160,11 +160,11 @@ SUB FMPANIMATE16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, hei
 
 				; draw four hardware tiles
 				dtile = tile(effective_sb, blockx, blocky)
-				settile dtile, trblk
-				settile dtile+2, trblk+1	; XXX: dtile+1 for rotscale BG
+				fastsettile dtile, trblk
+				fastsettile dtile+2, trblk+1	; XXX: dtile+1 for rotscale BG
 				dtile = tile(effective_sb, blockx, blocky+1)
-				settile dtile, trblk+2
-				settile dtile+2, trblk+3	; XXX: likewise
+				fastsettile dtile, trblk+2
+				fastsettile dtile+2, trblk+3	; XXX: likewise
 
 				; switch to next frame
 				inc cur_block
@@ -257,7 +257,7 @@ SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, heigh
 
 				; draw hardware tile
 				dtile = tile(effective_sb, blockx, blocky)
-				settile dtile, trblk
+				fastsettile dtile, trblk
 
 				; switch to next frame
 				inc cur_block
