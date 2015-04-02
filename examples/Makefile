@@ -1,5 +1,6 @@
 OBJS = \
 	breakout/breakout.gba \
+	coppa/coppa.gba \
 	gapman/gapman2.gba \
 	mappy/mappy.gba \
 	old_tut_4/old_tut_4.gba \

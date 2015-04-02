@@ -1,0 +1,35 @@
+; Unearthed at
+; https://web.archive.org/web/20040125072251/http://www.dragonbasic.com/phpBB2/viewtopic.php?t=382&amp
+; and slightly touched up. -- uli
+
+#title "B0B's WiLD C0PPA"
+
+#include <core.dbc>
+#include <ext.dbc>
+#include <input.dbc>
+#include <interrupts.dbc>
+#include <palette.dbc>
+
+DIM i,j
+
+INTERRUPT raster
+	INC i
+	setpalentry BG_PALETTE, 0, 0, i
+EXIT
+
+INTERRUPT rastcol
+	INC j
+	IF key(KEY_A) THEN DEC j, 2
+	i = j
+EXIT
+
+SUB start
+	graphics 1, 0
+	vblank
+	onhblank raster
+	onvblank rastcol
+
+	WHILE
+		vblank
+	LOOP
+END SUB
