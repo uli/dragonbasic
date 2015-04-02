@@ -65,6 +65,13 @@ code-thumb settile ( a u -- )
 	ret
 end-code
 
+\ sets the index of a tile without preserving palette number
+icode-thumb fastsettile ( a u -- )
+	w pop
+	w 0@ tos strh,
+	tos pop
+end-code
+
 \ enable a background layer
 code-thumb enabletiles ( bg screen char flags -- )
 	v0 v1 v2 pop
