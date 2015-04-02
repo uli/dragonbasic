@@ -2974,7 +2974,9 @@ do_ifwhile:
 	} else if (W("interrupt")) {
 		out->alignDword();
 		invalR5();
-		sym = symbols.appendNew(out->addr, getNextWord());
+		const char *ident = getNextWord();
+		out->addSym(ident);
+		sym = symbols.appendNew(out->addr, ident);
 		sym->is_addr = true;
 		sym->lit_addr = out->addr;
 		thumb = false;
