@@ -98,9 +98,3 @@ irq_handler:
 	pop	{r4-r11, lr}
 _empty:
 	bx	lr
-
-.global _tin_wlit
-_tin_wlit:
-	ldrt	r5, [lr], #4
-	bx	lr
-
