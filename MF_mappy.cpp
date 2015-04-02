@@ -268,6 +268,7 @@ int Decode(const char *filename,Output *out) {
 	out->emitWord(0);
 	int layers = 0;
 	unsigned int anim_ptr = 0;
+	anim_addr = 0;
 
 	while ((tag = GetWord(f)) != -1) {
 		int tagLen = GetWord(f);
