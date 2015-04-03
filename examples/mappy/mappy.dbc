@@ -34,7 +34,7 @@ SUB loadmap(fmp)
 
 	; Erase screen blocks of BG0 and BG1 (eight screen blocks overall).
 	FOR i = sblock TO sblock+7
-		cleartiles tile(i, 0, 0), 32, 32
+		cleartilesfast tile(i, 0, 0), 32, 32
 	NEXT
 
 	; Load the FMP map's tiles to character block "cblock".  We need to
