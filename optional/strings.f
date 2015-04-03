@@ -261,22 +261,22 @@ end-code
 
 \ append one string onto another
 : append$ ( to from -- a )
-	256 # r-alloc 1+ a! swap count
+	256 # s-alloc 1+ a! swap count
 		-> dup 1 # - push swap count -> drop 
 	a@ swap - r@ swap resize pop ;
 
 \ grab the beginning of a string
 : left$ ( from count -- a )
-	256 # r-alloc a! swap over 1+
+	256 # s-alloc a! swap over 1+
 		-> dup a! swap resize a@ ;
 
 \ grab the end of a string
 : right$ ( from count -- a )
-	256 # r-alloc 1+ a! push 
+	256 # s-alloc 1+ a! push
 		dup len r@ - 1+ +
 	r@ -> 1 # - dup pop resize ;
 
 \ grab the middle of a string
 : mid$ ( from start count -- a )
-	256 # r-alloc 1+ a! push + 1+
+	256 # s-alloc 1+ a! push + 1+
 		r@ -> 1 # - dup pop resize ;
