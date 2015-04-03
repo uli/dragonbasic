@@ -3114,6 +3114,10 @@ do_ifwhile:
 				codeToThumb();
 		}
 
+		char isym[strlen(icode->word) + 9 + 1];
+		sprintf(isym, "__inline_%s", icode->word);
+		out->addSym(isym);
+
 		if (cur_icode) {
 			memcpy(cur_icode->cp, icode->code, icode->len);
 			cur_icode->cp += icode->len;
