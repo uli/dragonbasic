@@ -247,6 +247,7 @@ SECTIONS
 	__ewram_start = ORIGIN(ewram);
 	.ewram __ewram_start : AT (__ewram_lma)
 	{
+		__ewram_start = ABSOLUTE(.);
 		*(.ewram)
 		. = ALIGN(4);  /* REQUIRED. LD is flaky without it. */
 		__ewram_end = ABSOLUTE(.);
