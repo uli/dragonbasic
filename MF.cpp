@@ -2222,6 +2222,10 @@ void Parser::loadR5(unsigned int num)
 		} else if (can_immrot(num)) {
 			DEBUG("loaded r5 with 0x%x using movi\n", num);
 			codeAsm(num, "r5", "movi");
+		} else if (can_immrot(num & 0xffffff00)) {
+			DEBUG("loaded r5 with 0x%x using movi/add\n", num);
+			codeAsm(num & 0xffffff00, "r5", "movi");
+			codeAsm(num & 0xff, "##", "r5", "add,");
 		} else {
 			DEBUG("loaded r5 with 0x%x using ldr pc\n", num);
 			literals.prependNew(num, out->addr, thumb);
