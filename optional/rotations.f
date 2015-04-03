@@ -2,11 +2,11 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ confine an angle to within 0-359
-: (wrap-hi) ( n1 -- n2 ) 
+:n (wrap-hi) ( n1 -- n2 )
 	dup 360 # >= if 180 # - 180 # - then ;
 
 \ confine an angle to within 0-359
-: (wrap-lo) ( n1 -- n2 )
+:n (wrap-lo) ( n1 -- n2 )
 	dup 0< if 180 # + 180 # + then ;
 
 \ confine an angle to within 0-359
