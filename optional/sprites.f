@@ -8,7 +8,7 @@
   -- sprite return the duplicated address }
 
 \ return the address of a sprite
-:n sprite ( n -- a ) 3 # n* $3000000 # + ;
+:i sprite ( n -- a ) 3 # n* $3000000 # + ;
 
 \ copy sprite data from ROM to VRAM
 : loadsprite ( n a blocks -- )
