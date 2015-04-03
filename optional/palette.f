@@ -14,9 +14,9 @@
 	10 # n* swap 5 # n* + + ;
 
 \ components of a color
-:n rgbr ( color -- r ) $1f # and ;
-:n rgbg ( color -- g ) 5 # n/ $1f # and ;
-:n rgbb ( color -- g ) 10 # n/ $1f # and ;
+:i rgbr ( color -- r ) $1f # and ;
+:i rgbg ( color -- g ) 5 # n/ $1f # and ;
+:i rgbb ( color -- g ) 10 # n/ $1f # and ;
 
 \ palette constant data
 label __colors
