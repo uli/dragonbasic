@@ -3113,7 +3113,14 @@ do_ifwhile:
 			else
 				codeToThumb();
 		}
-		out->emitString(icode->code, icode->len);
+
+		if (cur_icode) {
+			memcpy(cur_icode->cp, icode->code, icode->len);
+			cur_icode->cp += icode->len;
+			cur_icode->len += icode->len;
+		} else
+			out->emitString(icode->code, icode->len);
+
 		if (change) {
 			if (icode->thumb)
 				codeToArm();
