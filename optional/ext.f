@@ -92,7 +92,7 @@ icode-thumb int ( f -- n )
 end-code
 
 \ round a fixed-point value to an integer
-:n round ( f -- n ) $80 # + int ;
+:i round ( f -- n ) $80 # + int ;
 
 \ fixed-point square root
 icode-thumb fsqrt# ( f1 -- f2 )
