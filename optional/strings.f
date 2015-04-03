@@ -229,7 +229,7 @@ end-code
 : append$ ( to from -- a )
 	256 # r-alloc 1+ a! swap count
 		-> dup 1 # - push swap count -> drop 
-	a swap - r@ swap resize pop ;
+	a@ swap - r@ swap resize pop ;
 
 \ grab the beginning of a string
 : left$ ( from count -- a )

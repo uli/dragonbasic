@@ -2789,7 +2789,7 @@ handle_const:
 		else
 			out->reloc24(skip, out->addr);
 	} else if (W("drop")) {
-		if (getNextWordIf("a")) {
+		if (getNextWordIf("a@")) {
 			codeAsm("r1", "r0", "mov,");
 		} else if (getNextWordIf("over")) {
 			codeAsm("sp", "4", "#(", "r0", "ldr,");
