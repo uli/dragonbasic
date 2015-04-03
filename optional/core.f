@@ -9,8 +9,8 @@ icode-thumb poke ( a h -- ) w pop w 0@ tos strh, tos pop end-code
 icode-thumb pokeb ( a h -- ) w pop w 0@ tos strb, tos pop end-code
 icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 
-\ divide and modula
-:n / ( n1 n2 -- n3 ) swap a! 7 swi ;
+\ divide and modulo
+:i / ( n1 n2 -- n3 ) swap a! 7 swi ;
 :n mod ( n1 n2 -- n3 ) swap a! 7 swi drop a@ ;
 
 \ conditionals
