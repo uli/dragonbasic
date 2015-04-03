@@ -93,11 +93,11 @@ code-thumb erase ( a u -- )
 	l: __erase
 
 	\ erase
-	v0 0@ w strh,
-	2 ## v0 add,
+	v0 0@ w str,
+	4 ## v0 add,
 	
 	\ decrement and loop
-	2 ## tos sub,	\ subs, actually
+	4 ## tos sub,	\ subs, actually
 	__erase gt? b,
 
 	l: __exit
