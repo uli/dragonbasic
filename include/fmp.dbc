@@ -49,11 +49,11 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, star
 			xx = dest_x and 31
 			cell = peekb(line_ptr + x) * 4 + char_block
 			tile_addr = tile(block, xx, yy)
-			fastsettile tile_addr, cell
-			fastsettile tile_addr+2, cell+1
+			settilefast tile_addr, cell
+			settilefast tile_addr+2, cell+1
 			tile_addr = tile(block, xx, yy+1)
-			fastsettile tile_addr, cell+2
-			fastsettile tile_addr+2, cell+3
+			settilefast tile_addr, cell+2
+			settilefast tile_addr+2, cell+3
 		NEXT
 	NEXT
 END SUB
@@ -82,7 +82,7 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_
 			dest_x = x + start_x
 			block = line_block + dest_x / 32
 			xx = dest_x and 31
-			fastsettile tile(block, xx, yy), char_block + peekb(line_ptr + x)
+			settilefast tile(block, xx, yy), char_block + peekb(line_ptr + x)
 		NEXT
 	NEXT
 END SUB
@@ -160,11 +160,11 @@ SUB FMPANIMATE16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, hei
 
 				; draw four hardware tiles
 				dtile = tile(effective_sb, blockx, blocky)
-				fastsettile dtile, trblk
-				fastsettile dtile+2, trblk+1	; XXX: dtile+1 for rotscale BG
+				settilefast dtile, trblk
+				settilefast dtile+2, trblk+1	; XXX: dtile+1 for rotscale BG
 				dtile = tile(effective_sb, blockx, blocky+1)
-				fastsettile dtile, trblk+2
-				fastsettile dtile+2, trblk+3	; XXX: likewise
+				settilefast dtile, trblk+2
+				settilefast dtile+2, trblk+3	; XXX: likewise
 
 				; switch to next frame
 				inc cur_block
@@ -257,7 +257,7 @@ SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, heigh
 
 				; draw hardware tile
 				dtile = tile(effective_sb, blockx, blocky)
-				fastsettile dtile, trblk
+				settilefast dtile, trblk
 
 				; switch to next frame
 				inc cur_block

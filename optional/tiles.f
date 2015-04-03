@@ -66,7 +66,7 @@ code-thumb settile ( a u -- )
 end-code
 
 \ sets the index of a tile without preserving palette number
-icode-thumb fastsettile ( a u -- )
+icode-thumb settilefast ( a u -- )
 	w pop
 	w 0@ tos strh,
 	tos pop
