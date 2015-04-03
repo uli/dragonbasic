@@ -2,11 +2,11 @@
   -- Original code by Jeff Massung, 2003 }
 
 \ turn interrupts on
-: enableinterrupts ( -- )
+:n enableinterrupts ( -- )
 	$4000208 # ( REG_IF) 0 # com poke ;
 
 \ turn interrupts off
-: disableinterrupts ( -- )
+:n disableinterrupts ( -- )
 	$4000208 # ( REG_IF) 0 # poke ;
 
 \ setup an interrupt event handler (keypad)
