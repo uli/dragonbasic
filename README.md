@@ -19,6 +19,7 @@ improvements:
   rewritten in Thumb)
 - supports "naked" words that omit the prolog, reducing function call
   overhead
+- supports inlining of TIN words
 - optimizes many common TIN word sequences into more efficient machine code
 - optimizes many operations on constants
 - uses inlined comparisons and conditional branches
@@ -67,19 +68,24 @@ and a lot of new features have been added:
   the Internet Archive and living fossil web sites.
 - addition of Dragon BASIC language reference and timer API documentation to
   CHM file (from DDLullu's fix library)
+- added syntax highlighting descriptions for ConTEXT and JOE
 
 ### Library
 
 - new 32 and 8-bit peeks and pokes
 - uses BIOS call to wait for vertical blank (reduces power consumption, and
   works better overall)
-- changed LOADPAL256, LOADSPRITE, LOADTILES, and UPDATESPRITES to use DMA
-- uses byte-sized accesses where possible (there seems to have been some sort
-  of superstition that it is not...)
+- LOADPAL256, LOADSPRITE, LOADTILES, and UPDATESPRITES now use DMA
+- new SETTILEFAST and CLEARTILESFAST functions ignore rarely significant
+  corner cases in favor of speed
+- uses byte-sized or word-sized instead of halfword-sized accesses where
+  beneficial to performance
 - moved constants together with the corresponding functions to avoid having
   to include the entire library all the time
+- rewritten string memory allocator that actually works
 - new ASC() and CHR$() functions from DDLullu's fix library
 - signed numbers support in STR$()
+- many functions have been inlined or declared naked to improve performance
 
 ### Runtime Environment
 
