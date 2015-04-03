@@ -191,6 +191,40 @@ l: __last_digit_dec
 	pop-string b,
 end-code
 
+variable string_ring_ptr
+
+\ initialize string ring pointer
+code-thumb .init_string_ring
+	string_ring v1 LITERAL		\ ring start -> v1
+	string_ring_ptr v0 LITERAL
+	v0 0@ v1 str,
+	ret
+end-code
+
+\ allocate space in the string ring buffer
+code-thumb s-alloc ( u -- a )
+	tos w mov,			\ size -> w
+
+	string_ring v1 LITERAL		\ ring start -> v1
+	string_ring_ptr v0 LITERAL
+	v0 0@ tos ldr,			\ current pos -> v0
+
+	tos w w add,			\ new ring ptr -> w
+
+	\ check if we have overstepped the bounds of the ring buffer
+	string_ring_size v2 movi
+	v1 v2 v2 add,			\ end of ring buffer -> v2
+	v2 w cmp,			\ still within ring buffer?
+	__ok lt? b,
+	tos w w sub,			\ get back the size
+	v1 w w add,			\ &ring[size] -> w
+	v1 tos mov,			\ &ring[0] -> tos
+
+	l: __ok
+	v0 0@ w str,			\ write back new ring pos
+	ret
+end-code
+
 \ convert a number to a string and return address
 : str$ ( n -- a ) a! 256 # r-alloc dup a@ /str ;
 : hex$ ( n -- a ) a! 256 # r-alloc dup a@ /hex ;
