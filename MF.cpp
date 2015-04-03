@@ -2045,7 +2045,10 @@ void Parser::parseAsm(const char *word)
 
 	} else if ((sym = getSymbol(word))) {
 		DEBUG("asmsym %s 0x%x thumb %d\n", word, sym->addr, sym->thumb);
-		PUSH_ASM(ASM_OFF, sym->addr);
+		if (sym->is_addr)
+			PUSH_ASM(ASM_OFF, sym->lit_addr);
+		else
+			PUSH_ASM(ASM_OFF, sym->addr);
 	} else {
 		int i;
 		for (i = lsp - 1; i >= 0; i--) {
