@@ -1057,7 +1057,6 @@ static unsigned int immrot(unsigned int val, int *err)
 	}
 	if (err) {
 		if (val > 0xff) {
-			DEBUG("bad immediate 0x%x\n", val);
 			*err = 1;
 		}
 		else
