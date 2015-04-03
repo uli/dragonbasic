@@ -59,12 +59,13 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, star
 END SUB
 
 SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
-	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
-	LOCAL x, y		; 16x16 FMP tile coordinates
+	LOCAL yy		; SCx start coordinate for map tile
+	LOCAL x, y		; FMP map tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
 	LOCAL block		; screen block (SCx)
 	LOCAL line_block	; first screen block (SCx) of current line
 	LOCAL line_ptr		; first tile index of current line
+	LOCAL tile_addr
 
 	char_block = charblock(char_block)
 
@@ -78,11 +79,12 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_
 		yy = dest_y and 31
 		line_ptr = map_ptr + y * map_width
 		line_block = screen_block + (dest_y / 32) * 2
-		FOR x = 0 TO width
+		FOR x = 0 TO width STEP 2
 			dest_x = x + start_x
-			block = line_block + dest_x / 32
-			xx = dest_x and 31
-			settilefast tile(block, xx, yy), char_block + peekb(line_ptr + x)
+			tile_addr = tile(line_block + dest_x / 32, _
+					 dest_x and 31, yy)
+			settilefast tile_addr, char_block + peekb(line_ptr + x)
+			settilefast tile_addr+2, char_block + peekb(line_ptr + x + 1)
 		NEXT
 	NEXT
 END SUB
