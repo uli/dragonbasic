@@ -47,11 +47,12 @@ _all:	dbc$(SUFF) mf$(SUFF) converter$(SUFF)
 clean:
 	rm -f dbc.exe dbc mf.exe mf *.o.* run*.gba run*.elf runtime_syms.h
 	rm -f converter converter.exe
-	rm -f dbapi/dbapi.chm
+	rm -f dbapi/dbapi.chm docs/dbapi.chm
 	$(MAKE) -C $(PIMPMOBILE) clean
 	$(MAKE) -C examples clean
 
 doc:	dbapi/dbapi.chm
+	cp -p dbapi/dbapi.chm docs/
 
 dbapi/dbapi.chm: dbapi/dbapi.hhp dbapi/*.htm
 	cd dbapi ; chmcmd dbapi.hhp
