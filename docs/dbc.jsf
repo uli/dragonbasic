@@ -1,0 +1,242 @@
+# JOE syntax highlight file for DragonBASIC
+
+=Idle
+=Bad		bold red
+=Preproc 	blue
+=Define		bold blue
+=Comment 	green
+=IncLocal	cyan
+=IncSystem	bold cyan
+=Constant 	cyan
+=Keyword 	bold
+=Brace		magenta
+=Label		yellow dim
+=Control
+
+:reset Idle
+	*		idle		noeat
+
+:pre Preproc
+	*		reset		noeat
+	" \t"		pre
+	"a-zA-Z"	preident	recolor=-1 buffer
+
+:preident Preproc
+	*		reset		noeat istrings
+	"constant"	constant
+	"include"	inc
+	"map"		inc
+	"requires"	inc
+	"sound"		inc
+done
+	"a-zA-Z"		preident
+
+:constant Preproc
+	*		idle		noeat
+	" \t"		definee
+
+:definee Define
+	*		idle		noeat
+	"a-zA-Z_0-9"	definee
+
+:inc Preproc
+	*		inc
+	"<"		inc_system	recolor=-1
+	"\""		inc_local	recolor=-1
+	"\n"		reset
+
+:inc_system IncSystem
+	*		inc_system
+	">\n"		reset
+
+:inc_local IncLocal
+	*		inc_local
+	"\"\n"		reset
+
+:idle Idle
+	*		idle
+	"a-zA-Z_"	ident		buffer mark
+	"&"		first_digit	noeat recolor=-1
+	"0-9"		decimal		recolor=-1
+	"\n"		reset
+	"#"		pre		recolor=-1
+	";"		comment		recolor=-1
+	"\""		string		recolor=-1
+
+:string	Constant
+	*		string
+	"\""		idle
+
+:comment Comment
+	*		comment
+	"\n"		idle 
+
+:ident Idle
+	*		idle		noeat istrings
+	"and"		kw
+	"data"		kw
+	"dec"		kw
+	"dim"		kw
+	"else"		kw
+	"false"		kw
+	"for"		kw
+	"function"	brace
+	"if"		kw
+	"inc"		kw
+	"local"		kw
+	"loop"		kw
+	"next"		kw
+	"nor"		kw
+	"not"		kw
+	"or"		kw
+	"prototype"	prototype
+	"read"		kw
+	"restore"	kw
+	"return"	kw
+	"then"		kw
+	"to"		kw
+	"true"		kw
+	"while"		kw
+	"end"		end
+	"sub"		brace
+done
+	"a-zA-Z0-9_#"	ident
+	":"		label		noeat recolormark
+
+:label Label
+	*		idle		noeat
+	":"		label
+
+:kw Keyword
+	*		idle		noeat
+
+:brace Brace
+	*		idle		noeat
+
+# This istrings crap doesn't work.
+:ifkw Keyword
+	*		idle	noeat
+	"fF"		ifkw
+
+:subkw1 Brace
+	*		idle	noeat
+	"uU"		subkw2
+	"eE"		selectkw2
+
+:subkw2 Brace
+	*		idle	noeat
+	"bB"		subkw2
+
+:subkw1kw Keyword
+	*		idle	noeat
+	"uU"		subkw2kw
+	"eE"		selectkw2kw
+
+:subkw2kw Keyword
+	*		idle	noeat
+	"bB"		subkw2kw
+
+:funkw1 Brace
+	*		idle	noeat
+	"Uu"		funkw2
+:funkw2 Brace
+	*		idle	noeat
+	"Nn"		funkw3
+:funkw3 Brace
+	*		idle	noeat
+	"Cc"		funkw4
+:funkw4 Brace
+	*		idle	noeat
+	"Tt"		funkw5
+:funkw5 Brace
+	*		idle	noeat
+	"Ii"		funkw6
+:funkw6 Brace
+	*		idle	noeat
+	"Oo"		funkw7
+:funkw7 Brace
+	*		idle	noeat
+	"Nn"		funkw7
+
+:funkw1kw Keyword
+	*		idle	noeat
+	"Uu"		funkw2kw
+:funkw2kw Keyword
+	*		idle	noeat
+	"Nn"		funkw3kw
+:funkw3kw Keyword
+	*		idle	noeat
+	"Cc"		funkw4kw
+:funkw4kw Keyword
+	*		idle	noeat
+	"Tt"		funkw5kw
+:funkw5kw Keyword
+	*		idle	noeat
+	"Ii"		funkw6kw
+:funkw6kw Keyword
+	*		idle	noeat
+	"Oo"		funkw7kw
+:funkw7kw Keyword
+	*		idle	noeat
+	"Nn"		funkw7kw
+
+:selectkw2 Brace
+	*		idle	noeat
+	"Ll"		selectkw3
+:selectkw3 Brace
+	*		idle	noeat
+	"Ee"		selectkw4
+:selectkw4 Brace
+	*		idle	noeat
+	"Cc"		selectkw5
+:selectkw5 Brace
+	*		idle	noeat
+	"Tt"		selectkw5
+
+:selectkw2kw Keyword
+	*		idle	noeat
+	"Ll"		selectkw3kw
+:selectkw3kw Keyword
+	*		idle	noeat
+	"Ee"		selectkw4kw
+:selectkw4kw Keyword
+	*		idle	noeat
+	"Cc"		selectkw5kw
+:selectkw5kw Keyword
+	*		idle	noeat
+	"Tt"		selectkw5kw
+
+:end Brace
+	*		idle		noeat
+	"iI"		ifkw		markend recolor=-1 recolormark
+	"sS"		subkw1
+	"fF"		funkw1
+	" \t"		end
+
+:prototype Keyword
+	*		idle		noeat
+	"sS"		subkw1kw
+	"fF"		funkw1kw
+	" \t"		prototype
+
+:first_digit Constant
+	*		idle	noeat
+	"&"		hex
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:hex Constant
+	*		idle	noeat
+	"0-9A-Fa-f"	hex
+
+:decimal Constant
+	*		idle	noeat
+	"0-9"		decimal
+	"."		float
+	"#"		idle
+
+:float Constant
+	*		idle	noeat
+	"0-9"		float
