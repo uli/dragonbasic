@@ -2029,6 +2029,10 @@ void Parser::parseAsm(const char *word)
 		PUSH_ASM(ASM_IMM, 0x28);
 	} else if (W("iwram")) {
 		PUSH_ASM(ASM_IMM, 0x3000000);
+	} else if (W("string_ring")) {
+		PUSH_ASM(ASM_IMM, RT___ewram_start - 4096);
+	} else if (W("string_ring_size")) {
+		PUSH_ASM(ASM_IMM, 4096);
 	} else if (W("registers")) {
 		PUSH_ASM(ASM_IMM, 0x4000000);
 	} else if (W("vram")) {
