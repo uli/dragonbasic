@@ -285,6 +285,8 @@ int Decode(const char *filename,Output *out) {
 				Header->blockheight);
                         if (Header->mapwidth & 1)
                                 GLB_warning("%s: odd horizontal map size", filename);
+                        if (Header->blockwidth != Header->blockheight)
+                                GLB_warning("%s: non-square blocks", filename);
 			// XXX: endianness...
 			out->patch32(dim,
 				(Header->mapheight    << 24) |
