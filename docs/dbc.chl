@@ -1,0 +1,198 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// Dragon BASIC highlighter written by Jeff Massung  (modify by DDLullu)
+//
+//////////////////////////////////////////////////////////////////////////////
+
+Language:               Dragon BASIC
+Filter:                 Dragon BASIC files (*.dbc)|*.dbc
+HelpFile:               c:\db\dbAPI.chm                         // ==> change to your path
+CaseSensitive:          0
+LineComment:            ;
+BlockCommentBeg:
+BlockCommentEnd:
+IdentifierBegChars:     a..z A..Z _#
+IdentifierChars:        a..z A..Z 0..9 _#$@
+NumConstBegChars:		0..9 &%
+NumConstChars:			a..f A..F 0..9
+EscapeChar:             \
+
+
+KeyWords1:
+                pokeb poke4 peekb peek4 vblanks patch_interrupt bkey  start:
+                key_stop waitkeys
+                DMACOPY16 SETTILES COLORTILES PRINTCOLOR SLEEP SLEEPS
+                PRINT_SET PRINTS
+                #ALIGN #BITMAP #CODE #CONSTANT #DATA #FONT
+		              #IMPORT #INCLUDE #PALETTE #title #SOUND
+                #REQUIRES #REGISTER
+
+
+KeyWords2:
+		nand AND AS CASE DATA DIM DOWNTO ELSE END EXIT
+                FOR FUNCTION SUB IF INTERRUPT LEAVE LOOP MOD nand nor
+                NEXT NOT nor OR READ RESET RESTORE RETURN SELECT
+                SL SR STEP THEN TO WHILE XOR PROTOTYPE
+                map
+
+
+
+KeyWords3:
+
+// Input functions
+		keys input key waitkey
+
+// Sprite functions
+		sprite flipsprite makesprite sizesprite
+		loadsprite movesprite positionsprite colorsprite
+		spritex spritey makerotation rotatesprite
+		updatesprites hidesprite ordersprite animsprite
+		spriteframe bumpsprites spritehidden
+
+// Sound functions
+		playmusic playsound stopmusic stopsound
+		turnsoundon turnsoundoff
+
+// Timer functions
+		maketimer starttimer stoptimer clocktimer
+		waittimer resettimer
+
+// SRAM functions
+		savebyte saveword savelong savetext
+		loadbyte loadword loadlong loadtext
+//BACKGROUND
+CLEARTILES
+COLORTILE
+DISABLETILES
+ENABLETILES
+FLIPTILE
+LOADTILES
+MAPIMAGE
+MAPTILES
+ORDERTILES
+PRINT
+ROTATETILES
+SCROLL
+SCROLLPOS
+SCROLLX
+SCROLLY
+TILE
+UPDATETILES
+
+//DRAWING
+BLIT
+CIRCLE
+CLS
+FLIP
+FRAME
+LINE
+PIXEL
+PLOT
+RECT
+TRIANGLE
+WALLPAPER
+
+//EFFECT
+DISABLEMOSAIC
+ENABLEMOSAIC
+MOSAIC
+SPRITEMOSAIC
+
+
+//INTERRUPT
+ONHBLANK
+ONKEY
+ONTIMER
+ONVBLANK
+ONVCOUNT
+
+//MATH
+ABS
+COS
+FADD
+FDIV
+FIX
+FLOOR
+FMUL
+FSUB
+INT
+ROUND
+SIN
+TAN
+WRAPANGLE
+
+//MEMORY
+CHARBLOCK
+COPY
+DMACOPY
+ERASE
+PEEK
+POKE
+SCREENBLOCK
+TILEOFFSET
+
+
+//PALETTE
+GETPALENTRY
+LOADPAL16
+LOADPAL256
+MAKEPALETTE
+RGB
+RGBB
+RGBG
+RGBR
+ROTATEPAL16
+ROTATEPAL256
+SETPALENTRY
+
+//STRING
+APPEND$
+HEX$
+LEFT$
+LEN
+MID$
+MOVE
+RIGHT$
+VAL
+
+//SYSTEM
+BLOCKS
+GRAPHICS
+RANDOM
+RND
+SCANLINE
+SCREEN
+SEED
+VBLANK
+
+//NEWONE DB 1.45
+MOSAICTILES FADEOUT FADEIN ALIGNED ALLOCATE DMAWAIT SQRT FSQRT#
+ENABLEINTERRUPTS DISABLEINTERRUPTS PLAYNOTE PLAYDRUM RESIZE STR$
+COMPARE LOADFONT16 LOADFONT256 GETTILE SETTILE LOG SIN# COS# TAN#
+FIX# CHR$ ASC
+
+
+StringBegChar:          "
+StringEndChar:          "
+MultilineStrings:       0
+UsePreprocessor:        1
+CurrLineHighlighted:    0
+
+SpaceCol:               clWindowText clWindow
+Keyword1Col:            clRed clWindow B
+Keyword2Col:            $00C00000 clWindow B
+Keyword3Col:            clBlue clWindow
+IdentifierCol:          clWindowText clWindow
+CommentCol:             clGreen clWindow
+NumberCol:              clRed clWindow
+StringCol:              clPurple clWindow
+SymbolCol:              clWindowText clWindow
+PreprocessorCol:        clRed clWindow B
+SelectionCol:           clWhite $00C00000
+CurrentLineCol:         clBlack $00C0FFC0
+
+OverrideTxtFgColor:     1
+BlockAutoindent:        0
+BlockBegStr:
+BlockEndStr:
+MatchedBracesCol:       clWindowText clWindow
