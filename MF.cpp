@@ -2454,12 +2454,30 @@ parse_next:
 			   isWordN(1, "1+") &&
 			   isWordN(2, "swap") &&
 			   isWordN(3, "!")) {
+			// DBC INC x,1 idiom
 			getNextWord();
 			getNextWord();
 			getNextWord();
 			getNextWord();
 			codeAsm("r0", "0@", "r2", "ldr,");
 			codeAsm(1, "##", "r2", "add,");
+			codeAsm("r0", "0@", "r2", "str,");
+			codeAsm("r0", "pop");
+		} else if (isWordN(0, "@") &&
+			   isNum(peekWordN(1)) &&
+			   isWordN(2, "#") &&
+			   (isWordN(3, "-") || isWordN(3, "+")) &&
+			   isWordN(4, "swap") &&
+			   isWordN(5, "!")) {
+			// DBC INC/DEC x,n idiom
+			getNextWord();
+			unsigned int num = TIN_parseNum(getNextWord());
+			getNextWord();
+			const char *op = getNextWord();
+			getNextWord();
+			getNextWord();
+			codeAsm("r0", "0@", "r2", "ldr,");
+			codeAsm(num, "##", "r2", op[0] == '+' ? "add," : "sub,");
 			codeAsm("r0", "0@", "r2", "str,");
 			codeAsm("r0", "pop");
 		} else {
