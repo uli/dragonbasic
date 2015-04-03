@@ -54,5 +54,6 @@ PROTOTYPE SUB		FLIPTILE(tile,x,y)
 
 ; Mapping
 PROTOTYPE SUB		CLEARTILES(tile,width,height)
+PROTOTYPE SUB		CLEARTILESFAST(tile,width,height)
 PROTOTYPE SUB		MAPTILES(tile,label,width,height)
 PROTOTYPE SUB		MAPIMAGE(tile,base,width,height)

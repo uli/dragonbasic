@@ -77,7 +77,7 @@ code-thumb enabletiles ( bg screen char flags -- )
 	v0 v1 v2 pop
 	$40 ## w mov,
 	20 ## w w lsl,	\ REGISTERS
-	
+
 	\ construct REG_BGxCNT
 	2 ## v0 v0 lsl,
 	v0 tos tos add,		\ charblock
@@ -86,7 +86,7 @@ code-thumb enabletiles ( bg screen char flags -- )
 	1 ## v2 a lsl,
 	8 ## a add,
 	w a +( tos strh,		\ write
-	
+
 	\ enable bg in REG_DISPCNT
 	1 ## v1 mov,
 	8 ## v2 add,
@@ -94,7 +94,7 @@ code-thumb enabletiles ( bg screen char flags -- )
 	w 0@ v2 ldrh,
 	v2 v1 v2 add,
 	w 0@ v2 strh,
-	
+
 	\ done
 	tos pop
 	ret
@@ -209,6 +209,34 @@ code-thumb cleartiles ( a w h -- )
 	1 ## tos sub,
 	__loop gt? b,
 	
+	\ done
+	tos pop
+	ret
+end-code
+
+\ erase a rectangle of tiles without preserving palette
+code-thumb cleartilesfast ( a w h -- )
+	v1 v2 pop
+	1 ## v1 v1 lsl,
+	0 ## v0 mov,
+
+	\ clear loop
+	l: __loop
+	v1 w mov,
+
+	\ clear row loop
+	l: __row
+	v2 0@ v0 strh,
+	2 ## v2 add,
+	2 ## w sub,
+	__row gt? b,
+
+	\ finish row
+	64 ## v2 add,
+	v1 v2 v2 sub,
+	1 ## tos sub,
+	__loop gt? b,
+
 	\ done
 	tos pop
 	ret
