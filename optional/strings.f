@@ -226,8 +226,8 @@ code-thumb s-alloc ( u -- a )
 end-code
 
 \ convert a number to a string and return address
-: str$ ( n -- a ) a! 256 # r-alloc dup a@ /str ;
-: hex$ ( n -- a ) a! 256 # r-alloc dup a@ /hex ;
+: str$ ( n -- a ) a! 12 # s-alloc dup a@ /str ;
+: hex$ ( n -- a ) a! 12 # s-alloc dup a@ /hex ;
 
 \ convert between numbers and characters
 : chr$ ( n -- a ) 4 # s-alloc swap 8 # n* 1 # + OVER ! ;
