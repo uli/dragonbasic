@@ -2316,11 +2316,12 @@ parse_next:
 		while (isspace(*tptr))
 			tptr++;
 		//printf("==\n");
-	} else if (W("icode") || W("icode-thumb")) {
+	} else if (W("icode") || W("icode-thumb") || W(":i")) {
 		cur_icode = icodes.appendNew(getNextWord());
 		DEBUG("===start icode %s\n", cur_icode->word);
-		asm_mode = true;
-		if (word[5] == '-' && word[6] == 't') {
+		if (word[0] != ':')
+			asm_mode = true;
+		if ((word[5] == '-' && word[6] == 't') || word[0] == ':') {
 			thumb = true;
 			cur_icode->thumb = true;
 		} else {
@@ -2342,14 +2343,18 @@ parse_next:
 		asm_mode = true;
 		invalR5();
 		word_start = out->addr;
-	} else if (W("end-code")) {
-		if (cur_icode)
+	} else if (W("end-code")|| (W(";") && cur_icode)) {
+		if (cur_icode) {
 			cur_icode = 0;
+			if (literals.next)
+				GLB_error("literals not allowed in inlined code\n");
+		}
 		asm_mode = false;
 		literals.code(out);
 		for (int i = 0; i < rsp; i++) {
 			if (asm_relocs[i].label)
-				GLB_error("unresolved symbol %s\n", asm_relocs[i].label);
+				GLB_error("unresolved symbol %s\n",
+					  asm_relocs[i].label);
 		}
 		lsp = 0;
 		rsp = 0;
@@ -2397,17 +2402,20 @@ parse_next:
 		local_idx += 4;
 	} else if (W(";r")) {
 		// return from inside a routine's body
+		assert(!cur_icode);
 		if (currently_naked)
 			codeAsm("lr", "bx,");
 		else
 			codeAsm("r6", "bx,");
 	} else if (W(";l")) {
 		// end of function without return
+		assert(!cur_icode);
 		invalR5();
 		currently_naked = false;
 		thumb = false;
 		literals.code(out);
 	} else if (W(";")) {
+		assert(!cur_icode);
 		invalR5();
 		if (currently_naked)
 			codeAsm("lr", "bx,");
