@@ -22,7 +22,7 @@ icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 :i >= ( n1 n2 -- flag ) - 0< com ;
 
 \ fixed point math operations
-:n f* ( n1 n2 -- n3 ) * 8 # a/ ;
+:i f* ( n1 n2 -- n3 ) * 8 # a/ ;
 :n f/ ( n1 n2 -- n3 ) a! 8 # n* 6 swi ;
 
 \ the restore data pointer
