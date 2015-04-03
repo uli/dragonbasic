@@ -21,6 +21,8 @@
 ;  Ulrich Hecht
 ;  ulrich.hecht@gmail.com
 
+#REQUIRES "FMP.F"
+
 SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
 	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
 	LOCAL x, y		; 16x16 FMP tile coordinates
@@ -279,33 +281,13 @@ SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, heigh
 	loop
 END SUB
 
-FUNCTION FMPTILEADDR(fmp)
-	RETURN peekw(fmp + 4)
-END FUNCTION
-
-FUNCTION FMPPALADDR(fmp)
-	RETURN peekw(fmp)
-END FUNCTION
-
-FUNCTION FMPWIDTH(fmp)
-	RETURN peekb(fmp + 14)
-END FUNCTION
-
-FUNCTION FMPHEIGHT(fmp)
-	RETURN peekb(fmp + 15)
-END FUNCTION
-
-FUNCTION FMPLAYERS(fmp)
-	RETURN peek(fmp + 18)
-END FUNCTION
-
-FUNCTION FMPTILES(fmp)
-	RETURN peek(fmp + 16)
-END FUNCTION
-
-FUNCTION FMPTILESIZE(fmp)
-	RETURN peekb(fmp + 12)
-END FUNCTION
+PROTOTYPE FUNCTION FMPTILEADDR(fmp)
+PROTOTYPE FUNCTION FMPPALADDR(fmp)
+PROTOTYPE FUNCTION FMPWIDTH(fmp)
+PROTOTYPE FUNCTION FMPHEIGHT(fmp)
+PROTOTYPE FUNCTION FMPLAYERS(fmp)
+PROTOTYPE FUNCTION FMPTILES(fmp)
+PROTOTYPE FUNCTION FMPTILESIZE(fmp)
 
 FUNCTION FMPLAYERADDR(fmp, layer)
 	LOCAL layer_ptr
