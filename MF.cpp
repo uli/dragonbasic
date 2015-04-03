@@ -2381,6 +2381,8 @@ parse_next:
 			sym->thumb = false;
 			thumb = false;
 			codeToThumb();
+			if (getSymbol(".init_string_ring"))
+				codeAsm(".init_string_ring", "bl,");
 		} else {
 			thumb = true;
 			sym->thumb = true;
