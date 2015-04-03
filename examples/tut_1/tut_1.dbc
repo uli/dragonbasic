@@ -116,6 +116,7 @@ start:
 	print tile(0,2,10), str$(sqrt(500))
 	; print a fixed-point number (need to convert it to integer first)
 	print tile(0,10,10), str$(int(fsqrt#(500.0)))
+	print tile(0,2,11), str$(2)+"+"+str$(2)
 
 	; This prints the numbers from 100 to 10000, counting up by
 	; one every half-second.
