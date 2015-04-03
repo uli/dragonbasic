@@ -16,10 +16,10 @@ icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 \ conditionals
 :n = ( n1 n2 -- flag ) - 0= ;
 :n <> ( n1 n2 -- flag ) - 0= com ;
-:n < ( n1 n2 -- flag ) - 0< ;
-:n > ( n1 n2 -- flag ) swap - 0< ;
-:n <= ( n1 n2 -- flag ) swap - 0< com ;
-:n >= ( n1 n2 -- flag ) - 0< com ;
+:i < ( n1 n2 -- flag ) - 0< ;
+:i > ( n1 n2 -- flag ) swap - 0< ;
+:i <= ( n1 n2 -- flag ) swap - 0< com ;
+:i >= ( n1 n2 -- flag ) - 0< com ;
 
 \ fixed point math operations
 :n f* ( n1 n2 -- n3 ) * 8 # a/ ;
