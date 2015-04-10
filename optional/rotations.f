@@ -116,7 +116,7 @@ code-thumb tan# ( degrees -- f )
 end-code
 
 \ create a sprite rotation matrix
-code-thumb makerotation ( matrix sx sy degrees -- )
+code-thumb iwram makerotation ( matrix sx sy degrees -- )
 	v0 v1 v2 pop
 
 	5 ## v2 v2 lsl,
