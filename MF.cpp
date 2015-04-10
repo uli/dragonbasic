@@ -1806,10 +1806,10 @@ short_branch:
 			assert(TOS_TYPE == ASM_RELOC || TOS_TYPE == ASM_OFF);
 			if (TOS_TYPE == ASM_RELOC) {
 				asm_relocs[dest].reloc = RELOC_10;
-				dest = out->addr;
+				dest = out->ta();
 			}
-			DEBUG("asm thumb uncond branch from 0x%x to 0x%x\n", out->addr, dest);
-			int soff = dest - out->addr - 4;
+			DEBUG("asm thumb uncond branch from 0x%x to 0x%x\n", out->ta(), dest);
+			int soff = dest - out->ta() - 4;
 			assert(soff >= -2048 && soff < 2048);
 			insn |= (soff >> 1) & 0x7ff;
 		}
