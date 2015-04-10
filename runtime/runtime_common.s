@@ -45,6 +45,26 @@ _tin_entry:
 	str	r5, [r1, #0x24]
 	str	r5, [r1, #0x28]
 
+	ldr	r5, _tin_iwram_table_p
+	cmp	r5, #0
+	beq	_iwram_done
+
+_fun_loop:
+	ldr	r1, [r5]
+	cmp	r1, #0
+	beq	_iwram_done
+	ldr	r2, [r5, #4]
+	ldr	r3, [r5, #8]
+_copy_loop:
+	ldr	r6, [r1], #4
+	str	r6, [r2], #4
+	subs	r3, r3, #4
+	bne	_copy_loop
+	add	r5, r5, #12
+	b	_fun_loop
+
+
+_iwram_done:
 	ldr	r5, _tin_entry_p
 	ldr	r6, irq_handler_p
 	mov	r1, #0x4000000
