@@ -80,6 +80,9 @@ public:
 	Output(unsigned int code_addr, unsigned int var_addr);
 	void setTitle(const char *title);
 	void setEntry(unsigned int addr);
+	void setIwramTable(unsigned int addr);
+	unsigned int addIwram(unsigned int from, int size);
+	void codeIwramTable();
 	void emitByte(const unsigned char byte);
 	void emitDword(const unsigned int dword);
 	void emitWord(const unsigned short word);
@@ -114,6 +117,14 @@ public:
 private:
 	FILE *fp;
 	FILE *sym_fp;
+
+	unsigned int iwaddr;	// next IWRAM destination
+	unsigned int iwptr;	// IWRAM list index
+	struct {
+		unsigned int from;
+		unsigned int to;
+		int size;
+	} iwram[256];
 };
 
 class Literal {

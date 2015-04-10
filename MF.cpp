@@ -354,6 +354,39 @@ void Output::setEntry(unsigned int addr)
 	fseek(fp, cur, SEEK_SET);
 }
 
+void Output::setIwramTable(unsigned int addr)
+{
+	long cur = ftell(fp);
+
+	fseek(fp, RT__tin_iwram_table_p - 0x8000000, SEEK_SET);
+	fwrite(&addr, 1, 4, fp);
+	fseek(fp, cur, SEEK_SET);
+}
+
+unsigned int Output::addIwram(unsigned int from, int size)
+{
+	iwram[iwptr].from = from;
+	iwram[iwptr].size = size;
+	iwram[iwptr++].to = iwaddr;
+	iwaddr += size;
+	return iwaddr - size;
+}
+
+void Output::codeIwramTable()
+{
+	if (!iwptr)
+		return;
+
+	alignDword();
+	patch32(RT__tin_entry_p + 4, addr);
+	for (unsigned int i = 0; i < iwptr; i++) {
+		emitDword(iwram[i].from);
+		emitDword(iwram[i].to);
+		emitDword(iwram[i].size);
+	}
+	emitDword(0);
+}
+
 void Output::fixCartHeader()
 {
 	unsigned char bytes[0x1c];
@@ -3184,6 +3217,8 @@ Output::Output(unsigned int code_addr, unsigned int var_addr)
 	fp = NULL;
 	use_pimp = false;
 	sym_fp = NULL;
+	iwptr = 0;
+	iwaddr = 0x3001000;
 }
 
 void Output::openSymFile(const char *name)
