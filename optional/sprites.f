@@ -243,7 +243,7 @@ code-thumb spritehidden ( sprite -- flag )
 end-code
 
 \ set the absolute position of a sprite
-code-thumb positionsprite ( sprite x y -- )
+code-thumb iwram positionsprite ( sprite x y -- )
 	v1 v2 pop
 
 	IWRAM w LITERAL
