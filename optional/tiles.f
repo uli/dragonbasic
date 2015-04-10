@@ -215,7 +215,7 @@ code-thumb cleartiles ( a w h -- )
 end-code
 
 \ erase a rectangle of tiles without preserving palette
-code-thumb cleartilesfast ( a w h -- )
+code-thumb iwram cleartilesfast ( a w h -- )
 	v1 v2 pop
 	1 ## v1 v1 lsl,
 	0 ## v0 mov,
