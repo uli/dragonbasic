@@ -27,6 +27,7 @@
 .global _tin_entry
 .global _tin_entry_p
 .global _tin_iwram_table_p
+.global _thumbthunk
 .org 0xe0
 _tin_entry:
 	sub	r7, sp, #0x200
@@ -103,3 +104,7 @@ irq_handler:
 	pop	{r4-r11, lr}
 _empty:
 	bx	lr
+.thumb
+_thumbthunk:
+	bx	r1
+.arm
