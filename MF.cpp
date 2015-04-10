@@ -3359,7 +3359,13 @@ int main(int argc, char **argv)
 	par.pushText(argv[1]);
 	par.parseAll();
 
+	// Move IRQ handler to IWRAM.
+	out.patch32(RT_irq_handler_p,
+		    out.addIwram(RT_irq_handler,
+				 RT__end_irq_handler - RT_irq_handler));
+
 	out.codeIwramTable();
+
 	out.fixCartHeader();
 	out.closeOutFile();
 	out.closeSymFile();
