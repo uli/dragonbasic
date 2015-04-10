@@ -2231,7 +2231,10 @@ void Parser::codeToArm()
 void Parser::codeCallThumb(unsigned int dest)
 {
 	if (thumb) {
-		codeBranch(dest, "bl,");
+		if ((out->addr & 0xff000000) != (dest & 0xff000000))
+			codeBranch(dest, "lcallt");
+		else
+			codeBranch(dest, "bl,");
 	} else {
 		codeAsm("pc", "4", "#(", "r5", "ldr,"); // load function address
 		codeAsm("pc", "lr", "mov,");            // sets LR to skip the address when returning
