@@ -365,12 +365,14 @@ void Output::setIwramTable(unsigned int addr)
 
 unsigned int Output::addIwram(unsigned int from, int size)
 {
+	unsigned int start = start_iwram;
 	iwram[iwptr].from = from;
 	iwram[iwptr].size = size;
-	iwram[iwptr++].to = start_iwram;
+	iwram[iwptr++].to = start;
 	DEBUG("addiwram from 0x%x to 0x%x size %d now 0x%x\n",
-                from, start_iwram, size, iwaddr);
-	return start_iwram;
+		from, start, size, iwaddr);
+	start_iwram += size;
+	return start;
 }
 
 void Output::codeIwramTable()
