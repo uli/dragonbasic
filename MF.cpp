@@ -367,9 +367,10 @@ unsigned int Output::addIwram(unsigned int from, int size)
 {
 	iwram[iwptr].from = from;
 	iwram[iwptr].size = size;
-	iwram[iwptr++].to = iwaddr;
-	iwaddr += size;
-	return iwaddr - size;
+	iwram[iwptr++].to = start_iwram;
+	DEBUG("addiwram from 0x%x to 0x%x size %d now 0x%x\n",
+                from, start_iwram, size, iwaddr);
+	return start_iwram;
 }
 
 void Output::codeIwramTable()
@@ -475,6 +476,8 @@ void Output::emitDword(const unsigned int dword)
 	fputc((dword >> 16) & 0xff, fp);
 	fputc((dword >> 24), fp);
 	addr += 4;
+	if (currently_iwram)
+	        iwaddr += 4;
 }
 
 void Output::alignDword()
@@ -488,12 +491,16 @@ void Output::emitWord(const unsigned short word)
 	fputc(word & 0xff, fp);
 	fputc((word >> 8) & 0xff, fp);
 	addr += 2;
+	if (currently_iwram)
+	        iwaddr += 2;
 }
 
 void Output::emitString(const char *str, int len)
 {
 	fwrite(str, 1, len, fp);
 	addr += len;
+	if (currently_iwram)
+	        iwaddr += len;
 }
 
 #define RGB8TO5(c) ((c) >> 3)
