@@ -26,6 +26,7 @@
 
 .global _tin_entry
 .global _tin_entry_p
+.global _tin_iwram_table_p
 .org 0xe0
 _tin_entry:
 	sub	r7, sp, #0x200
@@ -57,6 +58,10 @@ irq_handler_p:
 _tin_entry_p:
 	# will be overwritten by the TIN compiler
 	.word 0xffffffff
+_tin_iwram_table_p:
+	# will be overwritten by the TIN compiler if there is code that
+	# must be copied to IWRAM
+	.word 0
 
 irq_handler:
 	push	{r4-r11, lr}
