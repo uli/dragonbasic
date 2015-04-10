@@ -289,11 +289,8 @@ code-thumb playsound ( a -- )
 	ret
 end-code
 
-\ address of playmusic handler
-label (playmusic-handler)
-
 \ interrupt handler for playmusic
-code-thumb /playmusic ( -- )
+code-thumb iwram /playmusic ( -- )
 	tothumb			\ interrupt handlers are always called as ARM
 	$40 ## r4 mov,
 	20 ## r4 r4 lsl,
@@ -378,7 +375,7 @@ code-thumb playmusic ( a -- )
 	r3 0@ r0 strh,
 
 	\ set interrupt vector
-	(playmusic-handler) r0 literal
+	/playmusic r0 literal
 	r5 INT_T0 #( r0 str,
 
 	\ enable timer 0 interrupt
