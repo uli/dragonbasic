@@ -2081,7 +2081,7 @@ void Parser::parseAsm(const char *word)
 	} else if (W("#offset")) {
 		assert(NOS_TYPE == ASM_IMM);
 		NOS_TYPE = ASM_OFF;
-		NOS_VAL += out->addr;
+		NOS_VAL += out->ta();
 
 	// XXX: there should be a list of constants
 	} else if (W("backbuffer")) {
