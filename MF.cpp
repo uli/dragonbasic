@@ -2437,6 +2437,9 @@ parse_next:
 			iwsym->addr = out->addIwram(iwsym->addr,
 						    out->addr - iwsym->addr);
 			currently_iwram = false;
+			char id[strlen(iwsym->word) + 7];
+			sprintf(id, "%s_iwram", iwsym->word);
+			out->addSym(id, iwsym->addr);
 		}
 	} else if (asm_mode) {
 		parseAsm(word);
