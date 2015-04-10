@@ -392,10 +392,10 @@ void Output::codeIwramTable()
 
 unsigned int Output::ta()
 {
-        if (!currently_iwram)
-                return addr;
-        else
-                return iwaddr;
+	if (!currently_iwram)
+		return addr;
+	else
+		return iwaddr;
 }
 
 
@@ -479,7 +479,7 @@ void Output::emitDword(const unsigned int dword)
 	fputc((dword >> 24), fp);
 	addr += 4;
 	if (currently_iwram)
-	        iwaddr += 4;
+		iwaddr += 4;
 }
 
 void Output::alignDword()
@@ -494,7 +494,7 @@ void Output::emitWord(const unsigned short word)
 	fputc((word >> 8) & 0xff, fp);
 	addr += 2;
 	if (currently_iwram)
-	        iwaddr += 2;
+		iwaddr += 2;
 }
 
 void Output::emitString(const char *str, int len)
@@ -502,7 +502,7 @@ void Output::emitString(const char *str, int len)
 	fwrite(str, 1, len, fp);
 	addr += len;
 	if (currently_iwram)
-	        iwaddr += len;
+		iwaddr += len;
 }
 
 #define RGB8TO5(c) ((c) >> 3)
@@ -837,10 +837,10 @@ void Output::reloc10(unsigned int addr, unsigned int target)
 	unsigned short insn;
 	long cur = ftell(fp);
 	if (addr < 0x8000000) {
-	        // Translate from IWRAM to ROM address.
-	        addr += this->addr - iwaddr;
-	        target += this->addr - iwaddr;
-        }
+		// Translate from IWRAM to ROM address.
+		addr += this->addr - iwaddr;
+		target += this->addr - iwaddr;
+	}
 	fseek(fp, addr - 0x8000000, SEEK_SET);
 	fread(&insn, 1, 2, fp);
 
@@ -859,10 +859,10 @@ void Output::reloc8(unsigned int addr, unsigned int target)
 	unsigned short insn;
 	long cur = ftell(fp);
 	if (addr < 0x8000000) {
-	        // Translate from IWRAM to ROM address.
-	        addr += this->addr - iwaddr;
-	        target += this->addr - iwaddr;
-        }
+		// Translate from IWRAM to ROM address.
+		addr += this->addr - iwaddr;
+		target += this->addr - iwaddr;
+	}
 	fseek(fp, addr - 0x8000000, SEEK_SET);
 	fread(&insn, 1, 2, fp);
 
@@ -1165,9 +1165,9 @@ unsigned int Parser::arm5CodeOp2()
 		case AMODE_ASR:
 		case AMODE_ROR:
 			insn |= TOS_VAL;
-			insn |= 1 << 4;             /* register shift */
+			insn |= 1 << 4;	     /* register shift */
 			insn |= POP_REG << 8;       /* Rs */
-			insn |= POP_REG;            /* Rm */
+			insn |= POP_REG;	    /* Rm */
 			break;
 		case AMODE_LSLI:
 		case AMODE_LSRI:
@@ -1175,7 +1175,7 @@ unsigned int Parser::arm5CodeOp2()
 		case AMODE_RORI:
 			insn |= TOS_VAL;
 			insn |= POP_IMM << 7;       /* shift_imm */
-			insn |= POP_REG;            /* Rm */
+			insn |= POP_REG;	    /* Rm */
 			break;
 		default:
 			GLB_error("unimp alu3 amode\n");
@@ -2265,9 +2265,9 @@ void Parser::codeCallThumb(unsigned int dest)
 			codeBranch(dest, "bl,");
 	} else {
 		codeAsm("pc", "4", "#(", "r5", "ldr,"); // load function address
-		codeAsm("pc", "lr", "mov,");            // sets LR to skip the address when returning
+		codeAsm("pc", "lr", "mov,");	    // sets LR to skip the address when returning
 		codeAsm("r5", "bx,");
-		code(dest | 1);                         // address with bit 0 set for Thumb mode
+		code(dest | 1);			 // address with bit 0 set for Thumb mode
 	}
 }
 
@@ -2430,7 +2430,7 @@ parse_next:
 			thumb = false;
 
 		if (getNextWordIf("iwram"))
-		        out->setIwram();
+			out->setIwram();
 		else
 			out->clearIwram();
 
@@ -2467,13 +2467,13 @@ parse_next:
 		rsp = 0;
 		invalR5();
 		if (out->currently_iwram) {
-		        // Add this word to IWRAM table and get the effective
-		        // address in return.  This is the address that we
-		        // will use to call this word.
+			// Add this word to IWRAM table and get the effective
+			// address in return.  This is the address that we
+			// will use to call this word.
 			iwsym->addr = out->addIwram(iwsym->addr,
 						    out->addr - iwsym->addr);
 
-		        out->clearIwram();
+			out->clearIwram();
 
 			char id[strlen(iwsym->word) + 7];
 			sprintf(id, "%s_iwram", iwsym->word);
