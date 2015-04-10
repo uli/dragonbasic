@@ -65,6 +65,7 @@ end-code
 code-thumb #str ( x -- )
 	\ note: w contains adress of string and v0 is length
 	w 0@ v0 strb,
+	v4 lr mov,
 	tos pop
 	ret
 end-code
@@ -96,6 +97,7 @@ end-code
 \ convert a signed integer to a base 10 string
 code-thumb /str ( a u -- )
 	w pop
+	lr v4 mov,
 
 	1 ## v0 mov,		\ length
 	
@@ -132,8 +134,7 @@ code-thumb /str ( a u -- )
 
 	l: __ge10
 	1 ## v0 add,
-	10 ## a mov,
-	6 swi, 			\ divide by 10
+	10/ lcallt
 	$30 ## a add,		\ store remainder
 	a push 			\ as a decimal character
 	__loop b,
@@ -142,6 +143,8 @@ end-code
 \ convert an unsigned integer to a base 16 string
 code-thumb /hex ( a u -- )
 	w pop
+	lr v4 mov,
+
 	1 ## v0 mov, \ length
 	
 	\ test for 0
