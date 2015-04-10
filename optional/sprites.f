@@ -280,7 +280,7 @@ code-thumb iwram positionsprite ( sprite x y -- )
 end-code
 
 \ relative movement of a sprite
-code-thumb movesprite ( sprite dx dy -- )
+code-thumb iwram movesprite ( sprite dx dy -- )
 	v1 v2 pop
 	u push
 
