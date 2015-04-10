@@ -104,20 +104,21 @@ code-thumb /str ( a u -- )
 
 	\ force absolute value
 	0 ## tos cmp,
-	6 #offset pl? b,
+	__pos pl? b,
 	tos tos neg,
 	tos v3 mov,		\ set negative flag
+	l: __pos
 	
 	\ test for 0
 	0 ## tos cmp,
-	6 #offset ne? b,
+	__loop ne? b,
 	$30 ## tos mov,
 	pop-string b,
 	
 	l: __loop
 	10 ## tos cmp,
 
-	18 #offset ge? b,
+	__ge10 ge? b,
 	$30 ## tos add,
 
 	v3 v1 mov,
@@ -129,6 +130,7 @@ code-thumb /str ( a u -- )
 	45 ## tos mov,		\ negative number, add '-'
 	pop-string b,
 
+	l: __ge10
 	1 ## v0 add,
 	10 ## a mov,
 	6 swi, 			\ divide by 10
