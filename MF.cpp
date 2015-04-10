@@ -1776,9 +1776,9 @@ bool Parser::parseThumb(const char *word)
 		unsigned short insn2 = 0xf800;
 		unsigned int dest = POP_VAL;
 		assert(TOS_TYPE == ASM_OFF);
-		DEBUG("asm thumb branch from 0x%x to 0x%x\n", out->addr, dest);
-		assert(can_branch_thumb(out->addr, dest));
-		int soff = (dest - out->addr - 4) >> 1;
+		DEBUG("asm thumb branch from 0x%x to 0x%x\n", out->ta(), dest);
+		assert(can_branch_thumb(out->ta(), dest));
+		int soff = (dest - out->ta() - 4) >> 1;
 		unsigned int off1 = (soff >> 11) & ((1 << 11) -1);
 		unsigned int off2 = soff & ((1 << 11) - 1);
 		DEBUG("off1 0x%x off2 0x%x\n", off1, off2);
