@@ -1567,10 +1567,10 @@ bool Parser::parseThumb(const char *word)
 		code16(insn);
 	} else if ((W("sub,") || W("add,"))) {
 		unsigned short insn;
-		unsigned int rd = POP_VAL;
-		assert(rd < 8 || rd == REG_SP);
+		unsigned int rd = POP_REG;
 		if (POP_TYPE == ASM_AMODE &&
 		    TOS_VAL == AMODE_IMM) {
+			assert(rd < REG_R8 || rd == REG_SP);
 			if (rd == REG_SP) {
 				insn = 0xb000;
 				if (word[0] == 's')
@@ -1585,7 +1585,24 @@ bool Parser::parseThumb(const char *word)
 				insn |= POP_IMM;
 				assert(TOS_VAL < 256);
 			}
+		} else if (word[0] == 'a' && TOS_TYPE == ASM_REG &&
+			   (rd >= REG_R8 || TOS_VAL >= REG_R8)) {
+			if (!asp) {
+				insn = 0x4400;
+				insn |= (rd & 7) << 0;
+				insn |= (TOS_VAL & 7) << 3;
+				insn |= !!(rd & 8) << 7;
+				insn |= !!(TOS_VAL & 8) << 6;
+			} else {
+				assert(TOS_VAL == REG_SP || TOS_VAL == REG_PC);
+				insn = 0xa000;
+				if (TOS_VAL == REG_SP)
+					insn |= 0x800;
+				insn |= POP_IMM >> 2;
+				assert(TOS_VAL < 1024);
+			}
 		} else {
+			assert(rd < REG_R8);
 			insn = 0x1800 | (rd << 0);
 			if (word[0] == 's')
 				insn |= 1 << 9;
