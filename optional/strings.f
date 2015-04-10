@@ -62,7 +62,7 @@ code-thumb print ( tile a -- )
 end-code
 
 \ write the length of a string and return
-code-thumb #str ( x -- )
+code-thumb iwram #str ( x -- )
 	\ note: w contains adress of string and v0 is length
 	w 0@ v0 strb,
 	v4 lr mov,
@@ -71,7 +71,7 @@ code-thumb #str ( x -- )
 end-code
 
 \ pop characters off the stack into RAM
-code-thumb pop-string ( x -- )
+code-thumb iwram pop-string ( x -- )
 	\ note: w contains address of string and v0 is length
 	\ tos contains the first byte to pop onto string
 	
@@ -95,7 +95,7 @@ code-thumb pop-string ( x -- )
 end-code
 
 \ convert a signed integer to a base 10 string
-code-thumb /str ( a u -- )
+code-thumb iwram /str ( a u -- )
 	w pop
 	lr v4 mov,
 
@@ -134,14 +134,14 @@ code-thumb /str ( a u -- )
 
 	l: __ge10
 	1 ## v0 add,
-	10/ lcallt
+	10/ bl,
 	$30 ## a add,		\ store remainder
 	a push 			\ as a decimal character
 	__loop b,
 end-code
 
 \ convert an unsigned integer to a base 16 string
-code-thumb /hex ( a u -- )
+code-thumb iwram /hex ( a u -- )
 	w pop
 	lr v4 mov,
 
