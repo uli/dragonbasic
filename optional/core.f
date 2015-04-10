@@ -13,6 +13,26 @@ icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 :i / ( n1 n2 -- n3 ) swap a! 7 swi ;
 :n mod ( n1 n2 -- n3 ) swap a! 7 swi drop a@ ;
 
+code-thumb iwram 10/ ( n -- q )
+	v0 v5 mov,
+	15 ## tos v0 lsr,
+	__recip eq? b,
+	10 ## a mov,
+	6 swi,
+	v5 v0 mov,
+	ret
+	l: __recip
+	3277 v0 LITERAL
+	tos v0 mul,
+	15 ## v0 v0 lsr,
+	10 ## a mov,
+	v0 a mul,
+	a tos a sub,
+	v0 tos mov,
+	v5 v0 mov,
+	ret
+end-code
+
 \ conditionals
 :n = ( n1 n2 -- flag ) - 0= ;
 :n <> ( n1 n2 -- flag ) - 0= com ;
