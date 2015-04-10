@@ -114,6 +114,8 @@ public:
 	unsigned int addr;
 	unsigned int vaddr;
 
+	unsigned int ta();	// Translated address of current position.
+
 private:
 	FILE *fp;
 	FILE *sym_fp;

@@ -387,6 +387,15 @@ void Output::codeIwramTable()
 	emitDword(0);
 }
 
+unsigned int Output::ta()
+{
+        if (!currently_iwram)
+                return addr;
+        else
+                return iwaddr;
+}
+
+
 void Output::fixCartHeader()
 {
 	unsigned char bytes[0x1c];
