@@ -2150,11 +2150,11 @@ void Parser::parseAsm(const char *word)
 		// to set the appropriate reloc type.
 		PUSH_ASM(ASM_RELOC, rsp);
 
-		// Remember that there will be an instruction at out->addr
+		// Remember that there will be an instruction at out->ta()
 		// that needs to be relocated to "word" once the latter is
 		// defined.
 		asm_relocs[rsp].label = strdup(word);
-		asm_relocs[rsp].addr = out->addr;
+		asm_relocs[rsp].addr = out->ta();
 		rsp++;
 	}
 }
