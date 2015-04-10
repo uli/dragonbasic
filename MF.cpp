@@ -2316,7 +2316,6 @@ void Parser::parseAll()
 	Symbol *sym;
 	Icode *icode;
 	bool currently_naked = false;
-	bool currently_iwram = false;
 	Symbol *iwsym;
 	// R5 is often repeatedly loaded with the same constant.  We keep
 	// track of its current value to avoid unnecessary reloading.
@@ -2410,17 +2409,23 @@ parse_next:
 			thumb = true;
 		else
 			thumb = false;
+
 		if (getNextWordIf("iwram"))
-			currently_iwram = true;
+		        out->setIwram();
 		else
-			currently_iwram = false;
+			out->clearIwram();
+
 		const char *ident = getNextWord();
 		out->addSym(ident);
 		sym = symbols.appendNew(out->addr, ident);
-		if (currently_iwram)
+
+		// Save pointer to symbol; we need it later to create the
+		// IWRAM table entry.
+		if (out->currently_iwram)
 			iwsym = sym;
 		else
 			iwsym = NULL;
+
 		DEBUG("===start %s %s at 0x%x\n", word, sym->word, sym->addr);
 		sym->thumb = thumb;
 		asm_mode = true;
@@ -2442,10 +2447,15 @@ parse_next:
 		lsp = 0;
 		rsp = 0;
 		invalR5();
-		if (currently_iwram) {
+		if (out->currently_iwram) {
+		        // Add this word to IWRAM table and get the effective
+		        // address in return.  This is the address that we
+		        // will use to call this word.
 			iwsym->addr = out->addIwram(iwsym->addr,
 						    out->addr - iwsym->addr);
-			currently_iwram = false;
+
+		        out->clearIwram();
+
 			char id[strlen(iwsym->word) + 7];
 			sprintf(id, "%s_iwram", iwsym->word);
 			out->addSym(id, iwsym->addr);

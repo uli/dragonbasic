@@ -116,12 +116,28 @@ public:
 
 	unsigned int ta();	// Translated address of current position.
 
+	void setIwram() {
+		currently_iwram = true;
+		// Remember where we started when enabling IWRAM mode.
+		start_iwram = iwaddr;
+	}
+	void clearIwram() {
+		currently_iwram = false;
+
+		// The runtime copier does not handle unaligned data.
+		if (iwaddr & 2)
+			iwaddr += 2;
+	}
+
+	bool currently_iwram;
+
 private:
 	FILE *fp;
 	FILE *sym_fp;
 
 	unsigned int iwaddr;	// next IWRAM destination
 	unsigned int iwptr;	// IWRAM list index
+	unsigned int start_iwram;
 	struct {
 		unsigned int from;
 		unsigned int to;
