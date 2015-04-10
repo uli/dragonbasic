@@ -2287,6 +2287,8 @@ void Parser::parseAll()
 	Symbol *sym;
 	Icode *icode;
 	bool currently_naked = false;
+	bool currently_iwram = false;
+	Symbol *iwsym;
 	// R5 is often repeatedly loaded with the same constant.  We keep
 	// track of its current value to avoid unnecessary reloading.
 	invalR5();
@@ -2379,9 +2381,17 @@ parse_next:
 			thumb = true;
 		else
 			thumb = false;
+		if (getNextWordIf("iwram"))
+			currently_iwram = true;
+		else
+			currently_iwram = false;
 		const char *ident = getNextWord();
 		out->addSym(ident);
 		sym = symbols.appendNew(out->addr, ident);
+		if (currently_iwram)
+			iwsym = sym;
+		else
+			iwsym = NULL;
 		DEBUG("===start %s %s at 0x%x\n", word, sym->word, sym->addr);
 		sym->thumb = thumb;
 		asm_mode = true;
@@ -2403,6 +2413,11 @@ parse_next:
 		lsp = 0;
 		rsp = 0;
 		invalR5();
+		if (currently_iwram) {
+			iwsym->addr = out->addIwram(iwsym->addr,
+						    out->addr - iwsym->addr);
+			currently_iwram = false;
+		}
 	} else if (asm_mode) {
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
@@ -3321,6 +3336,7 @@ int main(int argc, char **argv)
 	par.pushText(argv[1]);
 	par.parseAll();
 
+	out.codeIwramTable();
 	out.fixCartHeader();
 	out.closeOutFile();
 	out.closeSymFile();
