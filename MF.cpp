@@ -1779,6 +1779,11 @@ short_branch:
 			goto short_branch;
 		codeAsm(POP_VAL + 1, "r2", "literal");
 		codeAsm("r2", "bx,");
+	} else if (W("lcallt")) {
+		unsigned int dest = POP_VAL_TYPE(ASM_OFF);
+
+		codeAsm(dest+1, "r1", "literal");
+		codeBranch(RT__thumbthunk, "bl,");
 	} else if (W("bx,")) {
 		unsigned short insn = 0x4700;
 		code16(insn | (POP_REG << 3));
