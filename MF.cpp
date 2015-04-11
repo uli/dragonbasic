@@ -2259,9 +2259,11 @@ void Parser::codeToArm()
 void Parser::codeCallThumb(unsigned int dest, const char *ident)
 {
 	if (thumb) {
-		if ((out->addr & 0xff000000) != (dest & 0xff000000))
+		if ((out->ta() & 0xff000000) != (dest & 0xff000000)) {
+		        if ((out->ta() & 0xff000000) == 0x03000000)
+		                GLB_warning("call from IWRAM to %s in ROM\n", ident);
 			codeBranch(dest, "lcallt");
-		else
+		} else
 			codeBranch(dest, "bl,");
 	} else {
 		codeAsm("pc", "4", "#(", "r5", "ldr,"); // load function address
