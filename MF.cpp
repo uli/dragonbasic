@@ -2494,9 +2494,21 @@ parse_next:
 		out->alignDword();
 		invalR5();
 		currently_naked = word[1] == 'n';
+		if (getNextWordIf("iwram")) {
+		        DEBUG("iwram TIN word\n");
+		        out->setIwram();
+		}
 		const char *ident = getNextWord();
 		sym = symbols.appendNew(out->addr, ident);
 		out->addSym(ident);
+
+		// Save pointer to symbol; we need it later to create the
+		// IWRAM table entry.
+		if (out->currently_iwram)
+			iwsym = sym;
+		else
+			iwsym = NULL;
+
 		DEBUG("===start word %s at 0x%x\n", sym->word, sym->addr);
 		if (!strcmp(ident, "start")) {
 			// Runtime assumes that "start" is an ARM word, so we
@@ -2545,6 +2557,7 @@ parse_next:
 		currently_naked = false;
 		thumb = false;
 		literals.code(out);
+		out->registerIwram(iwsym);
 	} else if (W(";")) {
 		assert(!cur_icode);
 		invalR5();
@@ -2555,6 +2568,7 @@ parse_next:
 		currently_naked = false;
 		thumb = false;
 		literals.code(out);
+		out->registerIwram(iwsym);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
 			codeAsm("r1", "pop");
