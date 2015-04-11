@@ -401,6 +401,12 @@ void Compiler::emitTin(const char *fmt, ...)
 
 void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 {
+	bool iwram = false;
+
+	if (bobj->otype == OBJ_CMD && bobj->val.numeric == CMD_IWRAM) {
+		iwram = true;
+		bobj = parser->consumeNextBasicObj();
+	}
 	if (bobj->otype && bobj->otype != OBJ_SUB)
 		GLB_error(ERR_NOTOKEN, "Identifier");
 	if (!is_function && bobj->vtype)
@@ -431,7 +437,7 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 
 	if (emit_code) {
 		tin_tail = sub_head->declareTinLocals(tin_tail);
-		emitTin(": %s ", bobj->val.symbolic);
+		emitTin(": %s%s ", iwram ? "IWRAM " : "", bobj->val.symbolic);
 		if (sub_head->num_args > 0 || sub_head->num_locals > 0) {
 			// Code the local variable prolog.  Arguments
 			// are assumed to have been placed on the stack
@@ -2465,6 +2471,8 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_INC, cur_line);
 	} else if (!strcasecmp(token_name, "dec")) {
 		bobj = new BasicObject(CMD_DEC, cur_line);
+	} else if (!strcasecmp(token_name, "iwram")) {
+		bobj = new BasicObject(CMD_IWRAM, cur_line);
 	} else {
 		// non-keyword
 		bobj = new BasicObject(OBJ_IDENT, cur_line);

@@ -169,6 +169,7 @@ enum cmd_t {
 	CMD_DATAH,
 	CMD_READB,
 	CMD_READH,
+	CMD_IWRAM,
 };
 
 struct LoopStackEntry {
