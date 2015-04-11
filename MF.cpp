@@ -3084,9 +3084,9 @@ handle_const:
 	} else if (W("begin")) {
 		invalR5();
 		if (thumb)
-			loop_stack[lpsp++] = out->addr + 2;
+			loop_stack[lpsp++] = out->ta() + 2;
 		else
-			loop_stack[lpsp++] = out->addr;
+			loop_stack[lpsp++] = out->ta();
 	} else if (W("0=") && (getNextWordIf("if") || getNextWordIf("while"))) {
 		cond = thumb ? "eq?" : "ne?";
 		codeAsm("r0", "r0", "tst,");
