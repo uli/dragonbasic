@@ -372,6 +372,8 @@ unsigned int Output::addIwram(unsigned int from, int size)
 	DEBUG("addiwram from 0x%x to 0x%x size %d now 0x%x\n",
 		from, start, size, iwaddr);
 	start_iwram += size;
+	if (start_iwram >= RT___iwram_start)
+	        GLB_error("IWRAM overflow");
 	return start;
 }
 
