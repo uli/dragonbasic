@@ -3058,12 +3058,12 @@ handle_const:
 		codeAsm("r0", "r0", "tst,");
 		codeAsm("r0", "pop");
 		if (thumb) {
-			codeBranch(out->addr + 4, "ne?", "b,");
-			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "b,");
+			codeBranch(out->ta() + 4, "ne?", "b,");
+			loop_stack[lpsp++] = out->ta();
+			codeBranch(out->ta(), "b,");
 		} else {
-			loop_stack[lpsp++] = out->addr;
-			codeBranch(out->addr, "eq?", "b,");
+			loop_stack[lpsp++] = out->ta();
+			codeBranch(out->ta(), "eq?", "b,");
 		}
 	} else if (W("else")) {
 		invalR5();
