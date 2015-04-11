@@ -83,6 +83,7 @@ public:
 	void setIwramTable(unsigned int addr);
 	unsigned int addIwram(unsigned int from, int size);
 	void codeIwramTable();
+	void registerIwram(Symbol *iwsym);
 	void emitByte(const unsigned char byte);
 	void emitDword(const unsigned int dword);
 	void emitWord(const unsigned short word);

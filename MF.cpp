@@ -878,6 +878,22 @@ void Output::reloc8(unsigned int addr, unsigned int target)
 	fseek(fp, cur, SEEK_SET);
 }
 
+void Output::registerIwram(Symbol *iwsym)
+{
+        if (currently_iwram) {
+                // Add this word to IWRAM table and get the effective
+                // address in return.  This is the address that we
+                // will use to call this word.
+                iwsym->addr = addIwram(iwsym->addr,
+                                            addr - iwsym->addr);
+
+                clearIwram();
+
+                char id[strlen(iwsym->word) + 7];
+                sprintf(id, "%s_iwram", iwsym->word);
+                addSym(id, iwsym->addr);
+        }
+}
 
 void Parser::code(unsigned int insn)
 {
