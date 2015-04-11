@@ -143,5 +143,5 @@ _end_irq_handler:
 
 .thumb
 _thumbthunk:
-	bx	r1
+	bx	r2
 .arm

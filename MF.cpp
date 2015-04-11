@@ -1827,7 +1827,7 @@ short_branch:
 	} else if (W("lcallt")) {
 		unsigned int dest = POP_VAL_TYPE(ASM_OFF);
 
-		codeAsm(dest+1, "r1", "literal");
+		codeAsm(dest+1, "r2", "literal");
 		codeBranch(RT__thumbthunk, "bl,");
 	} else if (W("bx,")) {
 		unsigned short insn = 0x4700;
