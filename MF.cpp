@@ -3114,10 +3114,10 @@ do_ifwhile:
 	} else if (W("repeat")) {
 		invalR5();
 		if (thumb) {
-			out->reloc10(loop_stack[--lpsp], out->addr + 2);
+			out->reloc10(loop_stack[--lpsp], out->ta() + 2);
 			codeBranch(loop_stack[--lpsp] - 2, "jmp");
 		} else {
-			out->reloc24(loop_stack[--lpsp], out->addr + 4);
+			out->reloc24(loop_stack[--lpsp], out->ta() + 4);
 			codeBranch(loop_stack[--lpsp], "b,");
 		}
 	} else if (W("again")) {
