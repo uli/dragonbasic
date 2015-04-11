@@ -3130,7 +3130,7 @@ do_ifwhile:
 		codeAsm("1", "##", "r0", "sub,");
 		// If there is a borrow (ie. carry clear), we had 0 and are
 		// now at 0xffffffff -> mission accomplished.
-		codeBranch(out->addr + 4, "cc?", "b,");
+		codeBranch(out->ta() + 4, "cc?", "b,");
 		codeAsm("0", "##", "r0", "mov,");
 	} else if (W("interrupt")) {
 		out->alignDword();
