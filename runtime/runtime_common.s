@@ -32,6 +32,9 @@
 .global irq_handler
 .global _end_irq_handler
 
+.equ _thumbthunk_iwram, 0x3000ffe
+.global _thumbthunk_iwram
+
 .org 0xe0
 _tin_entry:
 	sub	r7, sp, #0x200
@@ -69,6 +72,10 @@ _copy_loop:
 
 
 _iwram_done:
+	ldr	r5, _thumbthunk_iwram_p
+	ldrh	r6, _thumbthunk
+	strh	r6, [r5]
+
 	ldr	r5, _tin_entry_p
 	ldr	r6, irq_handler_p
 	mov	r1, #0x4000000
@@ -78,6 +85,8 @@ _iwram_done:
 	bx	r5
 waitcnt_val:
 	.word	0x4317
+_thumbthunk_iwram_p:
+	.word _thumbthunk_iwram
 irq_handler_p:
 	# Will be overwritten by the TIN compiler if the IRQ handler
 	# is copied to IWRAM.
