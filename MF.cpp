@@ -1828,7 +1828,10 @@ short_branch:
 		unsigned int dest = POP_VAL_TYPE(ASM_OFF);
 
 		codeAsm(dest+1, "r2", "literal");
-		codeBranch(RT__thumbthunk, "bl,");
+		if ((out->ta() & 0xff000000) == 0x03000000)
+		        codeBranch(RT__thumbthunk_iwram, "bl,");
+                else
+			codeBranch(RT__thumbthunk, "bl,");
 	} else if (W("bx,")) {
 		unsigned short insn = 0x4700;
 		code16(insn | (POP_REG << 3));
