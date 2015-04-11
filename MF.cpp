@@ -3069,10 +3069,10 @@ handle_const:
 		invalR5();
 		codeBranch(out->addr, "jmp");
 		if (thumb) {
-			out->reloc10(loop_stack[--lpsp], out->addr);
+			out->reloc10(loop_stack[--lpsp], out->ta());
 			loop_stack[lpsp++] = out->addr - 2;
 		} else {
-			out->reloc24(loop_stack[--lpsp], out->addr);
+			out->reloc24(loop_stack[--lpsp], out->ta());
 			loop_stack[lpsp++] = out->addr - 4;
 		}
 	} else if (W("then")) {
