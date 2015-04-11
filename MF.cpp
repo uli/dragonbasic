@@ -3078,9 +3078,9 @@ handle_const:
 	} else if (W("then")) {
 		invalR5();
 		if (thumb)
-			out->reloc10(loop_stack[--lpsp], out->addr);
+			out->reloc10(loop_stack[--lpsp], out->ta());
 		else
-			out->reloc24(loop_stack[--lpsp], out->addr);
+			out->reloc24(loop_stack[--lpsp], out->ta());
 	} else if (W("begin")) {
 		invalR5();
 		if (thumb)
