@@ -191,7 +191,7 @@ public:
 	void codeBranch(unsigned int dest, const char *mnem);
 	void codeBranch(unsigned int dest, const char *cond, const char *mnem);
 	void codeCallArm(unsigned int dest);
-	void codeCallThumb(unsigned int dest);
+	void codeCallThumb(unsigned int dest, const char *ident);
 	void codeToThumb(bool save_lr = true);
 	void codeToArm();
 

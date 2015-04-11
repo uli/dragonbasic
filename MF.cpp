@@ -2256,7 +2256,7 @@ void Parser::codeToArm()
 	}
 }
 
-void Parser::codeCallThumb(unsigned int dest)
+void Parser::codeCallThumb(unsigned int dest, const char *ident)
 {
 	if (thumb) {
 		if ((out->addr & 0xff000000) != (dest & 0xff000000))
@@ -3142,17 +3142,17 @@ do_ifwhile:
 	} else if (out->use_pimp && W("modvblank")) {
 		codeAsm("r0", "push");
 		invalR5();
-		codeCallThumb(RT_pimp_vblank);
+		codeCallThumb(RT_pimp_vblank, "pimp_vblank");
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modframe")) {
 		codeAsm("r0", "push");
 		invalR5();
-		codeCallThumb(RT_pimp_frame);
+		codeCallThumb(RT_pimp_frame, "pimp_frame");
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modclose")) {
 		codeAsm("r0", "push");
 		invalR5();
-		codeCallThumb(RT_pimp_close);
+		codeCallThumb(RT_pimp_close, "pimp_close");
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modinit")) {
 		if (!thumb)
@@ -3162,21 +3162,21 @@ do_ifwhile:
 			codeAsm("4", "##", "r0", "add,");
 		}
 		invalR5();
-		codeCallThumb(RT_pimp_init);
+		codeCallThumb(RT_pimp_init, "pimp_init");
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modsetpos")) {
 		codeAsm("r1", "pop");
 		invalR5();
-		codeCallThumb(RT_pimp_set_pos);
+		codeCallThumb(RT_pimp_set_pos, "pimp_set_pos");
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modgetrow")) {
 		codeAsm("r0", "push");
 		invalR5();
-		codeCallThumb(RT_pimp_get_row);
+		codeCallThumb(RT_pimp_get_row, "pimp_get_row");
 	} else if (out->use_pimp && W("modgetorder")) {
 		codeAsm("r0", "push");
 		invalR5();
-		codeCallThumb(RT_pimp_get_order);
+		codeCallThumb(RT_pimp_get_order, "pimp_get_order");
 	} else if ((sym = getSymbol(word))) {
 		//DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x thumb %d\n", sym->word, sym->addr,
 		//      out->addr, sym->is_addr, sym->lit_addr, sym->thumb);
@@ -3212,7 +3212,7 @@ do_ifwhile:
 			assert(sym->addr != 0);
 			invalR5();
 			if (sym->thumb)
-				codeCallThumb(sym->addr);
+				codeCallThumb(sym->addr, sym->word);
 			else {
 				DEBUG("ARM call to %s\n", sym->word);
 				codeCallArm(sym->addr);
