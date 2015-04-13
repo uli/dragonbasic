@@ -92,6 +92,7 @@ code-thumb (cls) ( color a size -- )
 	24 ## v1 v1 lsl,	\ $85000000
 	
 	\ enable dma 3 to write 32-bit blocks
+	1 ## tos tos lsr,
 	tos v1 v1 add,
 	v0 $c #( v1 str,	\ REGISTERS + $dc
 	
