@@ -27,7 +27,7 @@ code log ( a -- )
 	\ we construct a suitable code snippet at runtime
 	\ in EWRAM.
 	\ XXX: This address should not be fixed!
-	$203c000 a LITERAL
+	$203b000 a LITERAL
 
 	$e1a0c00c v0 LITERAL	\ mov r12, r12
 	a 0@ v0 str,
