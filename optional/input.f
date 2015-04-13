@@ -41,10 +41,15 @@ end-code
 
 \ wait for button in mask to be pressed and released
 code-thumb waitkey ( n1 -- n2 )
+	lr push
 	$4000130 v1 LITERAL
 	
 	\ wait for any button in the mask
 	l: __press
+	v1 push
+	vblank	bl,
+	v1 pop
+
 	v1 0@ v2 ldrh,
 	tos v2 and,
 	tos v2 eor,	\ eors, actually
@@ -52,6 +57,10 @@ code-thumb waitkey ( n1 -- n2 )
 	
 	\ wait for the same button to be released
 	l: __depress
+	v1 v2 push
+	vblank	bl,
+	v1 v2 pop
+
 	v1 0@ v0 ldrh,
 	v2 v0 and,
 	v2 v0 cmp,
@@ -59,5 +68,6 @@ code-thumb waitkey ( n1 -- n2 )
 	
 	\ done
 	v2 tos mov,
-	ret
+	v0 pop
+	v0 bx,
 end-code
