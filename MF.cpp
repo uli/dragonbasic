@@ -3139,8 +3139,9 @@ do_ifwhile:
 	} else if (W("repeat")) {
 		invalR5();
 		if (thumb) {
-			out->reloc10(loop_stack[--lpsp], out->ta() + 2);
+		        unsigned int rel = loop_stack[--lpsp];
 			codeBranch(loop_stack[--lpsp] - 2, "jmp");
+			out->reloc10(rel, out->ta());
 		} else {
 			out->reloc24(loop_stack[--lpsp], out->ta() + 4);
 			codeBranch(loop_stack[--lpsp], "b,");
