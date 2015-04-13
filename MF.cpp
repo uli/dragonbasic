@@ -1837,7 +1837,7 @@ short_branch:
 	} else if (W("jmp")) {
 		/* unconditional branch of arbitrary distance */
 		assert(NOS_TYPE == ASM_OFF);
-		int soff = NOS_VAL - out->addr - 4;
+		int soff = NOS_VAL - out->ta() - 4;
 		if (soff >= -2048 && soff < 2048)
 			goto short_branch;
 		codeAsm(POP_VAL + 1, "r2", "literal");
