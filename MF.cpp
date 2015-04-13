@@ -3209,14 +3209,24 @@ do_ifwhile:
 		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
 		if (sym->is_addr) {
 			if (getNextWordIf("@")) {
-				codeAsm("r0", "push");
-				if (!thumb && small_offset) {
-					loadR5(sym->lit_addr & 0xff000000);
-					codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
-				} else {
-					loadR5(sym->lit_addr);
-					codeAsm("r5", "0@", "r0", "ldr,");
-				}
+			        if (getNextWordIf("a!")) {
+                                        if (!thumb && small_offset) {
+                                                loadR5(sym->lit_addr & 0xff000000);
+                                                codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r1", "ldr,");
+                                        } else {
+                                                loadR5(sym->lit_addr);
+                                                codeAsm("r5", "0@", "r1", "ldr,");
+                                        }
+			        } else {
+                                        codeAsm("r0", "push");
+                                        if (!thumb && small_offset) {
+                                                loadR5(sym->lit_addr & 0xff000000);
+                                                codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
+                                        } else {
+                                                loadR5(sym->lit_addr);
+                                                codeAsm("r5", "0@", "r0", "ldr,");
+                                        }
+                                }
 			} else if (getNextWordIf("!")) {
 				if (!thumb && small_offset) {
 					loadR5(sym->lit_addr & 0xff000000);
