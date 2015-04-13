@@ -3092,13 +3092,13 @@ handle_const:
 		}
 	} else if (W("else")) {
 		invalR5();
-		codeBranch(out->addr, "jmp");
+		codeBranch(out->ta(), "b,");
 		if (thumb) {
 			out->reloc10(loop_stack[--lpsp], out->ta());
-			loop_stack[lpsp++] = out->addr - 2;
+			loop_stack[lpsp++] = out->ta() - 2;
 		} else {
 			out->reloc24(loop_stack[--lpsp], out->ta());
-			loop_stack[lpsp++] = out->addr - 4;
+			loop_stack[lpsp++] = out->ta() - 4;
 		}
 	} else if (W("then")) {
 		invalR5();
