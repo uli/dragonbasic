@@ -17,6 +17,7 @@ improvements:
 - uses literal pools instead of accessor functions
 - generates Thumb instead of ARM code (all library functions have also been
   rewritten in Thumb)
+- supports functions (both assembler and TIN) in IWRAM
 - supports "naked" words that omit the prolog, reducing function call
   overhead
 - supports inlining of TIN words
@@ -29,6 +30,8 @@ improvements:
 
 - produces more easily optimized TIN code
 - uses function arguments in place instead of copying them
+- supports functions and SUBs in IWRAM
+- no longer uses accessors for one-dimensional arrays
 
 
 Numerous bugs have been fixed in the runtime library and the BASIC compiler,
@@ -75,6 +78,8 @@ and a lot of new features have been added:
 - new 32 and 8-bit peeks and pokes
 - uses BIOS call to wait for vertical blank (reduces power consumption, and
   works better overall)
+- several other blocking functions use BIOS calls to reduce power
+  consumption
 - LOADPAL256, LOADSPRITE, LOADTILES, and UPDATESPRITES now use DMA
 - new SETTILEFAST and CLEARTILESFAST functions ignore rarely significant
   corner cases in favor of speed
