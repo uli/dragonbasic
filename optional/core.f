@@ -49,7 +49,7 @@ end-code
 variable .idata
 
 \ transfer from data pointer to local address register
-:n >a ( -- ) .idata @ a! ;
+:i >a ( -- ) .idata @ a! ;
 
 :n a> ( -- ) a@ .idata ! ;
 
