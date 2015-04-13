@@ -2709,6 +2709,9 @@ handle_const:
 					else if (isWordN(2, "+"))
 						num += TIN_parseNum(
 							getNextWord());
+					else if (isWordN(2, "n*"))
+						num <<= TIN_parseNum(
+							getNextWord());
 					else
 						break;
 					getNextWord();
