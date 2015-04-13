@@ -107,6 +107,7 @@ end-code
 
 \ fade the screen in
 code-thumb fadein ( -- )
+	lr push
 	$4000050 w LITERAL	\ REGISTERS + $50
 	
 	\ REG_BLDCNT = $EF
@@ -124,24 +125,15 @@ code-thumb fadein ( -- )
 	w $4 #( a strh,		\ REGISTERS + $54
 	1 ## v1 v1 add,
 	
-	\ Wait for a vertical blank (160)
-	$50 ## w sub,		\ REGISTERS
-	l: __wait
-	w 6 #( v2 ldrh,		\ REGISTERS + $6
-	160 ## v2 cmp,
-	__wait ne? b,
-	
-	\ Wait for a vertical blank (159)
-	l: __wait
-	w 6 #( v2 ldrh,		\ REGISTERS + $6
-	159 ## v2 cmp,
-	__wait ne? b,
-	
-	$50 ## w add,		\ REGISTERS + $50
+	v0 v1 push
+	vblank bl,
+	vblank bl,
+	v0 v1 pop
 
 	\ Loop 16 times
 	$10 ## v1 cmp,
 	__loop le? b,
 	
-	ret
+	v1 pop
+	v1 bx,
 end-code
