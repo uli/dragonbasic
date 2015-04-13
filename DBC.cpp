@@ -1011,11 +1011,10 @@ void Compiler::doCmdDim()
 	int argc;
 	int total_size;
 	bool is_string;
-	int j;
 	char accessor_ident[168];
 	BasicObject *bobj;
-	int i;
 	char buf[168];
+	int i, j;
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "DIM");
 	do {
@@ -1053,7 +1052,8 @@ void Compiler::doCmdDim()
 			emitTin("%d %s RESERVE\n", total_size, tin_type);
 			addNewSub(accessor_ident, true, VAR_SCALAR);
 			sub_head->addArgument(0, VAR_SCALAR);
-			emitTin(": %s ( i*x -- a ) ", accessor_ident);
+			if (argc > 1)
+				emitTin(": %s ( i*x -- a ) ", accessor_ident);
 			for (i = 0; i < argc - 1; ++i) {
 				sub_head->addArgument(0, VAR_SCALAR);
 				total_size = 1;
@@ -1061,8 +1061,9 @@ void Compiler::doCmdDim()
 					total_size *= args[j];
 				emitTin("SWAP %d # * + ", total_size);
 			}
-			emitTin("%d # N* %s + ;\n", is_string != false ? 8 : 2,
-				buf);
+			if (argc > 1)
+				emitTin("%d # N* %s + ;\n", is_string != false ? 8 : 2,
+					buf);
 		}
 	} while (parser->requireRop(ROP_COMMA));
 }
@@ -1509,7 +1510,15 @@ void Compiler::doRvalArray(BasicObject *bobj)
 		GLB_error(ERR_UNK_IDENT, bobj->val.symbolic);
 	if (!sub->is_function)
 		GLB_error(ERR_NEED_RVAL, bobj->val.symbolic);
-	callSubroutine(sub);
+	if (sub->num_args == 1) {
+		emitTin("%s ", bobj->val.symbolic);
+		compileExpression();
+		if (bobj->vtype == VAR_ARRAY)
+			emitTin("8 # n* + ");
+		else
+			emitTin("2 # n* + ");
+	} else
+		callSubroutine(sub);
 	if (!parser->requireRop(ROP_CBRACK))
 		GLB_error(ERR_TOO_MANY_ARGS, sub->ident);
 }
