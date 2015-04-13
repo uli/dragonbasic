@@ -3,20 +3,26 @@
 
 \ wait for a button state to change
 code-thumb input ( n -- )
+	lr push
 	$4000130 v1 LITERAL	\ REGISTERS + $130
 	v1 0@ v2 ldrh,
 	tos v2 and,
 	
 	\ wait until the mask changes
 	l: __wait
+	v1 v2 push
+	vblank	bl,
+	v1 v2 pop
+
 	v1 0@ v0 ldrh,
 	tos v0 and,
 	v2 v0 eor,	\ eors, actually
 	__wait eq? b,
 	
 	\ done
+	v0 pop
 	tos pop
-	ret
+	v0 bx,
 end-code
 
 \ return the status of a button (0=released)
