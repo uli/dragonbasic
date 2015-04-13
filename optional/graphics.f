@@ -289,14 +289,14 @@ end-code
 	view-width (blit) then ;
 
 \ finish drawing a line
-code-thumb /line ( -- )
+code-thumb iwram /line ( -- )
 	r6 r7 pop
 	tos pop
 	ret
 end-code
 
 \ draw a horizontal bresenham line
-code-thumb (h-line) ( -- )
+code-thumb iwram (h-line) ( -- )
 	1 ## r6 r0 lsr,
 	r0 r5 r7 sub,
 
@@ -325,7 +325,7 @@ code-thumb (h-line) ( -- )
 end-code
 
 \ draw a vertical bresenham line
-code-thumb (v-line) ( -- )
+code-thumb iwram (v-line) ( -- )
 	1 ## r5 r0 lsr,
 	r0 r6 r7 sub,
 	
@@ -354,7 +354,7 @@ code-thumb (v-line) ( -- )
 end-code
 
 \ draw a bresenham line
-code-thumb (line) ( x1 y1 x2 y2 color screen -- )
+code-thumb iwram (line) ( x1 y1 x2 y2 color screen -- )
 	\ load arguments and save forth registers
 	tos r10 mov,
 	tos r1 r2 r3 r4 pop
