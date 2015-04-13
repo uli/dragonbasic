@@ -7,7 +7,7 @@ variable (seed)
 :n seed ( x -- ) (seed) ! ;
 
 \ return a random number from 0-7FFF
-: rnd ( -- n ) 
+:n rnd ( -- n ) 
 	(seed) @ 69069 # * 1+ dup (seed) ! 17 # n/ ;
 
 \ return a rando, number between min and max-1
