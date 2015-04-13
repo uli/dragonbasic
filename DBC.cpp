@@ -1053,7 +1053,7 @@ void Compiler::doCmdDim()
 			addNewSub(accessor_ident, true, VAR_SCALAR);
 			sub_head->addArgument(0, VAR_SCALAR);
 			if (argc > 1)
-				emitTin(": %s ( i*x -- a ) ", accessor_ident);
+				emitTin(":n %s ( i*x -- a ) ", accessor_ident);
 			for (i = 0; i < argc - 1; ++i) {
 				sub_head->addArgument(0, VAR_SCALAR);
 				total_size = 1;
