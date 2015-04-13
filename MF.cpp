@@ -2848,6 +2848,12 @@ handle_const:
 							codeAsm("r0", "pop");
 					} else
 						GLB_error("internal error\n");
+                                } else if (num == 0 && getNextWordIf("+r")) {
+                                        codeAsm("r0", "push");
+                                        codeAsm("r6", "r0", "mov,");
+                                } else if (num < 8 && getNextWordIf("+r")) {
+                                        codeAsm("r0", "push");
+                                        codeAsm(num, "##", "r6", "r0", "add,");
 				} else if (num > 0xff) {
 					if (!can_immrot(num)) {
 						codeAsm("r0", "push");
