@@ -876,6 +876,9 @@ void Compiler::doCommand(BasicObject *bobj)
 	case CMD_DEC:
 		doCmdDec();
 		break;
+	case CMD_GOTO:
+		doCmdGoto();
+		break;
 	default:
 		GLB_error(ERR_SYNTAX);
 		return;
@@ -1414,6 +1417,14 @@ void Compiler::doCmdDec()
 		emitTin("$%x # ", bobj->vtype != VAR_SCALAR ? 256 : 1);
 	}
 	emitTin("- SWAP ! ");
+}
+
+void Compiler::doCmdGoto()
+{
+	BasicObject *bobj = parser->consumeNextBasicObj();
+	if (bobj->otype != OBJ_IDENT)
+		GLB_error(ERR_TYPE_MISMATCH);
+	emitTin("GOTO %s::%s ", sub_head->ident, bobj->val.symbolic);
 }
 
 void Compiler::doLabel(BasicObject *bobj)
@@ -2484,6 +2495,8 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_DEC, cur_line);
 	} else if (!strcasecmp(token_name, "iwram")) {
 		bobj = new BasicObject(CMD_IWRAM, cur_line);
+	} else if (!strcasecmp(token_name, "goto")) {
+		bobj = new BasicObject(CMD_GOTO, cur_line);
 	} else {
 		// non-keyword
 		bobj = new BasicObject(OBJ_IDENT, cur_line);

@@ -170,6 +170,7 @@ enum cmd_t {
 	CMD_READB,
 	CMD_READH,
 	CMD_IWRAM,
+	CMD_GOTO,
 };
 
 struct LoopStackEntry {
@@ -412,6 +413,7 @@ public:
 	void doCmdExit();
 	void doCmdInc();
 	void doCmdDec();
+	void doCmdGoto();
 	void doLabel(BasicObject *bobj);
 	void doLval(BasicObject *bobj);
 	void doLvalNotSub(BasicObject *bobj, bool array);
