@@ -3262,6 +3262,7 @@ do_ifwhile:
 		codeToArm();
 		codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		codeAsm("lr", "bx,");
+		literals.code(out);
 	} else if (W("goto")) {
 		const char *target = getNextWord();
 		if ((sym = getSymbol(target))) {
