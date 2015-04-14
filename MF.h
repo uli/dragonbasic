@@ -266,8 +266,20 @@ extern const char *current_word;
 extern unsigned int current_line;
 extern bool last_eol;
 
-#define GLB_error(x ...) do { fprintf(stderr, "ERROR: " x); exit(1); } while (0)
-#define GLB_warning(x ...) do { fprintf(stderr, "WARNING: " x); } while (0)
+#define GLB_error(x, ...) do { \
+	fprintf(stderr, "ERROR: %s:%d: %s: " x, \
+		current_file, \
+		current_line - (last_eol ? 1 : 0), \
+		current_word, ##__VA_ARGS__); \
+	exit(1); \
+} while (0)
+
+#define GLB_warning(x, ...) do { \
+	fprintf(stderr, "WARNING: %s:%d: %s: " x, \
+		current_file, \
+		current_line - (last_eol ? 1 : 0), \
+		current_word, ##__VA_ARGS__); \
+} while (0)
 
 int Decode(const char *filename,Output *out);
 
