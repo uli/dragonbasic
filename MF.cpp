@@ -43,6 +43,18 @@
 bool option_debug = false;
 bool debug_words = false;
 
+// Error handling
+
+const char *current_file = NULL;
+static void GLB_setCurrentFile(const char *f) {
+	DEBUG("curfile %s\n", f);
+	if (current_file)
+		delete current_file;
+	current_file = strdup(f);
+}
+
+}
+
 
 Icode::Icode()
 {
@@ -321,8 +333,12 @@ void Parser::pushText(const char *filename)
 						"unable to open input file %s\n",
 						filename);
 			}
-		}
-	}
+			GLB_setCurrentFile(buf);
+		} else
+			GLB_setCurrentFile(stolower(filename));
+	} else
+		GLB_setCurrentFile(filename);
+
 	int len = fread(text, 1, 1 << 20, in);
 	text[len] = 0;
 	fclose(in);
