@@ -46,6 +46,7 @@ bool debug_words = false;
 // Error handling
 
 const char *current_file = NULL;
+const char *current_word = NULL;
 static void GLB_setCurrentFile(const char *f) {
 	DEBUG("curfile %s\n", f);
 	if (current_file)
@@ -53,6 +54,13 @@ static void GLB_setCurrentFile(const char *f) {
 	current_file = strdup(f);
 }
 
+static void GLB_setCurrentWord(const char *w) {
+	if (current_word)
+		delete current_word;
+	if (w)
+		current_word = strdup(w);
+	else
+		current_word = NULL;
 }
 
 
@@ -2477,6 +2485,7 @@ parse_next:
 			cur_icode->thumb = false;
 		}
 		invalR5();
+		GLB_setCurrentWord(cur_icode->word);
 	} else if (W("code") || W("code-thumb")) {
 		out->alignDword();
 		if (word[4] == '-' && word[5] == 't')
@@ -2505,6 +2514,7 @@ parse_next:
 		asm_mode = true;
 		invalR5();
 		word_start = out->addr;
+		GLB_setCurrentWord(ident);
 	} else if (W("end-code")|| (W(";") && cur_icode)) {
 		if (cur_icode) {
 			cur_icode = 0;
@@ -2518,6 +2528,7 @@ parse_next:
 		rsp = 0;
 		invalR5();
 		out->registerIwram(iwsym);
+		GLB_setCurrentWord(NULL);
 	} else if (asm_mode) {
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
@@ -2563,6 +2574,7 @@ parse_next:
 		}
 		word_start = out->addr;
 		local_idx = 0;
+		GLB_setCurrentWord(ident);
 	} else if (W("label")) {
 		out->alignDword();
 		sym = symbols.appendNew(out->addr, getNextWord());
