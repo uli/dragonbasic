@@ -2956,7 +2956,7 @@ handle_const:
 		const char *str = getNextWord();
 		codeAsm("r0", "push");
 		codeAsm("pc", "r0", "mov,");
-		unsigned int skip = out->addr;
+		unsigned int skip = out->ta();
 		codeBranch(out->addr, "b,");
 		end_str = out->addr + 4 + 1 + strlen(str);
 #ifdef BUG_FOR_BUG
@@ -2975,18 +2975,18 @@ handle_const:
 
 		out->emitString(str, strlen(str));
 
-		unsigned int pad_start = out->addr;
-		while (out->addr < end_str)
+		unsigned int pad_start = out->ta();
+		while (out->ta() < end_str)
 			out->emitByte(0);
-		if (out->addr > pad_start) {
-			sprintf(dbgsym, ".byt:%04X", out->addr - pad_start);
+		if (out->ta() > pad_start) {
+			sprintf(dbgsym, ".byt:%04X", out->ta() - pad_start);
 			out->addSym(dbgsym, pad_start);
 		}
 
 		if (thumb)
-			out->reloc10(skip, out->addr);
+			out->reloc10(skip, out->ta());
 		else
-			out->reloc24(skip, out->addr);
+			out->reloc24(skip, out->ta());
 	} else if (W("drop")) {
 		if (getNextWordIf("a@")) {
 			codeAsm("r1", "r0", "mov,");
