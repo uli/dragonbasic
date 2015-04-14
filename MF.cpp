@@ -3257,6 +3257,7 @@ do_ifwhile:
 		thumb = false;
 		codeAsm("sp", "db!", "lr", "r10", "r9", "r8", "stm,");
 		codeToThumb(false);
+		GLB_setCurrentWord(sym->word);
 	} else if (W("exit")) {
 		invalR5();
 		codeToArm();
