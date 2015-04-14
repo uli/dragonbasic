@@ -540,7 +540,7 @@ restart:
 					if (!parser->requireRop(ROP_COLON)) {
 						parser->getObjectWithType(
 							OBJ_EOL, "EOL");
-						emitTin("\n");
+						emitTin("\n#LINE\" %s\" %d\n", parser->filename, bobj->line_no);
 						goto restart;
 					}
 					bobj = parser->consumeNextBasicObj();
