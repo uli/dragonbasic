@@ -224,6 +224,8 @@ private:
 	bool parseArm(const char *word);
 	bool parseThumb(const char *word);
 
+	unsigned int POP_VAL_TYPE(unsigned int x);
+
 public:
 	Output *out;
 	char *text;

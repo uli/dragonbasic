@@ -1162,7 +1162,12 @@ Icode *Parser::getIcode(const char *word)
 #define POP_VAL (asm_stack[--asp][1])
 
 // pop with type checking
-#define POP_VAL_TYPE(x) (--asp, assert(TOS_TYPE == (x)), TOS_VAL)
+unsigned int Parser::POP_VAL_TYPE(unsigned int x) {
+	--asp;
+	if (TOS_TYPE != x)
+		GLB_error("type mismatch\n");
+	return TOS_VAL;
+}
 #define POP_REG POP_VAL_TYPE(ASM_REG)
 #define POP_TREG (--asp, assert(TOS_TYPE == ASM_REG && TOS_VAL < 8), TOS_VAL)
 #define POP_IMM POP_VAL_TYPE(ASM_IMM)
