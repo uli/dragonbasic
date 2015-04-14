@@ -1,0 +1,21 @@
+EWRAM
+$2000000 - $203afff	TIN variable space
+$203b000 - $203bfff	NO$GBA debug output buffer
+$203c000 - $203cfff	Temporary string ring buffer
+$203d000 - $203ffff	C runtime EWRAM
+
+IWRAM
+$3000000 - $30003ff	OAM staging buffer
+$3000400 - $30005ff	BG register staging buffer
+$3000600 - $300060f	Sound data
+$3000610 - $300062c	User interrupt vectors
+
+$3000ffe - $3000fff	Thumb thunking stub
+$3001000 - $3001fff	TIN IWRAM code
+$3002000 -		C runtime IWRAM
+
+         - $3007bff	Return stack
+$3007c00 - $3007eff	User stack
+$3007f00 - $3007f9f	Interrupt stack
+
+$3007ffc - $3007fff	BIOS interrupt vector
