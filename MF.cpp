@@ -3190,6 +3190,20 @@ do_ifwhile:
 		codeToArm();
 		codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		codeAsm("lr", "bx,");
+        } else if (W("goto")) {
+                const char *target = getNextWord();
+                if ((sym = getSymbol(target))) {
+                        codeBranch(sym->addr, "b,");
+                } else {
+                        asm_relocs[rsp].label = strdup(target);
+                        asm_relocs[rsp].addr = out->ta();
+                        if (thumb)
+                                asm_relocs[rsp].reloc = RELOC_10;
+                        else
+                                asm_relocs[rsp].reloc = RELOC_24;
+                        rsp++;
+                        codeBranch(out->ta(), "b,");
+                }
 	} else if (out->use_pimp && W("modvblank")) {
 		codeAsm("r0", "push");
 		invalR5();
