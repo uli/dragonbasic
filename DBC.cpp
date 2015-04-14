@@ -367,7 +367,7 @@ Compiler::~Compiler()
 
 void Compiler::parseFile(const char *filename)
 {
-	line_no = 0;
+	line_no = 1;
 	if (parser)
 		parser = new Parser(filename, parser->symbol_head);
 	else
@@ -379,7 +379,7 @@ int Compiler::writeOutput(const char *filename)
 {
 	FILE *fp;
 
-	line_no = 0;
+	line_no = 1;
 	fp = fopen(filename, "w+t");
 	if (!fp)
 		GLB_error(ERR_WRITE_OBJ, filename);
@@ -533,6 +533,7 @@ restart:
 		if (bobj->otype != OBJ_EOL) {
 			if (bobj->otype != OBJ_EOT) {
 				while (true) {
+					emitTin("\n#LINE\" %s\" %d\n", parser->filename, bobj->line_no);
 					compileBasicObject(bobj);
 					if (parser->checkNextBasicObjType(
 						    OBJ_EOT))
@@ -540,7 +541,6 @@ restart:
 					if (!parser->requireRop(ROP_COLON)) {
 						parser->getObjectWithType(
 							OBJ_EOL, "EOL");
-						emitTin("\n#LINE\" %s\" %d\n", parser->filename, bobj->line_no);
 						goto restart;
 					}
 					bobj = parser->consumeNextBasicObj();
@@ -2178,6 +2178,7 @@ void GLB_main(int argc, char **argv)
 			"Usage: DBC.EXE [-o|-mb|-debug] <sourcefile> <binary>\n", 0,
 			0);
 	compiler.parseFile(argv[num_opts]);
+	compiler.emitTin("#LINE\" %s\" 1\n", argv[num_opts]);
 	compiler.compile();
 	compiler.emitTin("\nENTRY START\n");
 	compiler.emitTin("PROGRAM\" %s\"\n\n", argv[binary_idx]);
