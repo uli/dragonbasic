@@ -2484,6 +2484,8 @@ parse_next:
 	} else if (W("#line")) {
 		current_line = TIN_parseNum(getNextWord());
 		explicit_line = true;
+	} else if (W("#file\"")) {
+		GLB_setCurrentFile(getNextWord());
 	} else if (W("{")) {
 		while ((word = getNextWord()) && word && !W("}")) ;
 		if (!word)
