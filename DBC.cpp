@@ -1420,8 +1420,10 @@ void Compiler::doLabel(BasicObject *bobj)
 {
 	BasicObject *same_line_bobj;
 
-	checkNotSegment(SEG_SUB, bobj->val.symbolic);
-	if (!strcasecmp(bobj->val.symbolic, "start")) {
+	if (cur_seg & SEG_SUB) {
+		emitTin("CLABEL %s::%s ", sub_head->ident, bobj->val.symbolic);
+		is_top_level = false;
+	} else if (!strcasecmp(bobj->val.symbolic, "start")) {
 		emitTin(": START ");
 		addNewSub(bobj->val.symbolic, false, VAR_SCALAR);
 		is_top_level = false;
