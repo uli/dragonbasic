@@ -2481,8 +2481,7 @@ parse_next:
 		/* ignore */
 		// XXX: maybe we should do a rename() here or something...
 		getNextWord();
-	} else if (W("#line\"")) {
-		GLB_setCurrentFile(getNextWord());
+	} else if (W("#line")) {
 		current_line = TIN_parseNum(getNextWord());
 		explicit_line = true;
 	} else if (W("{")) {

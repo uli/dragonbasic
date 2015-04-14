@@ -533,7 +533,7 @@ restart:
 		if (bobj->otype != OBJ_EOL) {
 			if (bobj->otype != OBJ_EOT) {
 				while (true) {
-					emitTin("\n#LINE\" %s\" %d\n", parser->filename, bobj->line_no);
+					emitTin("\n#LINE %4d  ", bobj->line_no);
 					compileBasicObject(bobj);
 					if (parser->checkNextBasicObjType(
 						    OBJ_EOT))
