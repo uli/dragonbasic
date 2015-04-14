@@ -94,6 +94,7 @@ code-thumb waittimer ( u -- )
 	
 	\ loop
 	l: __wait
+	2 swi,			\ BIOS Halt
 	v2 $c #( v1 ldrh,
 	tos v1 cmp,
 	__wait lt? b,
