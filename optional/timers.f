@@ -34,20 +34,22 @@ code-thumb starttimer ( -- )
 	$4000100 v2 LITERAL	\ REGISTERS + $100
 	IWRAM_GLOBALS v0 LITERAL
 	
-	\ test to see if an interrupt is running
-	v0 INT_T2 #( v1 ldr,
-	$82 ## v0 mov, 
-	
-	\ ENABLE + FREQ_64 + IRQ (if running)
-	0 ## v1 cmp,
-	4 #offset eq? b,
-	$40 ## v0 add,
+	\ ENABLE + FREQ_64 + IRQ
+	$c2 ## v0 mov,
 
 	v2 $a #( v0 strh,
 	
 	\ set timer 3 to overflow (ENABLE + COUNT_UP)
 	$84 ## v1 mov,
 	v2 $e #( v1 strh,
+
+	\ enable timer 2 in IE
+	$f0 ## v2 add,
+	$20 ## v1 mov,
+	v2 $10 #( v0 ldrh,
+	v1 v0 orr,
+	v2 $10 #( v0 strh,
+
 	ret
 end-code
 
