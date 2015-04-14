@@ -62,6 +62,13 @@ code-thumb stoptimer ( -- )
 	v2 $a #( v1 strh,
 	v2 $e #( v1 strh,
 	
+	\ disable timer 2 in IE
+	$f0 ## v2 add,
+	$20 ## v1 mov,
+	v2 $10 #( v0 ldrh,
+	v1 v0 bic,
+	v2 $10 #( v0 strh,
+
 	\ done
 	ret
 end-code
