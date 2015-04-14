@@ -2573,6 +2573,7 @@ parse_next:
 		currently_naked = false;
 		thumb = false;
 		literals.code(out);
+		checkRelocs();
 		out->registerIwram(iwsym);
 	} else if (W(";")) {
 		assert(!cur_icode);
@@ -2584,6 +2585,7 @@ parse_next:
 		currently_naked = false;
 		thumb = false;
 		literals.code(out);
+		checkRelocs();
 		out->registerIwram(iwsym);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
