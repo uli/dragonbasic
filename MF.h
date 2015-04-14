@@ -196,6 +196,8 @@ public:
 	void codeToThumb(bool save_lr = true);
 	void codeToArm();
 
+	void checkRelocs();
+
 	void setR5(unsigned int c) {
 		r5_const = true;
 		r5 = c;

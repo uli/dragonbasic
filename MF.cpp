@@ -2352,6 +2352,15 @@ void Parser::loadR5(unsigned int num)
 	}
 }
 
+void Parser::checkRelocs()
+{
+        for (int i = 0; i < rsp; i++) {
+                if (asm_relocs[i].label)
+                        GLB_error("unresolved symbol %s\n",
+                                  asm_relocs[i].label);
+        }
+}
+
 void Parser::parseAll()
 {
 	const char *word;
@@ -2481,11 +2490,7 @@ parse_next:
 		}
 		asm_mode = false;
 		literals.code(out);
-		for (int i = 0; i < rsp; i++) {
-			if (asm_relocs[i].label)
-				GLB_error("unresolved symbol %s\n",
-					  asm_relocs[i].label);
-		}
+		checkRelocs();
 		lsp = 0;
 		rsp = 0;
 		invalR5();
