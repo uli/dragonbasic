@@ -1364,13 +1364,18 @@ void Compiler::doCmdReset()
 void Compiler::doCmdInterrupt()
 {
 	BasicObject *bobj;
+	bool iwram = false;
 
+	if (parser->checkNextBasicObjType(OBJ_CMD)) {
+		parser->getNextCmd(CMD_IWRAM);
+		iwram = true;
+	}
 	bobj = parser->getObjectWithType(OBJ_IDENT, "Identifier");
 	checkNotSegment(SEG_INTR | SEG_SUB, "INTERRUPT");
 	if (bobj->vtype)
 		GLB_error(ERR_TYPE_MISMATCH);
 	addNewSub(bobj->val.symbolic, true, VAR_SCALAR);
-	emitTin("INTERRUPT %s ", bobj->val.symbolic);
+	emitTin("INTERRUPT %s%s ", iwram ? "IWRAM " : "", bobj->val.symbolic);
 	cur_seg = SEG_INTR;
 	is_top_level = false;
 }
