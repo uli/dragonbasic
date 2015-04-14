@@ -47,6 +47,9 @@ bool debug_words = false;
 
 const char *current_file = NULL;
 const char *current_word = NULL;
+unsigned int current_line = 1;
+bool explicit_line = false;
+
 static void GLB_setCurrentFile(const char *f) {
 	DEBUG("curfile %s\n", f);
 	if (current_file)
@@ -350,6 +353,9 @@ void Parser::pushText(const char *filename)
 	int len = fread(text, 1, 1 << 20, in);
 	text[len] = 0;
 	fclose(in);
+
+	current_line = 1;
+	explicit_line = false;
 }
 
 void Parser::popText()
@@ -2455,6 +2461,10 @@ parse_next:
 		/* ignore */
 		// XXX: maybe we should do a rename() here or something...
 		getNextWord();
+	} else if (W("#line\"")) {
+		GLB_setCurrentFile(getNextWord());
+		current_line = TIN_parseNum(getNextWord());
+		explicit_line = true;
 	} else if (W("{")) {
 		while ((word = getNextWord()) && word && !W("}")) ;
 		if (!word)
