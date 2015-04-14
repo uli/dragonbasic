@@ -2402,6 +2402,7 @@ parse_next:
 		if (!word) {
 			// DBC does not end "start" with a semicolon :/
 			literals.code(out);
+			checkRelocs();
 			return;
 		}
 	}
