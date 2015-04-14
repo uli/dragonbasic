@@ -257,6 +257,8 @@ public:
 	unsigned int last_insn;
 	bool r5_const;
 	unsigned int r5;
+
+	bool text_mode;
 };
 
 #define GLB_error(x ...) do { fprintf(stderr, "ERROR: " x); exit(1); } while (0)

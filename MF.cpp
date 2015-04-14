@@ -210,7 +210,6 @@ void Parser::setOutput(Output *out)
 
 const char *Parser::_getNextWord()
 {
-	static int text_mode = 0;
 	static char bufs[8][256];
 	static int buf_ptr = 0;
 	char *buf;
@@ -234,12 +233,12 @@ const char *Parser::_getNextWord()
 		return NULL;
 
 	if (buf[idx - 1] == '"') {
-		text_mode = 1;
+		text_mode = true;
 		assert(isspace(*tptr));
 		tptr++;
 	}
 	else {
-		text_mode = 0;
+		text_mode = false;
 		while (isspace(*tptr))
 			tptr++;
 	}
@@ -262,6 +261,7 @@ const char *Parser::getNextWord()
 const char *Parser::peekWordN(int n)
 {
 	char *save_tptr = tptr;
+	bool save_text = text_mode;
 	const char *pw;
 
 	do {
@@ -269,6 +269,7 @@ const char *Parser::peekWordN(int n)
 		n--;
 	} while (n >= 0);
 	tptr = save_tptr;
+	text_mode = save_text;
 	return pw;
 }
 
@@ -3353,6 +3354,7 @@ Parser::Parser()
 	lpsp = 0;
 	thumb = false;
 	invalR5();
+	text_mode = false;
 }
 
 void Output::openOutFile(const char *name)
