@@ -2902,7 +2902,7 @@ handle_const:
 				}
 			}
 		} else if (getNextWordIf(",")) {
-			code(num);
+			out->emitDword(num);
 		} else if (getNextWordIf("h,")) {
 			out->emitWord(num);
 		} else if (getNextWordIf("b,")) {
