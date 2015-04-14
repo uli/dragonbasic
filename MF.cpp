@@ -2028,7 +2028,7 @@ void Parser::parseAsm(const char *word)
 	Symbol *sym;
 #ifndef NDEBUG
 	int old_asp = asp;
-	unsigned int old_addr = out->addr;
+	unsigned int old_addr = out->ta();
 #endif
 
 	if (W("r0") || W("tos"))
