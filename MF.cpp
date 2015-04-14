@@ -1943,6 +1943,31 @@ short_branch:
 	return true;
 }
 
+void Parser::resolveRelocs(const char *label)
+{
+        // Resolve forward references to this label, if any.
+        for (int i = 0; i < rsp; i++) {
+                if (asm_relocs[i].label &&
+                    !strcmp(asm_relocs[i].label, label)) {
+                        switch (asm_relocs[i].reloc) {
+                        case RELOC_8:
+                                out->reloc8(asm_relocs[i].addr, out->ta());
+                                break;
+                        case RELOC_10:
+                                out->reloc10(asm_relocs[i].addr, out->ta());
+                                break;
+                        case RELOC_24:
+                                out->reloc24(asm_relocs[i].addr, out->ta());
+                                break;
+                        default:
+                                abort();
+                        }
+                        delete asm_relocs[i].label;
+                        asm_relocs[i].label = NULL;
+                }
+        }
+}
+
 void Parser::parseAsm(const char *word)
 {
 	Symbol *sym;
@@ -2077,27 +2102,7 @@ void Parser::parseAsm(const char *word)
 		DEBUG("asm label %s at 0x%x\n", asm_labels[lsp - 1].label,
 		      out->ta());
 
-		// Resolve forward references to this label, if any.
-		for (int i = 0; i < rsp; i++) {
-			if (asm_relocs[i].label &&
-			    !strcmp(asm_relocs[i].label, label)) {
-				switch (asm_relocs[i].reloc) {
-				case RELOC_8:
-					out->reloc8(asm_relocs[i].addr, out->ta());
-					break;
-				case RELOC_10:
-					out->reloc10(asm_relocs[i].addr, out->ta());
-					break;
-				case RELOC_24:
-					out->reloc24(asm_relocs[i].addr, out->ta());
-					break;
-				default:
-					abort();
-				}
-				delete asm_relocs[i].label;
-				asm_relocs[i].label = NULL;
-			}
-		}
+		resolveRelocs(label);
 	} else if (isNum(word)) {
 		unsigned int imm = TIN_parseNum(word);
 		PUSH_ASM(ASM_IMM, imm);

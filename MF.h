@@ -196,6 +196,7 @@ public:
 	void codeToThumb(bool save_lr = true);
 	void codeToArm();
 
+	void resolveRelocs(const char *label);
 	void checkRelocs();
 
 	void setR5(unsigned int c) {
