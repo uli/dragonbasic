@@ -3249,11 +3249,24 @@ do_ifwhile:
 	} else if (W("interrupt")) {
 		out->alignDword();
 		invalR5();
+		if (getNextWordIf("iwram"))
+			out->setIwram();
+		else
+			out->clearIwram();
+
 		const char *ident = getNextWord();
 		out->addSym(ident);
 		sym = symbols.appendNew(out->addr, ident);
 		sym->is_addr = true;
 		sym->lit_addr = out->addr;
+
+		// Save pointer to symbol; we need it later to create the
+		// IWRAM table entry.
+		if (out->currently_iwram)
+			iwsym = sym;
+		else
+			iwsym = NULL;
+
 		thumb = false;
 		codeAsm("sp", "db!", "lr", "r10", "r9", "r8", "stm,");
 		codeToThumb(false);
@@ -3264,6 +3277,10 @@ do_ifwhile:
 		codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		codeAsm("lr", "bx,");
 		literals.code(out);
+		if (iwsym) {
+                        out->registerIwram(iwsym);
+                        iwsym->lit_addr = iwsym->addr;
+                }
 	} else if (W("goto")) {
 		const char *target = getNextWord();
 		if ((sym = getSymbol(target))) {
