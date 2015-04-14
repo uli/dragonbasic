@@ -3281,6 +3281,7 @@ do_ifwhile:
                         out->registerIwram(iwsym);
                         iwsym->lit_addr = iwsym->addr;
                 }
+                GLB_setCurrentWord(NULL);
 	} else if (W("goto")) {
 		const char *target = getNextWord();
 		if ((sym = getSymbol(target))) {
