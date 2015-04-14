@@ -1169,7 +1169,12 @@ unsigned int Parser::POP_VAL_TYPE(unsigned int x) {
 	return TOS_VAL;
 }
 #define POP_REG POP_VAL_TYPE(ASM_REG)
-#define POP_TREG (--asp, assert(TOS_TYPE == ASM_REG && TOS_VAL < 8), TOS_VAL)
+unsigned int Parser::POP_TREG() {
+        --asp;
+        if (TOS_TYPE != ASM_REG || TOS_VAL > 8)
+                GLB_error("lower register expected\n");
+        return TOS_VAL;
+}
 #define POP_IMM POP_VAL_TYPE(ASM_IMM)
 
 #define ASSERT_REG do { assert(TOS_TYPE == ASM_REG); } while (0)
@@ -1600,8 +1605,8 @@ bool Parser::parseThumb(const char *word)
 		 asm_stack[asp - 3][0] == ASM_AMODE && \
 		 asm_stack[asp - 3][1] == AMODE_IMM) { \
 		unsigned short insn = op << 11; \
-		insn |= POP_TREG << 0; \
-		insn |= POP_TREG << 3; \
+		insn |= POP_TREG() << 0; \
+		insn |= POP_TREG() << 3; \
 		--asp; \
 		insn |= POP_IMM << 6; \
 		assert(TOS_VAL < 32); \
@@ -1615,8 +1620,8 @@ bool Parser::parseThumb(const char *word)
 #define THUMB4(str, op) \
 	else if (W(#str ",")) { \
 		unsigned short insn = 0x4000 | TOP_ ## op; \
-		insn |= POP_TREG << 0; \
-		insn |= POP_TREG << 3; \
+		insn |= POP_TREG() << 0; \
+		insn |= POP_TREG() << 3; \
 		code16(insn); \
 	}
 
@@ -1718,7 +1723,7 @@ bool Parser::parseThumb(const char *word)
 	} else if (W("ldr,") || W("str,") || W("ldrb,") || W("strb,")) {
 		unsigned short insn;
 		unsigned int offset;
-		unsigned int rd = POP_TREG;
+		unsigned int rd = POP_TREG();
 		--asp;
 		assert(TOS_TYPE == ASM_AMODE);
 		switch (TOS_VAL) {
@@ -1790,7 +1795,7 @@ bool Parser::parseThumb(const char *word)
 				if (word[3] == 'b')
 					insn |= 0x400;
 				insn |= TOS_VAL << 6;	// Ro
-				insn |= POP_TREG << 3;	// Rb
+				insn |= POP_TREG() << 3;	// Rb
 				insn |= rd << 0;
 				break;
 
@@ -1800,7 +1805,7 @@ bool Parser::parseThumb(const char *word)
 		code16(insn);
 	} else if (W("ldrh,") || W("strh,")) {
 		unsigned short insn;
-		unsigned int rd = POP_TREG;
+		unsigned int rd = POP_TREG();
 		--asp;
 		assert(TOS_TYPE == ASM_AMODE);
 		if (TOS_VAL == AMODE_PREIND ||
@@ -1812,13 +1817,13 @@ bool Parser::parseThumb(const char *word)
 				insn |= (POP_VAL >> 1) << 6;
 				assert(TOS_VAL < 64);
 			}
-			insn |= POP_TREG << 3;
+			insn |= POP_TREG() << 3;
 		} else if (TOS_VAL == AMODE_PREINDR) {
 			insn = 0x5200;
 			if (word[0] == 'l')
 				insn |= 0x800;
-			insn |= POP_TREG << 6;	// offset
-			insn |= POP_TREG << 3;	// base
+			insn |= POP_TREG() << 6;	// offset
+			insn |= POP_TREG() << 3;	// base
 		} else
 			GLB_error("invalid addressing mode on %s\n", word);
 		insn |= rd << 0;
@@ -1839,7 +1844,7 @@ bool Parser::parseThumb(const char *word)
 		assert(TOS_TYPE == ASM_DIR &&
 		       TOS_VAL == DIR_IAW);
 
-		insn |= POP_TREG << 8;
+		insn |= POP_TREG() << 8;
 		code16(insn);
 	} else if (W("bl,")) {
 		unsigned short insn1 = 0xf000;
@@ -1940,7 +1945,7 @@ short_branch:
 	} else if (W("pop")) {
 		unsigned short insn = 0xbc00;
 		while (asp) {
-			insn |= 1 << POP_TREG;
+			insn |= 1 << POP_TREG();
 		}
 		code16(insn);
 	} else if (W("push")) {
@@ -1961,13 +1966,13 @@ short_branch:
 		code16(insn);
 	} else if (W("literal")) {
 		unsigned short insn = 0x4800;
-		insn |= POP_TREG << 8;
+		insn |= POP_TREG() << 8;
 		literals.prependNew(POP_VAL, out->addr, true);
 		assert(TOS_TYPE == ASM_IMM ||
 		       TOS_TYPE == ASM_OFF);
 		code16(insn);
 	} else if (W("movi")) {
-		unsigned int rd = POP_TREG;
+		unsigned int rd = POP_TREG();
 		unsigned int val = POP_IMM;
 		int lsl;
 		immshift(&val, &lsl);

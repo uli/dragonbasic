@@ -225,6 +225,7 @@ private:
 	bool parseThumb(const char *word);
 
 	unsigned int POP_VAL_TYPE(unsigned int x);
+	unsigned int POP_TREG();
 
 public:
 	Output *out;
