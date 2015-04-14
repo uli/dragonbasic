@@ -58,6 +58,7 @@ and a lot of new features have been added:
 - byte and halfword-sized DATA and READ commands
 - support for a default include path; no need to state the full path anymore
 - allows leading underscores in identifiers
+- implemented GOTO command, making DB deserve the name "BASIC" again
 
 ### Debugging
 
