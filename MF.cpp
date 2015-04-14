@@ -418,7 +418,7 @@ unsigned int Output::addIwram(unsigned int from, int size)
 		from, start, size, iwaddr);
 	start_iwram += size;
 	if (start_iwram >= RT___iwram_start)
-	        GLB_error("IWRAM overflow");
+		GLB_error("IWRAM overflow");
 	return start;
 }
 
@@ -927,19 +927,19 @@ void Output::reloc8(unsigned int addr, unsigned int target)
 
 void Output::registerIwram(Symbol *iwsym)
 {
-        if (currently_iwram) {
-                // Add this word to IWRAM table and get the effective
-                // address in return.  This is the address that we
-                // will use to call this word.
-                iwsym->addr = addIwram(iwsym->addr,
-                                            addr - iwsym->addr);
+	if (currently_iwram) {
+		// Add this word to IWRAM table and get the effective
+		// address in return.  This is the address that we
+		// will use to call this word.
+		iwsym->addr = addIwram(iwsym->addr,
+					    addr - iwsym->addr);
 
-                clearIwram();
+		clearIwram();
 
-                char id[strlen(iwsym->word) + 7];
-                sprintf(id, "%s_iwram", iwsym->word);
-                addSym(id, iwsym->addr);
-        }
+		char id[strlen(iwsym->word) + 7];
+		sprintf(id, "%s_iwram", iwsym->word);
+		addSym(id, iwsym->addr);
+	}
 }
 
 void Parser::code(unsigned int insn)
@@ -1897,8 +1897,8 @@ short_branch:
 
 		codeAsm(dest+1, "r2", "literal");
 		if ((out->ta() & 0xff000000) == 0x03000000)
-		        codeBranch(RT__thumbthunk_iwram, "bl,");
-                else
+			codeBranch(RT__thumbthunk_iwram, "bl,");
+		else
 			codeBranch(RT__thumbthunk, "bl,");
 	} else if (W("bx,")) {
 		unsigned short insn = 0x4700;
@@ -1995,27 +1995,27 @@ short_branch:
 
 void Parser::resolveRelocs(const char *label)
 {
-        // Resolve forward references to this label, if any.
-        for (int i = 0; i < rsp; i++) {
-                if (asm_relocs[i].label &&
-                    !strcmp(asm_relocs[i].label, label)) {
-                        switch (asm_relocs[i].reloc) {
-                        case RELOC_8:
-                                out->reloc8(asm_relocs[i].addr, out->ta());
-                                break;
-                        case RELOC_10:
-                                out->reloc10(asm_relocs[i].addr, out->ta());
-                                break;
-                        case RELOC_24:
-                                out->reloc24(asm_relocs[i].addr, out->ta());
-                                break;
-                        default:
-                                abort();
-                        }
-                        delete asm_relocs[i].label;
-                        asm_relocs[i].label = NULL;
-                }
-        }
+	// Resolve forward references to this label, if any.
+	for (int i = 0; i < rsp; i++) {
+		if (asm_relocs[i].label &&
+		    !strcmp(asm_relocs[i].label, label)) {
+			switch (asm_relocs[i].reloc) {
+			case RELOC_8:
+				out->reloc8(asm_relocs[i].addr, out->ta());
+				break;
+			case RELOC_10:
+				out->reloc10(asm_relocs[i].addr, out->ta());
+				break;
+			case RELOC_24:
+				out->reloc24(asm_relocs[i].addr, out->ta());
+				break;
+			default:
+				abort();
+			}
+			delete asm_relocs[i].label;
+			asm_relocs[i].label = NULL;
+		}
+	}
 }
 
 void Parser::parseAsm(const char *word)
@@ -2337,8 +2337,8 @@ void Parser::codeCallThumb(unsigned int dest, const char *ident)
 {
 	if (thumb) {
 		if ((out->ta() & 0xff000000) != (dest & 0xff000000)) {
-		        if ((out->ta() & 0xff000000) == 0x03000000)
-		                GLB_warning("call from IWRAM to %s in ROM\n", ident);
+			if ((out->ta() & 0xff000000) == 0x03000000)
+				GLB_warning("call from IWRAM to %s in ROM\n", ident);
 			codeBranch(dest, "lcallt");
 		} else
 			codeBranch(dest, "bl,");
@@ -2410,11 +2410,11 @@ void Parser::loadR5(unsigned int num)
 
 void Parser::checkRelocs()
 {
-        for (int i = 0; i < rsp; i++) {
-                if (asm_relocs[i].label)
-                        GLB_error("unresolved symbol %s\n",
-                                  asm_relocs[i].label);
-        }
+	for (int i = 0; i < rsp; i++) {
+		if (asm_relocs[i].label)
+			GLB_error("unresolved symbol %s\n",
+				  asm_relocs[i].label);
+	}
 }
 
 void Parser::parseAll()
@@ -2572,8 +2572,8 @@ parse_next:
 		invalR5();
 		currently_naked = word[1] == 'n';
 		if (getNextWordIf("iwram")) {
-		        DEBUG("iwram TIN word\n");
-		        out->setIwram();
+			DEBUG("iwram TIN word\n");
+			out->setIwram();
 		}
 		const char *ident = getNextWord();
 		sym = symbols.appendNew(out->addr, ident);
@@ -2933,12 +2933,12 @@ handle_const:
 							codeAsm("r0", "pop");
 					} else
 						GLB_error("internal error\n");
-                                } else if (num == 0 && getNextWordIf("+r")) {
-                                        codeAsm("r0", "push");
-                                        codeAsm("r6", "r0", "mov,");
-                                } else if (num < 8 && getNextWordIf("+r")) {
-                                        codeAsm("r0", "push");
-                                        codeAsm(num, "##", "r6", "r0", "add,");
+				} else if (num == 0 && getNextWordIf("+r")) {
+					codeAsm("r0", "push");
+					codeAsm("r6", "r0", "mov,");
+				} else if (num < 8 && getNextWordIf("+r")) {
+					codeAsm("r0", "push");
+					codeAsm(num, "##", "r6", "r0", "add,");
 				} else if (num > 0xff) {
 					if (!can_immrot(num)) {
 						codeAsm("r0", "push");
@@ -3221,7 +3221,7 @@ do_ifwhile:
 	} else if (W("repeat")) {
 		invalR5();
 		if (thumb) {
-		        unsigned int rel = loop_stack[--lpsp];
+			unsigned int rel = loop_stack[--lpsp];
 			codeBranch(loop_stack[--lpsp] - 2, "jmp");
 			out->reloc10(rel, out->ta());
 		} else {
@@ -3256,20 +3256,20 @@ do_ifwhile:
 		codeToArm();
 		codeAsm("sp", "ia!", "lr", "r10", "r9", "r8", "ldm,");
 		codeAsm("lr", "bx,");
-        } else if (W("goto")) {
-                const char *target = getNextWord();
-                if ((sym = getSymbol(target))) {
-                        codeBranch(sym->addr, "b,");
-                } else {
-                        asm_relocs[rsp].label = strdup(target);
-                        asm_relocs[rsp].addr = out->ta();
-                        if (thumb)
-                                asm_relocs[rsp].reloc = RELOC_10;
-                        else
-                                asm_relocs[rsp].reloc = RELOC_24;
-                        rsp++;
-                        codeBranch(out->ta(), "b,");
-                }
+	} else if (W("goto")) {
+		const char *target = getNextWord();
+		if ((sym = getSymbol(target))) {
+			codeBranch(sym->addr, "b,");
+		} else {
+			asm_relocs[rsp].label = strdup(target);
+			asm_relocs[rsp].addr = out->ta();
+			if (thumb)
+				asm_relocs[rsp].reloc = RELOC_10;
+			else
+				asm_relocs[rsp].reloc = RELOC_24;
+			rsp++;
+			codeBranch(out->ta(), "b,");
+		}
 	} else if (out->use_pimp && W("modvblank")) {
 		codeAsm("r0", "push");
 		invalR5();
@@ -3315,24 +3315,24 @@ do_ifwhile:
 		bool small_offset = (sym->lit_addr & 0x00ffffff) < 0x800;
 		if (sym->is_addr) {
 			if (getNextWordIf("@")) {
-			        if (getNextWordIf("a!")) {
-                                        if (!thumb && small_offset) {
-                                                loadR5(sym->lit_addr & 0xff000000);
-                                                codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r1", "ldr,");
-                                        } else {
-                                                loadR5(sym->lit_addr);
-                                                codeAsm("r5", "0@", "r1", "ldr,");
-                                        }
-			        } else {
-                                        codeAsm("r0", "push");
-                                        if (!thumb && small_offset) {
-                                                loadR5(sym->lit_addr & 0xff000000);
-                                                codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
-                                        } else {
-                                                loadR5(sym->lit_addr);
-                                                codeAsm("r5", "0@", "r0", "ldr,");
-                                        }
-                                }
+				if (getNextWordIf("a!")) {
+					if (!thumb && small_offset) {
+						loadR5(sym->lit_addr & 0xff000000);
+						codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r1", "ldr,");
+					} else {
+						loadR5(sym->lit_addr);
+						codeAsm("r5", "0@", "r1", "ldr,");
+					}
+				} else {
+					codeAsm("r0", "push");
+					if (!thumb && small_offset) {
+						loadR5(sym->lit_addr & 0xff000000);
+						codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
+					} else {
+						loadR5(sym->lit_addr);
+						codeAsm("r5", "0@", "r0", "ldr,");
+					}
+				}
 			} else if (getNextWordIf("!")) {
 				if (!thumb && small_offset) {
 					loadR5(sym->lit_addr & 0xff000000);
