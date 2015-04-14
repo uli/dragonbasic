@@ -2127,7 +2127,8 @@ void Parser::parseAsm(const char *word)
 		PUSH_ASM(ASM_COND, COND_NV);
 
 	else if (parseThumb(word) || parseArm(word)) {
-		assert(asp == 0);
+		if (asp != 0)
+			GLB_error("too many operands\n");
 #ifndef NDEBUG
 		unsigned int addr;
 		if (cur_icode)
