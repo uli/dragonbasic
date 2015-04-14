@@ -2550,6 +2550,10 @@ parse_next:
 		sym = symbols.appendNew(out->addr, getNextWord());
 		DEBUG("===start label %s at 0x%x\n", sym->word, sym->addr);
 		thumb = false;
+	} else if (W("clabel")) {
+		sym = symbols.appendNew(out->ta(), getNextWord());
+		DEBUG("===start code label %s at 0x%x\n", sym->word, sym->addr);
+		resolveRelocs(sym->word);
 	} else if (W("local:")) {
 		sym = symbols.appendNew(local_idx, getNextWord());
 		sym->is_const = true;
