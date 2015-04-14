@@ -48,6 +48,10 @@ bool debug_words = false;
 const char *current_file = NULL;
 const char *current_word = NULL;
 unsigned int current_line = 1;
+// The parser skips all whitespace, so at the time an error occurs, the
+// current line may have already been updated.  We therefore keep track
+// what came in last, a newline or actual code.
+bool last_eol = false;
 bool explicit_line = false;
 
 static void GLB_setCurrentFile(const char *f) {
@@ -244,12 +248,17 @@ const char *Parser::_getNextWord()
 	prev_tptr = tptr;
 
 	if (text_mode) {
-		while (*tptr && *tptr != '"')
+		while (*tptr && *tptr != '"') {
+			if (!explicit_line && *tptr == '\n')
+				current_line++;
 			buf[idx++] = *tptr++;
+		}
 		tptr++;
 	} else {
-		while (*tptr && !isspace(*tptr))
+		while (*tptr && !isspace(*tptr)) {
+			last_eol = false;
 			buf[idx++] = tolower(*tptr++);
+		}
 	}
 
 	if (idx == 0)
@@ -262,8 +271,13 @@ const char *Parser::_getNextWord()
 	}
 	else {
 		text_mode = false;
-		while (isspace(*tptr))
+		while (isspace(*tptr)) {
+			if (!explicit_line && *tptr == '\n') {
+				last_eol = true;
+				current_line++;
+			}
 			tptr++;
+		}
 	}
 	buf[idx] = 0;
 
@@ -2476,11 +2490,17 @@ parse_next:
 			GLB_error("missing )\n");
 	} else if (W("\\")) {
 		//printf("skipping ==");
+		last_eol = false;
 		while (*tptr && *tptr != '\n')
 			//printf("%c", *tptr);
 			tptr++;
-		while (isspace(*tptr))
+		while (isspace(*tptr)) {
+			if (!explicit_line && *tptr == '\n') {
+				last_eol = true;
+				current_line++;
+			}
 			tptr++;
+		}
 		//printf("==\n");
 	} else if (W("icode") || W("icode-thumb") || W(":i")) {
 		cur_icode = icodes.appendNew(getNextWord());

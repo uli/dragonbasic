@@ -264,6 +264,8 @@ public:
 extern const char *current_file;
 extern const char *current_word;
 extern unsigned int current_line;
+extern bool last_eol;
+
 #define GLB_error(x ...) do { fprintf(stderr, "ERROR: " x); exit(1); } while (0)
 #define GLB_warning(x ...) do { fprintf(stderr, "WARNING: " x); } while (0)
 
