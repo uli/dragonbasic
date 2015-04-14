@@ -372,6 +372,7 @@ void Compiler::parseFile(const char *filename)
 		parser = new Parser(filename, parser->symbol_head);
 	else
 		parser = new Parser(filename, NULL);
+	emitTin("#FILE\" %s\" ", filename);
 	parser->parseAll();
 }
 
@@ -443,7 +444,7 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 			// are assumed to have been placed on the stack
 			// already, so we only have to reserve space for
 			// local variables.
-			emitTin("%d LPROLOG", 4 * sub_head->num_locals);
+			emitTin("%d LPROLOG ", 4 * sub_head->num_locals);
 		}
 	}
 }
@@ -628,7 +629,7 @@ void Compiler::doDirTitle()
 	BasicObject *bobj;
 
 	bobj = parser->getObjectWithType(OBJ_STR, "\"title\"");
-	emitTin("TITLE\" %s\"", bobj->val.symbolic);
+	emitTin("TITLE\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirRequires()
@@ -636,7 +637,7 @@ void Compiler::doDirRequires()
 	BasicObject *bobj;
 
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	emitTin("REQUIRES\" %s\"", bobj->val.symbolic);
+	emitTin("REQUIRES\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirInclude()
@@ -705,6 +706,7 @@ void Compiler::doDirInclude()
 
 	if (change_dir)
 		GLB_popDir();
+	emitTin("#FILE\" %s\" ", parser->filename);
 }
 
 void Compiler::doDirImport()
@@ -713,7 +715,7 @@ void Compiler::doDirImport()
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#IMPORT");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	emitTin("IMPORT\" %s\"", bobj->val.symbolic);
+	emitTin("IMPORT\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirBitmap()
@@ -722,7 +724,7 @@ void Compiler::doDirBitmap()
 
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
 	checkNotSegment(SEG_INTR | SEG_SUB, "#BITMAP");
-	emitTin("BITMAP\" %s\"", bobj->val.symbolic);
+	emitTin("BITMAP\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirMap()
@@ -731,7 +733,7 @@ void Compiler::doDirMap()
 
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
 	checkNotSegment(SEG_INTR | SEG_SUB, "#MAP");
-	emitTin("MAP\" %s\"", bobj->val.symbolic);
+	emitTin("MAP\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirPalette()
@@ -740,7 +742,7 @@ void Compiler::doDirPalette()
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#PALETTE");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	emitTin("PALETTE\" %s\"", bobj->val.symbolic);
+	emitTin("PALETTE\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirSound()
@@ -749,7 +751,7 @@ void Compiler::doDirSound()
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#SOUND");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	emitTin("SOUND\" %s\"", bobj->val.symbolic);
+	emitTin("SOUND\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirMusic()
@@ -760,7 +762,7 @@ void Compiler::doDirMusic()
 
 	checkNotSegment(SEG_INTR | SEG_SUB, "#MUSIC");
 	bobj = parser->getObjectWithType(OBJ_STR, "\"filename\"");
-	emitTin("MUSIC\" %s\"", bobj->val.symbolic);
+	emitTin("MUSIC\" %s\" ", bobj->val.symbolic);
 }
 
 void Compiler::doDirConstant()
@@ -2178,7 +2180,7 @@ void GLB_main(int argc, char **argv)
 			"Usage: DBC.EXE [-o|-mb|-debug] <sourcefile> <binary>\n", 0,
 			0);
 	compiler.parseFile(argv[num_opts]);
-	compiler.emitTin("#LINE\" %s\" 1\n", argv[num_opts]);
+	compiler.emitTin("#LINE    1 ");
 	compiler.compile();
 	compiler.emitTin("\nENTRY START\n");
 	compiler.emitTin("PROGRAM\" %s\"\n\n", argv[binary_idx]);
