@@ -1385,7 +1385,7 @@ do_imm_ind:
 		insn |= POP_REG;
 		break;
 	case AMODE_IND:
-		insn |= 0x00400000;
+		insn |= 0x01400000;
 		break;
 	default:
 		GLB_error("internal error\n");
