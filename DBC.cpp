@@ -1805,7 +1805,7 @@ void Expression::compileScalarOp()
 		compileOperation(2, "OR ", VAR_SCALAR);
 		break;
 	case OP_NAND:
-		compileOperation(2, "AND ", VAR_SCALAR);
+		compileOperation(2, "NAND ", VAR_SCALAR);
 		break;
 	case OP_NOR:
 		compileOperation(2, "OR ", VAR_SCALAR);
