@@ -43,9 +43,10 @@ code-thumb tile ( screen x y -- a )
 end-code
 
 \ returns the index of a tile (inlined)
-icode gettile ( a -- u )
+icode-thumb gettile ( a -- u )
 	tos 0@ tos ldrh,
-	$fc00 ## tos tos bic,
+	$fc00 v0 movi
+	v0 tos bic,
 end-code
 
 \ sets the index of a tile
