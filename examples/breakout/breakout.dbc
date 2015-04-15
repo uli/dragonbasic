@@ -252,7 +252,7 @@ sub load_level
 	; Count the number of blocks
 	for i = 9 to 28 step 2
 		for j = 2 to 9
-			if peek(tile(board,i,j)) nand &3ff
+			if peek(tile(board,i,j)) and &3ff
 				blocks_left = blocks_left + 1
 			end if
 		next
@@ -327,7 +327,7 @@ sub move_paddle_free
 	next
 
 	; Radomize initial direction of travel
-	ix = (rnd nand 1) + 1
+	ix = (rnd and 1) + 1
 	if ix = 2 then ix = -1
 
 	; Loop until the user presses a button
@@ -460,7 +460,7 @@ sub destroy_block
 	poke t,&2000
 
 	; Erase adjacent block
-	if m nand 1
+	if m and 1
 		poke t+2,&2000
 	else
 		poke t-2,&2000
@@ -476,7 +476,7 @@ sub check_blocks
 	if dx <> 0
 		tx = x + dx:if dx > 0 then tx = tx + 6
 		t = tile(board,tx sr 3,y + 4 sr 3)
-		m = peek(t) nand &3ff
+		m = peek(t) and &3ff
 
 		if m
 			; Erase the block
@@ -489,7 +489,7 @@ sub check_blocks
 	ty = y + dy
 	if dy > 0 then ty = ty + 6
 	t = tile(board,(x + 4) sr 3,ty sr 3)
-	m = peek(t) nand &3ff
+	m = peek(t) and &3ff
 
 	if m
 		; Erase the block
