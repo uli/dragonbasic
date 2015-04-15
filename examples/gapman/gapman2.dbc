@@ -171,7 +171,7 @@ sub create_board
 end sub
 
 sub show_title
-	maketimer 60 : 	starttimer : while clocktimer<60 : loop
+	maketimer 60 : 	starttimer : waittimer 60
 	cleartiles tile(board,0,0),240/8,33
 	loadtiles 3,0,morph_bmp,320
 	loadpal16 bg_palette,2,morph_pal
@@ -184,9 +184,9 @@ sub show_title
 	ordertiles board,0
 
 	fadein
-	maketimer 60 : 	starttimer : while clocktimer<180 : loop
+	maketimer 60 : 	starttimer : waittimer 180
 	fadeout
-	maketimer 60 : 	starttimer : while clocktimer<60 : loop
+	maketimer 60 : 	starttimer : waittimer 60
 
 	cleartiles tile(board,0,0),240/8,33
 	loadtiles 3,0,pactitle_bmp,200
@@ -200,9 +200,9 @@ sub show_title
 	ordertiles board,0
 
 	fadein
-	maketimer 60 : 	starttimer : while clocktimer<180 : loop
+	maketimer 60 : 	starttimer : waittimer 180
 	fadeout
-	maketimer 60 : 	starttimer : while clocktimer<60 : loop
+	maketimer 60 : 	starttimer : waittimer 60
 
 end sub
 
@@ -1003,7 +1003,7 @@ start:
 			print tile(text,12,6),"READY!" : updatetiles board : fadein
 			turnsoundon
 			PLAYMUSIC startgame
-			maketimer 60 : 	starttimer : while clocktimer<260 : loop
+			maketimer 60 : 	starttimer : waittimer 260
 			print tile(text,12,6),"      " : updatetiles board
 
 			maketimer 60 ; set up a timer for basic sound and timer counts
@@ -1061,7 +1061,7 @@ start:
 		updatesprites
 		boardoffset=96 : scrollpos board,0,boardoffset ; position game board to the bottom
 		print tile(text,10,6),"GAME  OVER" : updatetiles board
-		maketimer 60 : 	starttimer : while clocktimer<130 : loop
+		maketimer 60 : 	starttimer : waittimer 130
 		fadeout
 		; Save hiscore if you have beaten the previous hiscore
 		restore sram
