@@ -301,11 +301,11 @@ sub gapmananim
 	if gapmandir=up    : rotatesprite gapman,0  : flipsprite gapman,0,0 : end if ; Point Up
 	if gapmandir=down  : rotatesprite gapman,1  : flipsprite gapman,0,0 : end if ; point down
 
-	tilevalabove =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+0))) NAND %11111111
-	tilevalbelow =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+3))) NAND %11111111
-	tilevalleft  =gettile(tile(board,((gapmanx sr 3)+0),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
-	tilevalright =gettile(tile(board,((gapmanx sr 3)+3),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
-	tilevalcentre=gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
+	tilevalabove =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+0))) AND %11111111
+	tilevalbelow =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+3))) AND %11111111
+	tilevalleft  =gettile(tile(board,((gapmanx sr 3)+0),(((gapmany+boardoffset) sr 3)+1))) AND %11111111
+	tilevalright =gettile(tile(board,((gapmanx sr 3)+3),(((gapmany+boardoffset) sr 3)+1))) AND %11111111
+	tilevalcentre=gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+1))) AND %11111111
 
 	print tile(text,1,0),"SCORE :        "
 	print tile(text,9,0),str$(score)
@@ -351,14 +351,14 @@ sub gapmananim
 			if (tilevalleft <1 or tilevalleft >45) then gapmandir=left
 		end if
 		if key(key_right)
-			tilevalright =gettile(tile(board,((gapmanx sr 3)+2),(((gapmany+boardoffset) sr 3)+1))) NAND %11111111
+			tilevalright =gettile(tile(board,((gapmanx sr 3)+2),(((gapmany+boardoffset) sr 3)+1))) AND %11111111
 			if (tilevalright<1 or tilevalright>45) then gapmandir=right
 		end if
 		if key(key_up)
 			if (tilevalabove<1 or tilevalabove>45) then gapmandir=up
 		end if
 		if key(key_down)
-			tilevalbelow =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+2))) NAND %11111111
+			tilevalbelow =gettile(tile(board,((gapmanx sr 3)+1),(((gapmany+boardoffset) sr 3)+2))) AND %11111111
 			if (tilevalbelow<1 or tilevalbelow>45) then gapmandir=down
 		end if
 	end if
@@ -426,13 +426,13 @@ end sub
 
 sub do_ghosttilevals
 		; Get the tile values from around the ghost
-		gtilevalabove =gettile(tile(board,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)-0)) NAND %11111111
-		gtilevalbelow =gettile(tile(board,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)+2)) NAND %11111111
-		gtilevalleft  =gettile(tile(board,(ghostx sr 3)-0,(ghosty+ghostboardoffset sr 3)+1)) NAND %11111111
-		gtilevalright =gettile(tile(board,(ghostx sr 3)+2,(ghosty+ghostboardoffset sr 3)+1)) NAND %11111111
-		gtilevalcentre=gettile(tile(board,(ghostx sr 3)+0,(ghosty+ghostboardoffset sr 3)+0)) NAND %11111111
+		gtilevalabove =gettile(tile(board,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)-0)) AND %11111111
+		gtilevalbelow =gettile(tile(board,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)+2)) AND %11111111
+		gtilevalleft  =gettile(tile(board,(ghostx sr 3)-0,(ghosty+ghostboardoffset sr 3)+1)) AND %11111111
+		gtilevalright =gettile(tile(board,(ghostx sr 3)+2,(ghosty+ghostboardoffset sr 3)+1)) AND %11111111
+		gtilevalcentre=gettile(tile(board,(ghostx sr 3)+0,(ghosty+ghostboardoffset sr 3)+0)) AND %11111111
 		if ghosteyesonly
-			gtilevalcentre=gettile(tile(gmap,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)+1)) NAND %11111111
+			gtilevalcentre=gettile(tile(gmap,(ghostx sr 3)+1,(ghosty+ghostboardoffset sr 3)+1)) AND %11111111
 		end if
 
 		if gtilevalabove>=46 then gtilevalabove=0 ; make ghost ignore pac pills
