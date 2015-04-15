@@ -2775,6 +2775,10 @@ parse_next:
 	} else if (W("and")) {
 		codeAsm("r2", "pop");
 		codeAsm("r2", "r0", "and,");
+	} else if (W("nand")) {
+		codeAsm("r2", "pop");
+		codeAsm("r2", "r0", "and,");
+		codeAsm("r0", "r0", "mvn,");
 	} else if (W("or")) {
 		codeAsm("r2", "pop");
 		codeAsm("r2", "r0", "orr,");
