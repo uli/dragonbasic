@@ -398,6 +398,7 @@ end sub
 
 start:
 	;Play the background music and initialise timer for 60 times a second
+	turnsoundon
 	playmusic wave
 	;maketimer 60
 	;starttimer
