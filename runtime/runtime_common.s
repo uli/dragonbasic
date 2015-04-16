@@ -39,10 +39,19 @@
 _tin_entry:
 	sub	r7, sp, #0x200
 
+	// Clear OAM and BG staging memory.
+	mov	r1, #0x3000000
+	orr	r1, r1, #0x600
+	mov	r2, #0
+_oam_loop:
+	subs	r1, r1, #4
+	str	r2, [r1]
+	cmp	r1, #0x3000000
+	bne	_oam_loop
+
 	// Set user interrupt vectors to NOP so there won't be any bad
 	// surprises when enabling interrupts.
 	adr	r5, _empty
-	mov	r1, #0x3000000
 	orr	r1, r1, #0x600
 	str	r5, [r1, #0x10]
 	str	r5, [r1, #0x14]
