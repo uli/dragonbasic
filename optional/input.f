@@ -26,12 +26,12 @@ code-thumb input ( n -- )
 end-code
 
 \ return the status of a button (0=released)
-code-thumb key ( n1 -- n2 )
-	$4000130 v1 LITERAL	\ REGISTERS + $130
-	v1 0@ v2 ldrh,
+icode-thumb key ( n1 -- n2 )
+	REGISTERS v1 movi
+	$f8 ## v1 add,		\ REGISTERS + $f8
+	v1 $38 #( v2 ldrh,	\ REGISTERS + $130
 	tos v2 and,
 	v2 tos eor,
-	ret
 end-code
 
 \ return the status of all buttons (0=released)
