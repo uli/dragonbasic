@@ -419,8 +419,7 @@ code-thumb bumpsprites ( sprite1 sprite2 -- flag )
 	tos r7 mov,
 	
 	\ get address of size table
-	$30 ## v0 mov,
-	20 ## v0 v0 lsl,	\ IWRAM
+	IWRAM v0 movi
 	__sizes tos LITERAL
 	tos v5 mov,
 	
@@ -459,22 +458,21 @@ code-thumb bumpsprites ( sprite1 sprite2 -- flag )
 
 	\ make sure that negative values will collide
 	240 ## v2 cmp,
-	8 #offset lt? b,
-	$2 ## tos mov,
-	8 ## tos tos lsl,	\ $200
+	__posx1 lt? b,
+	$200 tos movi
 	tos v2 v2 sub,
 
+l: __posx1
 	160 ## a cmp,
-	8 #offset lt? b,
-	$1 ## tos mov,
-	8 ## tos tos lsl,	\ $100
+	__posy1 lt? b,
+	$100 tos movi
 	tos a a sub,
 
 	\ get the size of sprite 2 (V7->[V5,V3])
+l: __posy1
 	r7 0@ r6 ldrh,
 	r7 2 #( v0 ldrh,
-	$c0 ## tos mov,
-	8 ## tos tos lsl,	\ $c000
+	$c000 tos movi
 	tos r6 and,
 	12 ## r6 r6 lsr,
 	14 ## v0 v0 lsr,
@@ -492,34 +490,30 @@ code-thumb bumpsprites ( sprite1 sprite2 -- flag )
 	r7 0@ r7 ldrh,
 	$ff ## tos mov,
 	tos r7 and,
-	$fe ## tos mov,
-	8 ## tos tos lsl,	\ $fe00
+	$fe00 tos movi
 	tos r6 bic,
 
 	\ make sure that negative values will collide
 	240 ## r6 cmp,
-	8 #offset lt? b,
-	$2 ## tos mov,
-	8 ## tos tos lsl,	\ $200
+	__posx2 lt? b,
+	$200 tos movi
 	tos r6 r6 sub,
 
+l: __posx2
 	160 ## r7 cmp,
-	8 #offset lt? b,
-	$1 ## tos mov,
-	8 ## tos tos lsl,	\ $100
+	__posy2 lt? b,
+	$100 tos movi
 	tos r7 r7 sub,
 
 	\ set collision to false
+l: __posy2
 	0 ## tos mov,
 
 	\ test x direction (V4 > V2+V0 = fail)
 	v6 w mov,
 	v2 w w add,
 	w r6 cmp,
-	6 #offset le? b,
-	l: __ret
-	r6 r7 pop
-	ret \ fail
+	__ret gt? b,
 
 	\ test x direction (V4+V5 < V2 = fail)
 	v0 r6 w add,
@@ -537,9 +531,10 @@ code-thumb bumpsprites ( sprite1 sprite2 -- flag )
 	w a cmp,
 
 	\ success
-	6 #offset gt? b,
+	__ret gt? b,
 	0 ## tos mov,
 	tos tos mvn,
+l: __ret
 	r6 r7 pop
 	ret
 end-code
