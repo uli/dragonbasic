@@ -178,6 +178,7 @@ start:
 	; the music until we stop it with STOPMUSIC. It takes a
 	; single argument - the address of the WAV file.
 
+	turnsoundon
 	playmusic music
 
 	while
