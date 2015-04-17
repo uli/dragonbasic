@@ -430,6 +430,7 @@ void Output::codeIwramTable()
 	alignDword();
 	patch32(RT__tin_entry_p + 4, addr);
 	for (unsigned int i = 0; i < iwptr; i++) {
+		DEBUG("IT 0x%x -> 0x%x (%d)\n", iwram[i].from, iwram[i].to, iwram[i].size);
 		emitDword(iwram[i].from);
 		emitDword(iwram[i].to);
 		emitDword(iwram[i].size);
