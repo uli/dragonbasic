@@ -12,12 +12,12 @@
 
 DIM i,j
 
-INTERRUPT raster
+INTERRUPT iwram raster
 	INC i
 	setpalentry BG_PALETTE, 0, 0, i
 EXIT
 
-INTERRUPT rastcol
+INTERRUPT iwram rastcol
 	INC j
 	IF key(KEY_A) THEN DEC j, 2
 	i = j
