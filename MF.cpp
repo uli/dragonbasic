@@ -874,6 +874,11 @@ void Output::reloc24(unsigned int addr, unsigned int target)
 {
 	unsigned int insn;
 	long cur = ftell(fp);
+	if (addr < 0x8000000) {
+		// Translate from IWRAM to ROM address.
+		addr += this->addr - iwaddr;
+		target += this->addr - iwaddr;
+	}
 	fseek(fp, addr - 0x8000000, SEEK_SET);
 	fread(&insn, 1, 4, fp);
 
