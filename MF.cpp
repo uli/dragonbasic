@@ -2166,7 +2166,8 @@ void Parser::parseAsm(const char *word)
 #ifndef NDEBUG
 		unsigned int addr;
 		if (cur_icode)
-			addr = cur_icode->cp - cur_icode->code;
+			addr = cur_icode->cp - cur_icode->code -
+			       (thumb ? 2 : 4);
 		else
 			addr = old_addr;
 		DEBUG("%07X  ", addr);
