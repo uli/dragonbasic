@@ -1175,10 +1175,10 @@ unsigned int Parser::POP_VAL_TYPE(unsigned int x) {
 }
 #define POP_REG POP_VAL_TYPE(ASM_REG)
 unsigned int Parser::POP_TREG() {
-        --asp;
-        if (TOS_TYPE != ASM_REG || TOS_VAL > 8)
-                GLB_error("lower register expected\n");
-        return TOS_VAL;
+	--asp;
+	if (TOS_TYPE != ASM_REG || TOS_VAL > 8)
+		GLB_error("lower register expected\n");
+	return TOS_VAL;
 }
 #define POP_IMM POP_VAL_TYPE(ASM_IMM)
 
@@ -2400,7 +2400,6 @@ const char *op2cond(const char *word, bool invert)
 
 void Parser::loadR5(unsigned int num)
 {
-
 	if (!r5_const || r5 != num) {
 		if (r5_const && num > r5 && num - r5 < 0x100) {
 			DEBUG("loaded r5 with 0x%x by adding 0x%x\n", num, num - r5);
@@ -3295,10 +3294,10 @@ do_ifwhile:
 		codeAsm("lr", "bx,");
 		literals.code(out);
 		if (iwsym) {
-                        out->registerIwram(iwsym);
-                        iwsym->lit_addr = iwsym->addr;
-                }
-                GLB_setCurrentWord(NULL);
+			out->registerIwram(iwsym);
+			iwsym->lit_addr = iwsym->addr;
+		}
+		GLB_setCurrentWord(NULL);
 	} else if (W("goto")) {
 		const char *target = getNextWord();
 		if ((sym = getSymbol(target))) {
