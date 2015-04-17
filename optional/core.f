@@ -80,14 +80,10 @@ end-code
 code-thumb copy ( to from u -- )
 	v0 v1 pop
 	tos tos tst,
+	__end eq? b,
 	
 	\ loop
 	l: __copy
-	
-	\ if <= 0 then return
-	6 #offset gt? b,
-	tos pop
-	ret
 	
 	\ transfer
 	v0 0@ w ldrh,
@@ -97,7 +93,12 @@ code-thumb copy ( to from u -- )
 	
 	\ decrement and loop
 	2 ## tos sub,	\ subs, actually
-	__copy b,
+	\ if > 0 then continue
+	__copy gt? b,
+
+l: __end
+	tos pop
+	ret
 end-code
 
 \ erase bytes at an address
