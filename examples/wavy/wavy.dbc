@@ -215,7 +215,7 @@ datab 00,10,00,00,11,10,00,10,12,00,00,00,00,10,00,00,00,00,10,00,10,12,00,11,10
 datab 00,10,10,10,10,13,00,14,10,10,10,13,00,13,00,00,00,00,14,00,14,10,10,10,13,00,00,13,00,00
 datab 00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00
 
-sub update_dragons
+sub iwram update_dragons
 	positionsprite dragon1,40+(myval1/8),40+(myval2/8)
 	positionsprite dragon2,168+(myval1/8),40+(myval2/8)
 	positionsprite dragon3,40-(myval1/8),88-(myval2/8)
@@ -224,7 +224,7 @@ end sub
 
 ;Wave bootlegger logo
 ;look up offset table, and posiiton sprite by offset, then increment and repeat for each letter
-sub anim_bootlegger
+sub iwram anim_bootlegger
 	local offset, i
 	restore offsets + anim_frame - 1
 
@@ -327,7 +327,7 @@ sub init_bluebar
 end sub
 
 ;Routine to bounce the copper bars
-sub update_bars
+sub iwram update_bars
 	local i
 	for i = 0 to 3
 		positionsprite redbar[i], i*64, r_ypos
