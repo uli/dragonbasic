@@ -302,7 +302,7 @@ code-thumb iwram /playmusic ( -- )
 	\ load sound samples left
 	r5 4 #( r2 ldr,
 	1 ## r2 sub,
-	20 #offset pl? b,	\ XXX: Adjust offset when changing anything!
+	__write_back pl? b,
 	0 ## r3 mov,
 
 	\ stop dma tranfer to reset source address
@@ -319,8 +319,8 @@ code-thumb iwram /playmusic ( -- )
 	r0 0@ r2 ldr,
 	r4 $44 #( r1 str,
 
-	\ bpl jumps here
 	\ write address and samples back
+l: __write_back
 	r5 4 #( r2 str,
 	
 	\ done
