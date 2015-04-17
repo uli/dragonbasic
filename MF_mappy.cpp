@@ -314,7 +314,7 @@ int Decode(const char *filename,Output *out) {
 			out->emitDword(0);
 			anim_ptr = out->addr;
 			out->emitDword(0);
-			fprintf(stderr, "layer at 0x%x\n", out->addr);
+			DEBUG("layer at 0x%x\n", out->addr);
 			DecodeBODY((short *)block,tagLen,out);
                         if (anim_addr) {
                                 out->alignDword();
