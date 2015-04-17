@@ -139,23 +139,20 @@ end-code
 
 \ return the x coordinate of a sprite
 code-thumb spritex ( sprite -- x )
-	$30 ## w mov,
-	20 ## w w lsl,	\ IWRAM
+	IWRAM w movi
 	3 ## tos tos lsl,
 	w tos tos add,
 	tos 2 #( tos ldrh,
 	
 	\ x >= 240 then negate
-	$fe ## v0 mov,
-	8 ## v0 v0 lsl,	\ $fe00
+	$fe00 v0 movi
 	v0 tos bic,
-	$f0 ## tos cmp,
-	8 #offset lt? b,
-	$2 ## v0 mov,
-	8 ## v0 v0 lsl,
+	240 ## tos cmp,
+	__done lt? b,
+	$200 v0 movi
 	v0 tos tos sub,
 	
-	\ done
+l: __done
 	ret
 end-code
 
