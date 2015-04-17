@@ -532,8 +532,11 @@ void Output::emitDword(const unsigned int dword)
 
 void Output::alignDword()
 {
-	while(addr & 3)
+	while(addr & 3) {
 		emitByte(0);
+		if (currently_iwram)
+			iwaddr++;
+	}
 }
 
 void Output::emitWord(const unsigned short word)
