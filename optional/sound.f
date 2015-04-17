@@ -292,10 +292,6 @@ end-code
 \ interrupt handler for playmusic
 code-thumb iwram /playmusic ( -- )
 	tothumb			\ interrupt handlers are always called as ARM
-	$40 ## r4 mov,
-	20 ## r4 r4 lsl,
-	$80 ## r4 add,		\ $4000080
-
 	\ address of sound data -> R5
 	$3000600 r5 LITERAL
 
@@ -303,6 +299,9 @@ code-thumb iwram /playmusic ( -- )
 	r5 4 #( r2 ldr,
 	1 ## r2 sub,
 	__write_back pl? b,
+
+	$4000000 r4 movi
+	$80 ## r4 add,		\ $4000080
 	0 ## r3 mov,
 
 	\ stop dma tranfer to reset source address
