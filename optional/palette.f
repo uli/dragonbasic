@@ -66,13 +66,12 @@ code-thumb makepalette ( pal -- )
 	ret
 end-code
 
-code-thumb getpalentry ( pal index entry -- color )
+icode-thumb getpalentry ( pal index entry -- color )
 	v1 v2 pop
 	5 ## v1 v1 lsl,
 	v1 v2 v2 add,
 	2 ## tos tos lsl,
 	tos v2 +( tos ldrh,
-	ret
 end-code
 
 code-thumb setpalentry ( pal index entry color -- )
