@@ -1082,6 +1082,8 @@ void Compiler::doCmdLocal()
 
 	do {
 		bobj = parser->getObjectWithType(OBJ_IDENT, "Identifier");
+		if (bobj->vtype == VAR_ARRAY)
+			GLB_error(ERR_TYPE_MISMATCH);
 		sub_head->addLocal(bobj->val.symbolic, bobj->vtype);
 		addSubLocal(bobj->val.symbolic, bobj->vtype);
 	} while (parser->requireRop(ROP_COMMA));
