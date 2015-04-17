@@ -432,8 +432,7 @@ code-thumb bumpsprites ( sprite1 sprite2 -- flag )
 	\ get the size of sprite 1 (V6->[V0,V1])
 	a 0@ r6 ldrh,
 	a 2 #( v0 ldrh,
-	$c0 ## tos mov,
-	8 ## tos tos lsl,	\ $c000
+	$c000 tos movi
 	tos r6 and,
 	12 ## r6 r6 lsr,
 	14 ## v0 v0 lsr,
@@ -541,12 +540,9 @@ end-code
 
 \ copy all updated sprite data from IWRAM to OAM
 code-thumb updatesprites ( -- )
-	$30 ## v1 mov,
-	20 ## v1 v1 lsl,	\ IWRAM
-	$70 ## v2 mov,
-	20 ## v2 v2 lsl,	\ OAM
-	$40 ## v0 mov,
-	20 ## v0 v0 lsl,	\ REGISTERS
+	IWRAM v1 movi
+	$7000000 v2 movi	\ OAM
+	REGISTERS v0 movi
 	$d0 ## v0 add,		\ REGISTERS + $d0
 
 	\ setup dma3 transfer addresses
