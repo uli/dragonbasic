@@ -2392,11 +2392,15 @@ void Parser::codeCallThumb(unsigned int dest, const char *ident)
 void Parser::codeCallArm(unsigned int dest)
 {
 	if (thumb) {
-		// Worst. Instruction set. Ever.
-		codeToArm();
-		codeAsm("1", "##", "pc", "lr", "add,");
-		codeBranch(dest, "b,");
-		thumb = true;
+		if ((out->ta() & 0xff000000) != (dest & 0xff000000))
+			codeBranch(dest, "lcalla");
+		else {
+			// Worst. Instruction set. Ever.
+			codeToArm();
+			codeAsm("1", "##", "pc", "lr", "add,");
+			codeBranch(dest, "b,");
+			thumb = true;
+		}
 	} else {
 		codeBranch(dest, "bl,");
 	}
