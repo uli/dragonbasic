@@ -33,10 +33,10 @@
 ; Global data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-dim bg_x,level,last,score,bonus,extra
-dim ix,dx,dy,x,y,t,m,pts,dead,ptr,done
+dim level,score,bonus,extra
+dim ix,dx,dy,x,y,t,m,pts,dead
 dim speed,chain,best_chain,paddles_left
-dim blocks_left,i,j,score$,tx,ty,choose
+dim blocks_left,score$
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Game
@@ -44,6 +44,7 @@ dim blocks_left,i,j,score$,tx,ty,choose
 
 ; Creates the paralax background
 sub create_bg
+	local i
 	enabletiles bg,bg,1,0
 
 	; Load tile data
@@ -62,6 +63,7 @@ end sub
 
 ; Creates the text background
 sub create_text
+	local i, j
 	enabletiles text,text,2,0
 
 	; Load tiles after paralax tiles
@@ -81,6 +83,7 @@ end sub
 
 ; Creates the board & blocks
 sub create_board
+	local i, j
 	enabletiles board,board,3,0
 
 	; Load tiles
@@ -137,6 +140,7 @@ end sub
 
 ; Shows the credits
 sub credits
+	local i
 	; Print the credits offscreen
 	print tile(text,9,20),"Breakout"
 	print tile(text,9,21),"Dragon BASIC"
@@ -164,6 +168,7 @@ end sub
 
 ; Creates the title screen
 sub title
+	local choose, done
 	; Loop forever
 	while
 		print tile(text,11,5),"B R E A K O U T"
@@ -208,6 +213,8 @@ end sub
 
 ; Loads the next level
 sub load_level
+	local i, j
+	local ptr
 	level = level + 1
 	blocks_left = 0
 
@@ -317,6 +324,7 @@ end sub
 
 ; Lets the user change initial position of paddle
 sub move_paddle_free
+	local i
 	; Move the paddle & ball into place
 	for i = -32 to mx-16 step 4
 		vblank:updatesprites
@@ -472,6 +480,7 @@ end sub
 
 ; Checks for collision with a block
 sub check_blocks
+	local tx, ty
 	; Left/right blocks
 	if dx <> 0
 		tx = x + dx:if dx > 0 then tx = tx + 6
@@ -565,7 +574,8 @@ sub next_level
 end sub
 
 ; Entry point
-start:
+sub start
+	local i
 	graphics 0,true
 	turnsoundon
 
@@ -632,3 +642,4 @@ start:
 		; Check for last block destroyed
 		if blocks_left = 0 then next_level
 	loop
+end sub
