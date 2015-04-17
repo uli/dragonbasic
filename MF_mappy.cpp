@@ -329,7 +329,9 @@ int Decode(const char *filename,Output *out) {
 		        DecodeANDT(block, tagLen, out);
 		}
 		else {
-			GLB_warning("code %x (%d bytes) skipped\n",tag,tagLen);
+			GLB_warning("code %c%c%c%c (%d bytes) skipped\n",
+				    tag >> 24, tag << 8 >> 16,
+				    tag << 16 >> 16, tag & 0xff, tagLen);
 			free(block);
 		}
 	}
