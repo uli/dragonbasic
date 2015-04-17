@@ -51,10 +51,10 @@ code-thumb stopsound ( -- )
 	
 	\ turn off DMA 2 interrupt in IE
 	$f4 ## v0 add,			\ $40001c4
-	v0 $3e #( w ldrh,		\ $4000200
+	v0 $3c #( w ldrh,		\ $4000200
 	$400 v2 movi
 	v2 w bic,
-	v0 $3e #( w strh,		\ $4000200
+	v0 $3c #( w strh,		\ $4000200
 
 	\ done
 	ret
