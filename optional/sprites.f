@@ -242,30 +242,33 @@ end-code
 code-thumb iwram positionsprite ( sprite x y -- )
 	v1 v2 pop
 
-	IWRAM w LITERAL
+	IWRAM w movi
 	3 ## v2 v2 lsl,
 	v2 w v2 add,
 	
 	\ fix position
-	$100 w LITERAL
+	$100 w movi
 	0 ## tos cmp,
-	4 #offset ge? b,
+	__posy ge? b,
 	w tos tos add,
+l: __posy
+
 	0 ## v1 cmp,
-	6 #offset ge? b,
+	__posx ge? b,
 	w v1 v1 add,
 	w v1 v1 add,
-	
+l: __posx
+
 	\ y position
 	v2 0@ w ldrh,
-	$ff00 v0 LITERAL
+	$ff00 v0 movi
 	v0 w and,
 	tos w orr,
 	v2 0@ w strh,
 	
 	\ x position
 	v2 2 #( w ldrh,
-	$fe00 v0 LITERAL
+	$fe00 v0 movi
 	v0 w and,
 	v1 w orr,
 	v2 2 #( w strh,
