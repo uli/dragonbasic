@@ -2478,7 +2478,7 @@ void Parser::parseAll()
 	const char *cond;
 
 parse_next:
-	if (thumb && out->addr - word_start > 0x380 && literals.next) {
+	if (thumb && out->addr - word_start > 0x320 && literals.next) {
 		unsigned int branch = out->addr;
 		code16(0);
 		literals.code(out);
