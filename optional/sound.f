@@ -278,37 +278,33 @@ code-thumb playsound ( a -- )
 end-code
 
 \ interrupt handler for playmusic
-code-thumb iwram /playmusic ( -- )
-	tothumb			\ interrupt handlers are always called as ARM
-	\ address of sound data -> R5
-	$3000600 r5 LITERAL
+code iwram /playmusic ( -- )
+	IWRAM r5 movi
 
 	\ load sound samples left
-	r5 4 #( r2 ldr,
-	16 ## r2 sub,
+	r5 $604 #( r2 ldr,
+	16 ## r2 r2 s! sub,
 	__write_back pl? b,
 
-	$4000000 r4 movi
-	$80 ## r4 add,		\ $4000080
+	REGISTERS r4 movi
 	0 ## r3 mov,
 
 	\ stop DMA transfer to reset source address
-	r4 $44 #( r1 ldr,
-	r4 $44 #( r3 str,
-	r4 $20 #( r3 str, \ clear fifo a
+	r4 $c4 #( r1 ldr,
+	r4 $c4 #( r3 str,
+	r4 $a0 #( r3 str,		\ clear fifo a
 
 	\ loop music by resetting address and samples
-	r5 0@ r0 ldr,
-	r4 $3c #( r0 str,
+	r5 $600 #( r0 ldr,
+	r4 $bc #( r0 str,		\ DMA1SAD
 
 	\ restart the DMA transfer
-	4 ## r0 sub,
-	r0 0@ r2 ldr,
-	r4 $44 #( r1 str,
+	r0 -4 #( r2 ldr,
+	r4 $c4 #( r1 str,
 
 	\ write address and samples back
 l: __write_back
-	r5 4 #( r2 str,
+	r5 $604 #( r2 str,
 	
 	\ done
 	ret
