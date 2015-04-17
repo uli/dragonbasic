@@ -15,11 +15,10 @@ icode-thumb count ( a -- a+1 u )
 end-code
 
 \ resize the length of a string
-code-thumb resize ( a u -- )
+icode-thumb resize ( a u -- )
 	w pop
 	w 0@ tos strb,
 	tos pop
-	ret
 end-code
 
 \ map a string to a screenblock
