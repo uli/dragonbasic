@@ -74,14 +74,13 @@ icode-thumb getpalentry ( pal index entry -- color )
 	tos v2 +( tos ldrh,
 end-code
 
-code-thumb setpalentry ( pal index entry color -- )
+icode-thumb setpalentry ( pal index entry color -- )
 	v0 v1 v2 pop
 	5 ## v1 v1 lsl,
 	1 ## v0 v0 lsl,
 	v1 v0 v0 add,
 	v2 v0 +( tos strh,
 	tos pop
-	ret
 end-code
 
 code-thumb rotatepal16 ( pal index -- )
