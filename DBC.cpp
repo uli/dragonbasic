@@ -2120,6 +2120,13 @@ int GLB_parseOneOption(int optind, char **argv)
 	return next;
 }
 
+static void GLB_usage()
+{
+	GLB_failWithMbox(
+		"Usage: DBC.EXE [-o|-mb|-debug] <sourcefile> [<binary>]\n", 0,
+		0);
+}
+
 int GLB_parseAllOptions(int *optind, char **argv)
 {
 	int next;
@@ -2134,7 +2141,7 @@ int GLB_parseAllOptions(int *optind, char **argv)
 		break;
 	}
 	if (i == *optind)
-		GLB_error(ERR_NO_SOURCE);
+		GLB_usage();
 	return i;
 }
 
@@ -2176,24 +2183,34 @@ void GLB_main(int argc, char **argv)
 {
 	Compiler compiler;
 	char FileName[256];
+	char outfile[256];
 	int num_opts;
 	int binary_idx;
 
 	gCompiler = &compiler;
 	num_opts = GLB_parseAllOptions(&argc, argv);
 	binary_idx = num_opts + 1;
-	if (num_opts + 1 >= argc)
-		GLB_failWithMbox(
-			"Usage: DBC.EXE [-o|-mb|-debug] <sourcefile> <binary>\n", 0,
-			0);
+	if (binary_idx < argc)
+		strcpy(outfile, argv[binary_idx]);
+	else {
+		strcpy(outfile, argv[num_opts]);
+		char *dot = strrchr(outfile, '.');
+		if (dot)
+			*dot = 0;
+		strcat(outfile, ".gba");
+	}
+
+	if (num_opts + 1 > argc)
+		GLB_usage();
+
 	compiler.parseFile(argv[num_opts]);
 	compiler.emitTin("#LINE    1 ");
 	compiler.compile();
 	compiler.emitTin("\nENTRY START\n");
-	compiler.emitTin("PROGRAM\" %s\"\n\n", argv[binary_idx]);
+	compiler.emitTin("PROGRAM\" %s\"\n\n", outfile);
 	sprintf(FileName, "~a.out");
 	compiler.writeOutput(FileName);
-	GLB_runMF(FileName, argv[binary_idx]);
+	GLB_runMF(FileName, outfile);
 }
 
 #ifdef __WIN32__
