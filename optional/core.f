@@ -51,7 +51,7 @@ variable .idata
 \ transfer from data pointer to local address register
 :i >a ( -- ) .idata @ a! ;
 
-:n a> ( -- ) a@ .idata ! ;
+:i a> ( -- ) a@ .idata ! ;
 
 \ allocate bytes of data on the return stack
 code-thumb r-alloc ( u -- a )
