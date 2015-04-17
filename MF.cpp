@@ -748,11 +748,16 @@ void Output::emitSound(const char *wav)
 		emitByte(sample / 256);
 		count++;
 	}
+	if (count & 15) {
+		GLB_warning("sample count not a multiple of 16, padding\n");
+		while (count & 15) {
+			emitByte(sample / 256);
+			count++;
+		}
+	}
 
+	DEBUG("end samples 0x%x\n", addr);
 	patch32(size_addr, count);
-
-	// XXX: looks like BUG_FOR_BUG...
-	emitByte(0x80);
 
 	alignDword();
 }
