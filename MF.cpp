@@ -2192,6 +2192,14 @@ void Parser::parseAsm(const char *word)
 		PUSH_ASM(ASM_IMM, 0x24);
 	} else if (W("int_t2")) {
 		PUSH_ASM(ASM_IMM, 0x28);
+	} else if (W("int_d0")) {
+		PUSH_ASM(ASM_IMM, 0x2c);
+	} else if (W("int_d1")) {
+		PUSH_ASM(ASM_IMM, 0x30);
+	} else if (W("int_d2")) {
+		PUSH_ASM(ASM_IMM, 0x34);
+	} else if (W("int_d3")) {
+		PUSH_ASM(ASM_IMM, 0x38);
 	} else if (W("iwram")) {
 		PUSH_ASM(ASM_IMM, 0x3000000);
 	} else if (W("string_ring")) {
