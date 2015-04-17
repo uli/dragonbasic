@@ -60,6 +60,10 @@ _oam_loop:
 	str	r5, [r1, #0x20]
 	str	r5, [r1, #0x24]
 	str	r5, [r1, #0x28]
+	str	r5, [r1, #0x2c]
+	str	r5, [r1, #0x30]
+	str	r5, [r1, #0x34]
+	str	r5, [r1, #0x38]
 
 	ldr	r5, _tin_iwram_table_p
 	cmp	r5, #0
@@ -142,6 +146,18 @@ irq_handler:
 	add	lr, pc, #4
 	tst	r10, #0x0020
 	ldrne	pc, [r8, #40]
+	add	lr, pc, #4
+	tst	r10, #0x0100
+	ldrne	pc, [r8, #44]
+	add	lr, pc, #4
+	tst	r10, #0x0200
+	ldrne	pc, [r8, #48]
+	add	lr, pc, #4
+	tst	r10, #0x0400
+	ldrne	pc, [r8, #52]
+	add	lr, pc, #4
+	tst	r10, #0x0800
+	ldrne	pc, [r8, #56]
 
 	orr	r8, r9, #0x200
 	strh	r10, [r8, #2]

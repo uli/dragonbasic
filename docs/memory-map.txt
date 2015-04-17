@@ -8,7 +8,7 @@ IWRAM
 $3000000 - $30003ff	OAM staging buffer
 $3000400 - $30005ff	BG register staging buffer
 $3000600 - $300060f	Sound data
-$3000610 - $300062c	User interrupt vectors
+$3000610 - $300063b	User interrupt vectors
 
 $3000ffe - $3000fff	Thumb thunking stub
 $3001000 - $3001fff	TIN IWRAM code
