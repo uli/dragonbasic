@@ -1479,10 +1479,15 @@ bool Parser::parseArm(const char *word)
 		if (word[1] == 'l')
 			insn |= 0x01000000;
 		CODE_COND;
-		unsigned int dest = POP_VAL_TYPE(ASM_OFF);
-		DEBUG("asm branch from 0x%x to 0x%x\n", out->addr, dest);
-		assert(can_branch(out->addr, dest));
-		code(insn | (((dest - out->addr - 8) >> 2) & 0x00ffffff));
+		unsigned int dest = POP_VAL;
+		assert(TOS_TYPE == ASM_RELOC || TOS_TYPE == ASM_OFF);
+		if (TOS_TYPE == ASM_RELOC) {
+			asm_relocs[dest].reloc = RELOC_24;
+			dest = out->ta();
+		}
+		DEBUG("asm branch from 0x%x to 0x%x\n", out->ta(), dest);
+		assert(can_branch(out->ta(), dest));
+		code(insn | (((dest - out->ta() - 8) >> 2) & 0x00ffffff));
 	} else if (W("bx,")) {
 		unsigned insn = 0x012fff10;
 		CODE_COND;
