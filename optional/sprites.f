@@ -158,8 +158,7 @@ end-code
 
 \ return the y coordinate of a sprite
 code-thumb spritey ( sprite -- y )
-	$30 ## w mov,
-	20 ## w w lsl,	\ IWRAM
+	IWRAM w movi
 	3 ## tos tos lsl,
 	w tos tos add,
 	tos 0@ tos ldrh,
@@ -167,12 +166,12 @@ code-thumb spritey ( sprite -- y )
 	\ y >= 160 then negate
 	$ff ## v0 mov,
 	v0 tos and,
-	$a0 ## tos cmp,
-	6 #offset lt? b,
+	160 ## tos cmp,
+	__done lt? b,
 	$80 ## tos sub,
 	$80 ## tos sub,
 	
-	\ done
+l: __done
 	ret
 end-code
 
