@@ -205,16 +205,16 @@ code-thumb /playsound ( -- )
 	r4 0@ r0 ldr,
 	r4 4 #( r2 ldr,
 	1 ## r2 r2 sub,		\ subs, actually
-	10 #offset pl? b,	\ XXX: adjust offset when changing anything!
+	__write_back pl? b,
 	0 ## r0 mov,
 	
 	\ stop dma 2 transfer and timer 1 if done
 	r1 $30 #( r0 str,	\ $40000d0
 	r3 $4 #( r0 str,	\ $4000104
 	r1 $4 #( r0 str,	\ $40000a4
-	
+
 	\ write address and samples back
-	\ bpl jumps here
+l: __write_back
 	r4 ia! r0 r2 stm,
 	
 	\ done
