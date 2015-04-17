@@ -185,38 +185,26 @@ code-thumb playdrum ( length freq step -- )
 	ret
 end-code
 
-\ address of playsound handler
-label (playsound-handler)
-
 \ interrupt handler for playsound
-code-thumb /playsound ( -- )
-	tothumb
-
-	\ 0x40000a0 -> R1, 0x4000100 -> R3
-	$40 ## r1 mov,
-	20 ## r1 r1 lsl,
-	$a0 ## r1 add,		\ $40000a0
-	r1 r3 mov,
-	$60 ## r3 add,		\ $4000100
-
-	\ address of sound data -> R4
-	$3000608 r4 LITERAL
+code iwram /playsound ( -- )
+	IWRAM r4 movi
 
 	\ load sound samples and process
-	r4 0@ r0 ldr,
-	r4 4 #( r2 ldr,
-	16 ## r2 sub,		\ subs, actually
+	r4 $60c #( r2 ldr,
+	16 ## r2 r2 s! sub,
 	__write_back pl? b,
+
+	REGISTERS r1 movi
 	0 ## r0 mov,
 	
 	\ stop DMA 2 transfer and timer 1 if done
-	r1 $30 #( r0 str,	\ $40000d0
-	r3 $4 #( r0 str,	\ $4000104
-	r1 $4 #( r0 str,	\ $40000a4
+	r1 $d0 #( r0 str,	\ DMA2CNT
+	r1 $104 #( r0 str,	\ TM1CNT
+	r1 $a4 #( r0 str,	\ FIFO_B
 
-	\ write address and samples back
+	\ write samples back
 l: __write_back
-	r4 ia! r0 r2 stm,
+	r4 $60c #( r2 str,
 	
 	\ done
 	ret
@@ -267,7 +255,7 @@ code-thumb playsound ( a -- )
 	r6 0@ r0 strh,
 
 	\ set interrupt vector
-	(playsound-handler) r0 literal
+	/playsound r0 literal
 	r5 INT_D2 #( r0 str,
 
 	\ enable DMA 2 interrupt in IE
