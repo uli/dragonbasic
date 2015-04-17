@@ -44,17 +44,18 @@ end-code
 code-thumb stopsound ( -- )
 	$40000d0 v0 LITERAL
 	
-	\ turn off timer 1 overflow interrupt
-	v0 $36 #( w ldrh,		\ $4000106
-	$c0 ## v2 mov,
-	v2 w bic,
-	v0 $36 #( w strh,		\ $4000106
-	
-	\ stop dma 2 and timer 1
+	\ stop DMA 2 and timer 1
 	0 ## w mov,
 	v0 0@ w str,
 	v0 $34 #( w str,		\ $4000104
 	
+	\ turn off DMA 2 interrupt in IE
+	$f4 ## v0 add,			\ $40001c4
+	v0 $3e #( w ldrh,		\ $4000200
+	$400 v2 movi
+	v2 w bic,
+	v0 $3e #( w strh,		\ $4000200
+
 	\ done
 	ret
 end-code
@@ -65,13 +66,13 @@ code-thumb stopmusic ( -- )
 	v0 v2 mov,
 	$fe ## v2 add,			\ $40001c2 (interrupts - $3e)
 	
-	\ turn off timer 0 overflow interrupt
+	\ turn off DMA 1 interrupt
 	v2 $3e #( w ldrh,		\ $4000200
-	$8 ## v1 mov,
+	$200 v1 movi
 	v1 w bic,
 	v2 $3e #( w strh,		\ $4000200
 	
-	\ stop dma 1 and reset timer 0
+	\ stop DMA 1 and reset timer 0
 	0 ## w mov,
 	v0 0@ w str,			\ $40000c4
 	v0 $3c #( w str,		\ $4000100 (timers)
@@ -204,11 +205,11 @@ code-thumb /playsound ( -- )
 	\ load sound samples and process
 	r4 0@ r0 ldr,
 	r4 4 #( r2 ldr,
-	1 ## r2 r2 sub,		\ subs, actually
+	16 ## r2 sub,		\ subs, actually
 	__write_back pl? b,
 	0 ## r0 mov,
 	
-	\ stop dma 2 transfer and timer 1 if done
+	\ stop DMA 2 transfer and timer 1 if done
 	r1 $30 #( r0 str,	\ $40000d0
 	r3 $4 #( r0 str,	\ $4000104
 	r1 $4 #( r0 str,	\ $40000a4
@@ -232,9 +233,9 @@ code-thumb playsound ( a -- )
 	1 ## r5 r5 sub,
 	r4 8 #( r5 strh,
 
-	\ turn off timer 1 overflow interrupt flag
+	\ turn off DMA 2
 	0 ## r1 mov,
-	r3 $50 #( r1 str,
+	r3 $50 #( r1 str,	\ REGISTERS + $d0
 	
 	IWRAM_GLOBALS r5 LITERAL
 
@@ -253,33 +254,32 @@ code-thumb playsound ( a -- )
 	r0 ia! r1 r2 ldm,
 	r6 ia! r0 r2 stm,
 
-	\ write dma 2 source and destination
+	\ write DMA 2 source and destination
 	r3 $48 #( r0 str,
 	r3 r0 mov,
 	$24 ## r0 add,
 	r3 $4c #( r0 str,
 	
-	\ enable and start dma 2 on fifo empty
-	$b6 ## r0 mov,
-	8 ## r0 r0 lsl,	\ $b600
+	\ enable and start DMA 2 on fifo empty with interrupt enabled
+	$f600 r0 movi
 	r3 r6 mov,
 	$52 ## r6 add,
 	r6 0@ r0 strh,
 
 	\ set interrupt vector
 	(playsound-handler) r0 literal
-	r5 INT_T1 #( r0 str,
+	r5 INT_D2 #( r0 str,
 
-	\ enable timer 1 interrupt
+	\ enable DMA 2 interrupt in IE
 	r4 0@ r0 ldrh,
-	$10 ## r6 mov,
+	$400 r6 movi
 	r6 r0 orr,
 	r4 0@ r0 strh,
 
-	\ set timer 1 to interrupt and enable
+	\ enable timer 1
 	$80 ## r3 add,
-	$c0 ## r6 mov,
-	16 ## r6 r6 lsl,	\ $c00000
+	$80 ## r6 mov,
+	16 ## r6 r6 lsl,	\ $800000
 	r6 r1 orr,
 	r3 4 #( r1 str,
 
@@ -297,14 +297,14 @@ code-thumb iwram /playmusic ( -- )
 
 	\ load sound samples left
 	r5 4 #( r2 ldr,
-	1 ## r2 sub,
+	16 ## r2 sub,
 	__write_back pl? b,
 
 	$4000000 r4 movi
 	$80 ## r4 add,		\ $4000080
 	0 ## r3 mov,
 
-	\ stop dma tranfer to reset source address
+	\ stop DMA transfer to reset source address
 	r4 $44 #( r1 ldr,
 	r4 $44 #( r3 str,
 	r4 $20 #( r3 str, \ clear fifo a
@@ -313,7 +313,7 @@ code-thumb iwram /playmusic ( -- )
 	r5 0@ r0 ldr,
 	r4 $3c #( r0 str,
 
-	\ restart the dma transfer
+	\ restart the DMA transfer
 	4 ## r0 sub,
 	r0 0@ r2 ldr,
 	r4 $44 #( r1 str,
@@ -336,7 +336,7 @@ code-thumb playmusic ( a -- )
 	1 ## r5 sub,
 	r4 8 #( r5 strh,	\ $4000208
 
-	\ stop dma transfer of any currently playing music
+	\ stop DMA transfer of any currently playing music
 	0 ## r1 mov,
 	$c4 ## r3 add,		\ $40000c4
 	r3 0@ r1 str,
@@ -360,33 +360,32 @@ code-thumb playmusic ( a -- )
 	r5 0@ r0 str,
 	r5 4 #( r2 str,
 
-	\ write dma 1 source and destination
+	\ write DMA 1 source and destination
 	$40000a0 r3 LITERAL
 	r3 $1c #( r0 str,	\ $40000bc
 	r3 r0 mov,		\ $40000a0
 	$20 ## r3 add,		\ $40000c0
 	r3 0@ r0 str,
 
-	\ enable and start dma 1 on fifo emty
-	$b6 ## r0 mov,
-	8 ## r0 r0 lsl,		\ $b600
+	\ enable and start DMA 1 on fifo emty
+	$f600 r0 movi
 	$6 ## r3 add,		\ $40000c6
 	r3 0@ r0 strh,
 
 	\ set interrupt vector
 	/playmusic r0 literal
-	r5 INT_T0 #( r0 str,
+	r5 INT_D1 #( r0 str,
 
-	\ enable timer 0 interrupt
+	\ enable DMA 1 interrupt in IE
 	r4 0@ r0 ldrh,
-	$8 ## r3 mov,
+	$200 r3 movi
 	r3 r0 orr,
 	r4 0@ r0 strh,
 
-	\ set timer 0 to interrupt and enable
+	\ enable timer 0
 	$4000100 r3 LITERAL
-	$c0 ## r0 mov,
-	16 ## r0 r0 lsl,	\ $c00000
+	$80 ## r0 mov,
+	16 ## r0 r0 lsl,	\ $800000
 	r1 r0 orr,
 	r3 0@ r0 str,
 
