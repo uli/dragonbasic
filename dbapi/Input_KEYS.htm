@@ -18,7 +18,7 @@
   <h2><a href="INPUT.htm">INPUT</a> :: KEYS</h2>
 
   <blockquote>
-    Returns the current input mask.
+    Returns the current input state.
     <pre>
 FUNCTION KEYS
 </pre>
@@ -29,19 +29,19 @@ FUNCTION KEYS
   </blockquote><b>Return</b>
 
   <blockquote>
-    Reads REG_P1 from the GBA hardware and returns it immediates.
+    Reads REG_P1 from the GBA hardware and returns it.
     All bits are flipped, so that a 0 is not-pressed and 1 is
     pressed.
   </blockquote><b>Remarks</b>
 
   <blockquote>
-    The return value can be masked using a NAND operation along
+    The return value can be masked using an AND operation along
     with a KEY_ constant to see if a button is pressed.
   </blockquote><b>See Also</b>
 
   <blockquote>
     <a href="Input_KEY.htm">KEY</a> | <a href=
-    "Keywords_NAND.htm">NAND</a>
+    "Keywords_AND.htm">AND</a>
   </blockquote>
   <hr width="95%" align="middle">
 
