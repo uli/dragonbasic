@@ -23,7 +23,20 @@
 
 #REQUIRES "FMP.F"
 
-SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
+DIM __fmp_fmp
+DIM __fmp_layer_ptr
+DIM __fmp_screen_block
+DIM __fmp_char_block
+
+PROTOTYPE FUNCTION FMPTILEADDR(fmp)
+PROTOTYPE FUNCTION FMPPALADDR(fmp)
+PROTOTYPE FUNCTION FMPWIDTH(fmp)
+PROTOTYPE FUNCTION FMPHEIGHT(fmp)
+PROTOTYPE FUNCTION FMPLAYERS(fmp)
+PROTOTYPE FUNCTION FMPTILES(fmp)
+PROTOTYPE FUNCTION FMPTILESIZE(fmp)
+
+SUB FMPMAPTILES16x16(start_x, start_y, map_x, map_y, width, height)
 	LOCAL xx, yy		; SCx start coordinates for 16x16 tile
 	LOCAL x, y		; 16x16 FMP tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
@@ -32,13 +45,18 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, star
 	LOCAL cell		; tile index
 	LOCAL line_ptr		; first tile index of current line
 	LOCAL tile_addr
+	LOCAL map_width
+	LOCAL char_block, screen_block
+	LOCAL map_ptr
 
-	char_block = charblock(char_block)
+	map_width = fmpwidth(__fmp_fmp)
+	char_block = charblock(__fmp_char_block)
+	screen_block = __fmp_screen_block
 
 	width = width - 1	; thanks, BASIC :(
 	height = height - 1
 
-	inc map_ptr, map_x + map_y * map_width
+	map_ptr = __fmp_layer_ptr + 8 + map_x + map_y * map_width
 
 	FOR y = 0 TO height
 		dest_y = y * 2 + start_y
@@ -60,7 +78,7 @@ SUB FMPMAPTILES16x16(map_ptr, map_width, screen_block, char_block, start_x, star
 	NEXT
 END SUB
 
-SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
+SUB FMPMAPTILES8x8(start_x, start_y, map_x, map_y, width, height)
 	LOCAL yy		; SCx start coordinate for map tile
 	LOCAL x, y		; FMP map tile coordinates
 	LOCAL dest_x, dest_y	; 8x8 screen tile coordinates
@@ -68,13 +86,18 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_
 	LOCAL line_block	; first screen block (SCx) of current line
 	LOCAL line_ptr		; first tile index of current line
 	LOCAL tile_addr
+	LOCAL map_width
+	LOCAL char_block, screen_block
+	LOCAL map_ptr
 
-	char_block = charblock(char_block)
+	map_width = fmpwidth(__fmp_fmp)
+	char_block = charblock(__fmp_char_block)
+	screen_block = __fmp_screen_block
 
 	width = width - 1	; thanks, BASIC :(
 	height = height - 1
 
-	inc map_ptr, map_x + map_y * map_width
+	map_ptr = __fmp_layer_ptr + 8 + map_x + map_y * map_width
 
 	FOR y = 0 TO height
 		dest_y = y + start_y
@@ -91,7 +114,7 @@ SUB FMPMAPTILES8x8(map_ptr, map_width, screen_block, char_block, start_x, start_
 	NEXT
 END SUB
 
-SUB FMPANIMATE16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height)
+SUB FMPANIMATE16x16(x, y, map_x, map_y, width, height)
 	local anim_ptr		; pointer to animated block description
 	local anim		; pointer to animation description
 	local block_map_ptr	; points to "animation frames to tiles" map
@@ -106,9 +129,16 @@ SUB FMPANIMATE16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, hei
 	local effective_sb	; screen block the current tile must go to
 	local trblk		; hardware tile index
 	local dtile		; destination tile address
+	local map_width
+	local cb, sb
+	local layer_ptr
+
+	map_width = fmpwidth(__fmp_fmp)
+	layer_ptr = __fmp_layer_ptr
 
 	; get hardware address for map character block
-	cb = charblock(cb)
+	cb = charblock(__fmp_char_block)
+	sb = __fmp_screen_block
 
 	block_map_ptr = peekw(peekw(layer_ptr + 4))
 
@@ -188,7 +218,7 @@ SUB FMPANIMATE16x16(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, hei
 	loop
 END SUB
 
-SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, height)
+SUB FMPANIMATE8x8(x, y, map_x, map_y, width, height)
 	local anim_ptr		; pointer to animated block description
 	local anim		; pointer to animation description
 	local block_map_ptr	; points to "animation frames to tiles" map
@@ -203,9 +233,16 @@ SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, heigh
 	local effective_sb	; screen block the current tile must go to
 	local trblk		; hardware tile index
 	local dtile		; destination tile address
+	local map_width
+	local cb, sb
+	local layer_ptr
+
+	map_width = fmpwidth(__fmp_fmp)
+	layer_ptr = __fmp_layer_ptr
 
 	; get hardware address for map character block
-	cb = charblock(cb)
+	cb = charblock(__fmp_char_block)
+	sb = __fmp_screen_block
 
 	block_map_ptr = peekw(peekw(layer_ptr + 4))
 
@@ -281,14 +318,6 @@ SUB FMPANIMATE8x8(layer_ptr, map_width, sb, cb, x, y, map_x, map_y, width, heigh
 	loop
 END SUB
 
-PROTOTYPE FUNCTION FMPTILEADDR(fmp)
-PROTOTYPE FUNCTION FMPPALADDR(fmp)
-PROTOTYPE FUNCTION FMPWIDTH(fmp)
-PROTOTYPE FUNCTION FMPHEIGHT(fmp)
-PROTOTYPE FUNCTION FMPLAYERS(fmp)
-PROTOTYPE FUNCTION FMPTILES(fmp)
-PROTOTYPE FUNCTION FMPTILESIZE(fmp)
-
 FUNCTION FMPLAYERADDR(fmp, layer)
 	LOCAL layer_ptr
 	; find address of map data
@@ -300,25 +329,36 @@ FUNCTION FMPLAYERADDR(fmp, layer)
 	RETURN layer_ptr
 END FUNCTION
 
-SUB FMPANIMATE(fmp, layer, sb, cb, x, y, map_x, map_y, width, height)
-	LOCAL layer_ptr
-	layer_ptr = fmplayeraddr(fmp, layer)
-	if peekw(layer_ptr + 4) = 0 then return
-	if fmptilesize(fmp) = 16
-		fmpanimate16x16 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
+SUB FMPSETMAP(fmp)
+	__fmp_fmp = fmp
+END SUB
+
+SUB FMPSETLAYER(layer)
+	__fmp_layer_ptr = fmplayeraddr(__fmp_fmp, layer)
+END SUB
+
+SUB FMPSETSBLOCK(sb)
+	__fmp_screen_block = sb
+END SUB
+
+SUB FMPSETCBLOCK(cb)
+	__fmp_char_block = cb
+END SUB
+
+SUB FMPANIMATE(x, y, map_x, map_y, width, height)
+	if peekw(__fmp_layer_ptr + 4) = 0 then return
+	if fmptilesize(__fmp_fmp) = 16
+		fmpanimate16x16 x, y, map_x, map_y, width, height
 	else
-		fmpanimate8x8 layer_ptr, fmpwidth(fmp), sb, cb, x, y, map_x, map_y, width, height
+		fmpanimate8x8 x, y, map_x, map_y, width, height
 	end if
 END SUB
 
-SUB FMPMAPTILES(fmp, layer, screen_block, char_block, start_x, start_y, map_x, map_y, width, height)
-	LOCAL layer_ptr
-
-	layer_ptr = fmplayeraddr(fmp, layer)
+SUB FMPMAPTILES(start_x, start_y, map_x, map_y, width, height)
 	; choose mapping routine based on tile size
-	IF fmptilesize(fmp) = 16
-		fmpmaptiles16x16 layer_ptr + 8, fmpwidth(fmp), screen_block, char_block, start_x, start_y, map_x, map_y, width, height
+	IF fmptilesize(__fmp_fmp) = 16
+		fmpmaptiles16x16 start_x, start_y, map_x, map_y, width, height
 	ELSE
-		fmpmaptiles8x8 layer_ptr + 8, fmpwidth(fmp), screen_block, char_block, start_x, start_y, map_x, map_y, width, height
+		fmpmaptiles8x8 start_x, start_y, map_x, map_y, width, height
 	END IF
 END SUB
