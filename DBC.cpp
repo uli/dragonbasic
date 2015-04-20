@@ -2544,10 +2544,10 @@ BasicObject *Parser::parseToken()
 				"#");
 			++text_ptr;
 		}
-		if (getChar() == '(') {
+		if (*text_ptr == '(') {
 			bobj->otype = OBJ_SUB;
 			++text_ptr;
-		} else if (getChar() == '[') {
+		} else if (*text_ptr == '[') {
 			bobj->otype = OBJ_ARR;
 			++text_ptr;
 		}
