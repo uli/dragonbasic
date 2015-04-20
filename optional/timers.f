@@ -50,6 +50,10 @@ code-thumb starttimer ( -- )
 	v1 v0 orr,
 	v2 $10 #( v0 strh,
 
+	\ set IME
+	1 ## v0 mov,
+	v2 $18 #( v0 strh,
+
 	ret
 end-code
 
