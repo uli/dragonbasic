@@ -102,12 +102,12 @@ void __pimp_mod_context_update_next_pos(pimp_mod_context *ctx);
 
 static INLINE int __pimp_mod_context_get_row(const pimp_mod_context *ctx)
 {
-	return ctx->report_row;
+	return ctx->curr_row;
 }
 
 static INLINE int __pimp_mod_context_get_order(const pimp_mod_context *ctx)
 {
-	return ctx->report_order;
+	return ctx->curr_order;
 }
 
 static INLINE int __pimp_mod_context_get_bpm(const pimp_mod_context *ctx)
