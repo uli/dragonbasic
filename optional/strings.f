@@ -235,7 +235,7 @@ end-code
 
 \ convert between numbers and characters
 : chr$ ( n -- a ) 4 # s-alloc swap 8 # n* 1 # + OVER ! ;
-: asc ( a -- n ) 1 # + peekb ;
+:i asc ( a -- n ) 1 # + peekb ;
 
 \ transfer bytes from one address to address in A
 code-thumb -> ( from count -- a ) ( A: to -- to+count )
