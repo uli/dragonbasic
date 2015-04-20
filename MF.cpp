@@ -2822,6 +2822,10 @@ parse_next:
 	} else if (W("or")) {
 		codeAsm("r2", "pop");
 		codeAsm("r2", "r0", "orr,");
+	} else if (W("nor")) {
+		codeAsm("r2", "pop");
+		codeAsm("r2", "r0", "orr,");
+		codeAsm("r0", "r0", "mvn,");
 	} else if ((sym = getSymbol(word)) && sym->is_const) {
 		num = sym->lit_addr;
 		goto handle_const;
