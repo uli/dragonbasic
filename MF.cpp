@@ -3366,7 +3366,8 @@ do_ifwhile:
 		codeCallThumb(RT_pimp_init, "pimp_init");
 		codeAsm("r0", "pop");
 	} else if (out->use_pimp && W("modsetpos")) {
-		codeAsm("r1", "pop");
+		codeAsm("r0", "r1", "mov,");
+		codeAsm("r0", "pop");
 		invalR5();
 		codeCallThumb(RT_pimp_set_pos, "pimp_set_pos");
 		codeAsm("r0", "pop");
