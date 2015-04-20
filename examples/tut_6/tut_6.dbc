@@ -103,7 +103,7 @@ start:
 	; character block 0 and only 16 colors.
 
 	graphics 0,true
-	enabletiles 0,8,0,TEXT_256x256 Nor BG_COLOR_16
+	enabletiles 0,8,0,TEXT_256x256 or BG_COLOR_16
 
 	; Now, just like in tutorial 1, let's load our background
 	; tiles and palette into memory at character block 0.
