@@ -32,6 +32,10 @@ DIM cblock, sblock
 SUB loadmap(fmp)
 	LOCAL i
 
+	; Set fmp as the current map.  All FMP* functions will refer to this
+	; map from now on.
+	fmpsetmap fmp
+
 	; Erase screen blocks of BG0 and BG1 (eight screen blocks overall).
 	FOR i = sblock TO sblock+7
 		cleartilesfast tile(i, 0, 0), 32, 32
@@ -42,20 +46,28 @@ SUB loadmap(fmp)
 	; twice as much space as 16-color tiles.
 	loadtiles charblock(cblock), 0, fmptileaddr(fmp), fmptiles(fmp) * 2
 
+	; Inform the FMP functions of the character block used.
+	fmpsetcblock cblock
+
 	; Load the FMP map's palette.
 	loadpal256 BG_PALETTE, fmppaladdr(fmp)
 
 	; The FMPLAYERS() function tells us how many layers the FMP map has.
 	FOR i = 0 TO fmplayers(fmp)-1
+		; Set current map layer.
+		fmpsetlayer i
 		; We write each map layer to the screen blocks of a different
 		; background, so we have to add "i * 4" to the starting
 		; screen block.
-		fmpmaptiles fmp, i, sblock + i * 4, cblock, _
-			    0, 0, 0, 0, _
+		fmpsetsblock sblock + i * 4
+
+		fmpmaptiles 0, 0, 0, 0, _
 			    fmpwidth(fmp), fmpheight(fmp)
+
 		; We stack the backgrounds from the bottom, so the earlier
 		; layers will be underneath the later ones.
 		ordertiles i, 3 - i
+
 		; Reset the background's position.
 		scrollpos i, 0, 0
 		updatetiles i
@@ -134,8 +146,9 @@ SUB start
 			scroll i, dx, dy
 			; Animate the FMP map.  The parameters are the same
 			; as those of fmpmaptiles.
-			fmpanimate current_map, i, sblock+i*4, cblock, _
-				   0, 0, 0, 0, _
+			fmpsetlayer i
+			fmpsetsblock sblock+i*4
+			fmpanimate 0, 0, 0, 0, _
 				   fmpwidth(current_map), fmpheight(current_map)
 			updatetiles i
 		NEXT
