@@ -32,3 +32,13 @@ PROTOTYPE FUNCTION	KEY(mask)
 
 ; Wait for any button in mask to be pressed and released
 PROTOTYPE FUNCTION	WAITKEY(mask)
+
+; Check key state and record the keys that have been pressed and released
+; since the last call.
+PROTOTYPE SUB		CHECKKEYS
+
+; Check if a key has been pressed between the last two CHECKKEYS calls.
+PROTOTYPE FUNCTION	KEYDOWN(mask)
+
+; Check if a key has been released between the last two CHECKKEYS calls.
+PROTOTYPE FUNCTION	KEYUP(mask)
