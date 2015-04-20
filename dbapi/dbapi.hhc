@@ -282,6 +282,11 @@
 
       <ul>
         <li><object type="text/sitemap">
+          <param name="Name" value="CHECKKEYS">
+          <param name="Local" value="Input_CHECKKEYS.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
           <param name="Name" value="INPUT">
           <param name="Local" value="Input_INPUT.htm">
         </object></li>
@@ -292,8 +297,18 @@
         </object></li>
 
         <li><object type="text/sitemap">
+          <param name="Name" value="KEYDOWN">
+          <param name="Local" value="Input_KEYDOWN.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
           <param name="Name" value="KEYS">
           <param name="Local" value="Input_KEYS.htm">
+        </object></li>
+
+        <li><object type="text/sitemap">
+          <param name="Name" value="KEYUP">
+          <param name="Local" value="Input_KEYUP.htm">
         </object></li>
 
         <li><object type="text/sitemap">
