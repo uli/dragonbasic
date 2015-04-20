@@ -69,7 +69,8 @@ void __pimp_mod_context_set_pos(pimp_mod_context *ctx, int row, int order)
 		ctx->curr_order = ctx->mod->order_repeat;
 	}
 	
-	ctx->curr_pattern = __pimp_module_get_pattern(ctx->mod, __pimp_module_get_order(ctx->mod, ctx->curr_order));
+	ctx->next_order = ctx->curr_order;
+	ctx->next_pattern = __pimp_module_get_pattern(ctx->mod, __pimp_module_get_order(ctx->mod, ctx->curr_order));
 	__pimp_mod_context_update_next_pos(ctx);
 }
 
