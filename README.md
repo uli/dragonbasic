@@ -92,12 +92,15 @@ and a lot of new features have been added:
 - new ASC() and CHR$() functions from DDLullu's fix library
 - signed numbers support in STR$()
 - many functions have been inlined or declared naked to improve performance
+- sound playback uses DMA instead of timer interrupt, reducing CPU load
+- new input functions that simplify checking for key events
 
 ### Runtime Environment
 
 - possibility to link C libraries into the TIN runtime (used to integrate
   pimpmobile)
 - sets WAITCNT register to a sane value to improve memory access timing
+- support for user DMA interrupt handlers
 
 
 Oh, and there is no size limit... :)
