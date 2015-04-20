@@ -3,6 +3,7 @@ OBJS = \
 	coppa/coppa.gba \
 	gapman/gapman2.gba \
 	mappy/mappy.gba \
+	moddemo/moddemo.gba \
 	old_tut_4/old_tut_4.gba \
 	old_tut_7/old_tut_7.gba \
 	tut_1/tut_1.gba \

@@ -1,0 +1,66 @@
+; MOD player demonstration
+;
+#title "MOD demo"
+
+#include <gba.dbc>
+#include <mod.dbc>
+
+font: #bitmap "font.bmp"
+pal: #palette "font.bmp"
+
+; This is the way to import a MOD or XM file.
+acker: #music "acker.mod"
+
+sub start
+	; Set up the display and load a font.  See Tutorial 1 for a
+	; detailed explanation.
+	graphics 0,false
+	enabletiles 0,0,1,TEXT_256x256 + BG_COLOR_16
+	loadfont16 1,font
+	loadpal16 BG_PALETTE,0,pal
+
+	print tile(0,2,2),"MOD Demo"
+
+	; This initializes the MOD player and loads the song specified in
+	; the argument.
+	modinit acker
+
+	while
+		vblank
+		; While playing a song, the MODVBLANK subroutine must be
+		; called immediately after entering the vertical blanking
+		; period to avoid noise during playback.
+		modvblank
+
+		; Print the current playing position.
+		print tile(0, 2, 5), "Order " + str$(modgetorder) + " "
+		print tile(0, 2, 6), "Row   " + str$(modgetrow) + " "
+
+		; Check if any key states have changed.
+		checkkeys
+
+		if keydown(KEY_UP)
+			; Change the current playback position to the
+			; start of the next pattern.
+			modsetpos 0, modgetorder + 1
+		end if
+		if keydown(KEY_DOWN)
+			modsetpos 0, modgetorder - 1
+		end if
+
+		if keydown(KEY_RIGHT)
+			; Skip eight rows ahead.  The masking ensures
+			; that the row specified is valid.
+			modsetpos (modgetrow + 8) and 63, modgetorder
+		end if
+		if keydown(KEY_LEFT)
+			modsetpos (modgetrow - 8) and 63, modgetorder
+		end if
+
+		; While playing a song, the MODFRAME subroutine must be
+		; called once per frame.  This subroutine can, but does
+		; not have to be executed during the vertical blanking
+		; period.  You can run it at any convenient time.
+		modframe
+	loop
+end sub
