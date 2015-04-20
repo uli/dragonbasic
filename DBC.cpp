@@ -113,7 +113,7 @@ void Subroutine::addLocal(const char *name, enum vartype_t vtype)
 
 	idx = num_locals;
 	++num_locals;
-	if (num_locals > 15)
+	if (num_locals > 31)
 		GLB_error(ERR_TOO_MANY_PROTO_ARGS, name);
 	local_vtype[idx] = vtype;
 	if (name)

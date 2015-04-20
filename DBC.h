@@ -120,8 +120,8 @@ public:
 	Subroutine *next;
 	char arg_name[16][168];
 	int num_locals;
-	int local_vtype[16];
-	char local_name[16][168];
+	int local_vtype[32];
+	char local_name[32][168];
 };
 
 enum segment_t {
