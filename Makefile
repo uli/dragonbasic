@@ -54,7 +54,7 @@ clean:
 doc:	dbapi/dbapi.chm
 	cp -p dbapi/dbapi.chm docs/
 
-dbapi/dbapi.chm: dbapi/dbapi.hhp dbapi/*.htm
+dbapi/dbapi.chm: dbapi/dbapi.hhp dbapi/dbapi.hhc dbapi/*.htm
 	cd dbapi ; chmcmd dbapi.hhp
 	rm -f dbapi/bla.something	# WTF?
 	chmod 644 dbapi/dbapi.chm
