@@ -6,12 +6,12 @@
 :n *8 ( n1 n2 -- n3 ) swap 8 # n* + ;
 
 \ save data to static ram
-: savebyte ( b -- ) >a c!a a> ;
-: saveword ( n -- ) >a /8 c!a c!a a> ;
-: savelong ( x -- ) >a /8 /8 /8 c!a c!a c!a c!a a> ;
+:n savebyte ( b -- ) >a c!a a> ;
+:n saveword ( n -- ) >a /8 c!a c!a a> ;
+:n savelong ( x -- ) >a /8 /8 /8 c!a c!a c!a c!a a> ;
 
 \ load data from static ram
-: loadbyte ( -- b ) >a c@a a> ;
+:n loadbyte ( -- b ) >a c@a a> ;
 : loadword ( -- n ) >a c@a c@a *8 a> ;
 : loadlong ( -- x ) >a c@a c@a *8 c@a *8 c@a *8 a> ;
 
