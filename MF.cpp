@@ -237,13 +237,13 @@ void Parser::setOutput(Output *out)
 
 const char *Parser::_getNextWord(bool skip_line)
 {
-	static char bufs[8][256];
+	static char bufs[16][256];
 	static int buf_ptr = 0;
 	char *buf;
 	int idx = 0;
 
 	buf = bufs[buf_ptr];
-	buf_ptr = (buf_ptr + 1) % 8;
+	buf_ptr = (buf_ptr + 1) % 16;
 
 	prev_tptr = tptr;
 
