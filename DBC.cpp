@@ -449,7 +449,6 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 			// already, so we only have to reserve space for
 			// local variables.
 			emitTin("%d LPROLOG ", 4 * sub_head->num_locals);
-			sub_head->can_be_naked = false;
 		}
 	}
 }
