@@ -28,7 +28,7 @@ PROTOTYPE FUNCTION	KEYS
 PROTOTYPE SUB		INPUT(mask)
 
 ; Return the state of the buttons in mask (1=pressed)
-PROTOTYPE FUNCTION	KEY(mask)
+PROTOTYPE INLINE FUNCTION	KEY(mask)
 
 ; Wait for any button in mask to be pressed and released
 PROTOTYPE FUNCTION	WAITKEY(mask)
