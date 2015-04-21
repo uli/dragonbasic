@@ -15,8 +15,12 @@ code-thumb onkey ( addr n1 n2 -- )
 	$4000132 r4 LITERAL
 	
 	\ write mask to REG_KEYCNT
+	0 ## r2 cmp,
+	__no_handler eq? b,
+	\ enable IRQ only if there is a non-zero handler address
 	$4000 r5 movi
 	r5 r1 r1 add,
+l: __no_handler
 
 	0 ## r0 cmp,
 	6 #offset eq? b,
@@ -29,7 +33,7 @@ code-thumb onkey ( addr n1 n2 -- )
 	IWRAM_GLOBALS r0 LITERAL
 	r0 INT_P1 #( r2 str,
 	
-	\ set key interrupt flag
+	\ set key interrupt flag in IE
 	$ce ## r4 add,		\ REGISTERS + $200
 	r4 0@ r0 ldrh,
 	
