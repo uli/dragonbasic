@@ -22,4 +22,8 @@ FUNCTION RND
 	RETURN __rnd_seed SR 17
 END FUNCTION
 
-PROTOTYPE FUNCTION	RANDOM(min,max)
+
+; return a random number between min and max-1
+FUNCTION random(min,max)
+	RETURN min + rnd MOD (max - min)
+END FUNCTION
