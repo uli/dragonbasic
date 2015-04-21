@@ -11,7 +11,7 @@ icode-thumb pokew ( a h -- ) w pop w 0@ tos str, tos pop end-code
 
 \ divide and modulo
 :i / ( n1 n2 -- n3 ) swap a! 7 swi ;
-:n mod ( n1 n2 -- n3 ) swap a! 7 swi drop a@ ;
+:i mod ( n1 n2 -- n3 ) swap a! 7 swi drop a@ ;
 
 code-thumb iwram 10/ ( n -- q )
 	v0 v5 mov,
