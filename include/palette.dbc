@@ -14,9 +14,9 @@
 
 ; Color functions
 PROTOTYPE FUNCTION	RGB(red,green,blue)
-PROTOTYPE FUNCTION	RGBR(color)
-PROTOTYPE FUNCTION	RGBG(color)
-PROTOTYPE FUNCTION	RGBB(color)
+PROTOTYPE INLINE FUNCTION	RGBR(color)
+PROTOTYPE INLINE FUNCTION	RGBG(color)
+PROTOTYPE INLINE FUNCTION	RGBB(color)
 
 ; Some constant 15-bit colors
 ; XXX: needs to be below RGB() because otherwise DBC misinterprets the
@@ -46,6 +46,6 @@ PROTOTYPE SUB		ROTATEPAL16(palette,index)
 PROTOTYPE SUB		ROTATEPAL256(palette)
 
 ; Entry manipulation
-PROTOTYPE SUB		SETPALENTRY(palette,index,entry,color)
-PROTOTYPE FUNCTION	GETPALENTRY(palette,index,entry)
+PROTOTYPE INLINE SUB		SETPALENTRY(palette,index,entry,color)
+PROTOTYPE INLINE FUNCTION	GETPALENTRY(palette,index,entry)
 
