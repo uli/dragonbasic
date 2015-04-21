@@ -3423,7 +3423,13 @@ do_ifwhile:
 					loadR5(sym->lit_addr);
 					codeAsm("r5", "0@", "r0", "str,");
 				}
-				codeAsm("r0", "pop");
+				if (isWordN(0, sym->word) && isWordN(1, "@")) {
+					// We leave TOS and make the next load a NOP.
+					DEBUG("skip reload\n");
+					getNextWord();
+					getNextWord();
+				} else
+					codeAsm("r0", "pop");
 			} else {
 				// load from literal pool
 				codeAsm("r0", "push");
