@@ -235,7 +235,7 @@ void Parser::setOutput(Output *out)
 	this->out = out;
 }
 
-const char *Parser::_getNextWord()
+const char *Parser::_getNextWord(bool skip_line)
 {
 	static char bufs[8][256];
 	static int buf_ptr = 0;
@@ -281,12 +281,19 @@ const char *Parser::_getNextWord()
 	}
 	buf[idx] = 0;
 
+	if (skip_line)
+		while (!strcmp(buf, "#line")) {
+			_getNextWord();
+			buf = (char *)_getNextWord();
+		}
+
 	return buf;
 }
 
-const char *Parser::getNextWord()
+const char *Parser::getNextWord(bool skip_line)
 {
-	const char *word = _getNextWord();
+	const char *word = _getNextWord(skip_line);
+
 	if (!debug_words)
 		DEBUG("\"%s", word);
 	else
@@ -2487,7 +2494,7 @@ parse_next:
 		word_start = out->addr;
 	}
 
-	word = getNextWord();
+	word = getNextWord(false);
 	if (!word) {
 		while (sp > 0) {
 			popText();

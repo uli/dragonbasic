@@ -165,8 +165,8 @@ class Parser {
 public:
 	Parser();
 	void setOutput(Output *out);
-	const char *_getNextWord();
-	const char *getNextWord();
+	const char *_getNextWord(bool skip_line = true);
+	const char *getNextWord(bool skip_line = true);
 	const char *peekWordN(int n);
 	bool isWordN(int n, const char *word);
 	const char *peekNextWord();
