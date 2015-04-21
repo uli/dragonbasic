@@ -2974,6 +2974,9 @@ handle_const:
 						if (!skip_push && getNextWordIf("+")) {
 							codeAsm("r6", num, "#(", "r2", "ldr,");
 							codeAsm("r2", "r0", "r0", "add,");
+						} else if (!skip_push && getNextWordIf("-")) {
+							codeAsm("r6", num, "#(", "r2", "ldr,");
+							codeAsm("r2", "r0", "r0", "sub,");
 						} else {
 							// If a local store precedes,
 							// we don't have to push R0.
