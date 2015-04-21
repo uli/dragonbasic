@@ -64,6 +64,7 @@ Subroutine::Subroutine(const char *ident, bool is_function,
 	num_locals = 0;
 	next = 0;
 	can_be_naked = true;
+	tin_start = NULL;
 	is_inline = false;
 }
 
@@ -440,7 +441,8 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 
 	if (emit_code) {
 		tin_tail = sub_head->declareTinLocals(tin_tail);
-		emitTin(": %s%s ", iwram ? "IWRAM " : "", bobj->val.symbolic);
+		emitTin(":  %s%s ", iwram ? "IWRAM " : "", bobj->val.symbolic);
+		sub_head->tin_start = tin_tail;
 		if (sub_head->num_args > 0 || sub_head->num_locals > 0) {
 			// Code the local variable prolog.  Arguments
 			// are assumed to have been placed on the stack
@@ -1118,6 +1120,9 @@ void Compiler::doCmdReturn(bool eof)
 	else
 		emitTin(";r ");
 
+	if (sub_head->can_be_naked)
+		sub_head->tin_start->text[1] = 'n';
+
 	if (!loop_stack.getStackPtr())
 		is_top_level = true;
 }
@@ -1453,7 +1458,7 @@ void Compiler::doLabel(BasicObject *bobj)
 		emitTin("CLABEL %s::%s ", sub_head->ident, bobj->val.symbolic);
 		is_top_level = false;
 	} else if (!strcasecmp(bobj->val.symbolic, "start")) {
-		emitTin(": START ");
+		emitTin(":  START ");
 		addNewSub(bobj->val.symbolic, false, VAR_SCALAR);
 		is_top_level = false;
 		cur_seg = SEG_SUB;

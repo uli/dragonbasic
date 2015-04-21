@@ -123,6 +123,7 @@ public:
 	int local_vtype[32];
 	char local_name[32][168];
 	bool can_be_naked;
+	TIN *tin_start;
 	bool is_inline;
 };
 
