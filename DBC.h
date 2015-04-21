@@ -122,6 +122,7 @@ public:
 	int num_locals;
 	int local_vtype[32];
 	char local_name[32][168];
+	bool can_be_naked;
 	bool is_inline;
 };
 

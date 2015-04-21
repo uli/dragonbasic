@@ -63,6 +63,7 @@ Subroutine::Subroutine(const char *ident, bool is_function,
 	num_args = 0;
 	num_locals = 0;
 	next = 0;
+	can_be_naked = true;
 	is_inline = false;
 }
 
@@ -446,6 +447,7 @@ void Compiler::doSubroutine(BasicObject *bobj, bool is_function, bool emit_code)
 			// already, so we only have to reserve space for
 			// local variables.
 			emitTin("%d LPROLOG ", 4 * sub_head->num_locals);
+			sub_head->can_be_naked = false;
 		}
 	}
 }
@@ -1695,6 +1697,8 @@ void Compiler::doOperand(BasicObject *bobj)
 				GLB_error(ERR_TOO_FEW_ARGS, bobj->val.symbolic);
 
 			emitTin("%s ", bobj->val.symbolic);
+			if (!sub->is_inline)
+				sub_head->can_be_naked = false;
 		}
 	}
 }
@@ -1715,6 +1719,8 @@ void Compiler::callSubroutine(Subroutine *sub)
 				GLB_error(ERR_TOO_FEW_ARGS, sub->ident);
 	}
 	emitTin("%s ", sub->ident);
+	if (!sub->is_inline)
+		sub_head->can_be_naked = false;
 }
 
 int LoopStack::getStackPtr()
