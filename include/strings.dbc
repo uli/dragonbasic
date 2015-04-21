@@ -9,8 +9,8 @@
 #REQUIRES "STRINGS.F"
 
 ; Length functions
-PROTOTYPE FUNCTION	LEN(string$)
-PROTOTYPE SUB		RESIZE(string$,length)
+PROTOTYPE INLINE FUNCTION	LEN(string$)
+PROTOTYPE INLINE SUB		RESIZE(string$,length)
 
 ; Converting from number to string
 PROTOTYPE FUNCTION	STR$(n)
@@ -18,7 +18,7 @@ PROTOTYPE FUNCTION	HEX$(n)
 
 ; Converting between numbers and characters
 PROTOTYPE FUNCTION	CHR$(n)
-PROTOTYPE FUNCTION	ASC(string$)
+PROTOTYPE INLINE FUNCTION	ASC(string$)
 
 ; Copying, comparing and printing
 PROTOTYPE SUB		MOVE(dest$,source$)
