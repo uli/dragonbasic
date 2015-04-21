@@ -2991,9 +2991,19 @@ handle_const:
 						// don't have to pop R0.
 						if (isWordN(1, "#") &&
 						    isWordN(2, "+r") &&
-						    isWordN(3, "@"))
-							skip_push = true;
-						else
+						    isWordN(3, "@")) {
+							if ((sym = getSymbol(peekNextWord())) &&
+							    sym->is_const && sym->lit_addr == num) {
+								// store followed by load of
+								// same variable -> NOP
+								getNextWord();
+								getNextWord();
+								getNextWord();
+								getNextWord();
+								DEBUG("skipped local reload\n");
+							} else
+								skip_push = true;
+						} else
 							codeAsm("r0", "pop");
 					} else
 						GLB_error("internal error\n");
