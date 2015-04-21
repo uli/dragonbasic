@@ -2476,7 +2476,6 @@ void Parser::parseAll()
 	const char *word;
 	Symbol *sym;
 	Icode *icode;
-	bool currently_naked = false;
 	Symbol *iwsym;
 	// R5 is often repeatedly loaded with the same constant.  We keep
 	// track of its current value to avoid unnecessary reloading.
@@ -3522,6 +3521,7 @@ Parser::Parser()
 	thumb = false;
 	invalR5();
 	text_mode = false;
+	currently_naked = false;
 }
 
 void Output::openOutFile(const char *name)

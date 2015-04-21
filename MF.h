@@ -262,6 +262,7 @@ public:
 	unsigned int r5;
 
 	bool text_mode;
+	bool currently_naked;
 };
 
 extern const char *current_file;
