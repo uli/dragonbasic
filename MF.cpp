@@ -3100,20 +3100,26 @@ handle_const:
 		} else if (getNextWordIf("b,")) {
 			out->emitByte(num);
 		} else if (getNextWordIf("lprolog")) {
-			assert(!currently_naked);
-			codeAsm("r0", "push");	// last param to stack
+			// Push last parameter to the stack so it can be
+			// loaded from memory, like the others.
+			codeAsm("r0", "push");
 			// Reserve space for additional local variables.
 			if (num)
 				codeAsm(num, "##", "sp", "sub,");
-			// Set up R6 as base pointer.
-			codeAsm("sp", "r6", "mov,");
-			// Save return address.
-			codeAsm("lr", "push");
-			// NB: We now have a bogus value in TOS that we
-			// have to discard in the epilog!
+			if (!currently_naked) {
+				// Set up R6 as base pointer.
+				codeAsm("sp", "r6", "mov,");
+				// Save return address.
+				codeAsm("lr", "push");
+				// NB: We now have a bogus value in TOS that we
+				// have to discard in the epilog!
+			} else
+				sp_offset = 0;
 		} else if (getNextWordIf("lepilog")) {
-			// Restore return address.
-			codeAsm("r6", "pop");
+			if (!currently_naked) {
+				// Restore return address.
+				codeAsm("r6", "pop");
+			}
 			// Purge locals from stack...
 			codeAsm(num, "##", "sp", "add,");
 			// ...including bogus TOS.
@@ -3125,8 +3131,11 @@ handle_const:
 			// SP+4		return address
 			// SP+8 etc.	locals/arguments
 
-			// Dispose of bogus TOS and restore return address.
-			codeAsm("r2", "r6", "pop");
+			if (!currently_naked) {
+				// Dispose of bogus TOS and restore return address.
+				codeAsm("r2", "r6", "pop");
+			} else
+				codeAsm("r2", "pop");
 			// Purge locals and arguments from stack...
 			codeAsm(num, "##", "sp", "add,");
 			// ...and keep TOS because it contains the return
