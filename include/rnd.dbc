@@ -15,5 +15,11 @@ DIM __rnd_seed
 #CONSTANT RAND_MAX			&0007FFF 	; The highest randon number possible
 
 PROTOTYPE SUB		SEED(n)
-PROTOTYPE FUNCTION	RND
+
+; return a random number from 0-7FFF
+FUNCTION RND
+	__rnd_seed = __rnd_seed * 69069 + 1
+	RETURN __rnd_seed SR 17
+END FUNCTION
+
 PROTOTYPE FUNCTION	RANDOM(min,max)
