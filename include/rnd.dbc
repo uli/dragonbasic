@@ -8,20 +8,19 @@
 ;;; Copyright (c) 2003 by Jeff Massung
 ;;; All rights reserved.
 
-DIM __rnd_seed
-
-#REQUIRES "RND.F"
-
 #CONSTANT RAND_MAX			&0007FFF 	; The highest randon number possible
 
-PROTOTYPE SUB		SEED(n)
+DIM __rnd_seed
 
 ; return a random number from 0-7FFF
-FUNCTION RND
+FUNCTION rnd
 	__rnd_seed = __rnd_seed * 69069 + 1
 	RETURN __rnd_seed SR 17
 END FUNCTION
 
+SUB seed(seed)
+	__rnd_seed = seed
+END SUB
 
 ; return a random number between min and max-1
 FUNCTION random(min,max)
