@@ -1,14 +1,6 @@
 { -- MF/TIN INTERRUPT functions
   -- Original code by Jeff Massung, 2003 }
 
-\ turn interrupts on
-:n enableinterrupts ( -- )
-	$4000208 # ( REG_IF) 0 # com poke ;
-
-\ turn interrupts off
-:n disableinterrupts ( -- )
-	$4000208 # ( REG_IF) 0 # poke ;
-
 \ setup an interrupt event handler (keypad)
 code-thumb onkey ( addr n1 n2 -- )
 	r1 r2 r3 pop
