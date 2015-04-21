@@ -2471,6 +2471,50 @@ void Parser::checkRelocs()
 	}
 }
 
+void Parser::codePush(const char *reg)
+{
+	sp_offset += 4;
+	codeAsm(reg, "push");
+}
+
+void Parser::codePop(const char *reg)
+{
+	sp_offset -= 4;
+	codeAsm(reg, "pop");
+}
+
+void Parser::codeLocalLoad(int num, const char *reg)
+{
+	if (currently_naked)
+		codeAsm("sp", num + sp_offset, "#(", reg, "ldr,");
+	else
+		codeAsm("r6", num, "#(", reg, "ldr,");
+}
+
+void Parser::codeLocalStore(int num, const char *reg)
+{
+	if (currently_naked)
+		codeAsm("sp", num + sp_offset, "#(", reg, "str,");
+	else
+		codeAsm("r6", num, "#(", reg, "str,");
+}
+
+void Parser::codeGetLocalAddr(int num, const char *reg)
+{
+	if (currently_naked)
+		codeAsm(num + sp_offset, "##", "sp", reg, "add,");
+	else
+		codeAsm(num, "##", "r6", reg, "add,");
+}
+
+void Parser::codeAddLocalBase(const char *reg)
+{
+	if (currently_naked)
+		codeAsm(sp_offset, "##", "sp", reg, "add,");
+	else
+		codeAsm("r6", reg, reg, "add,");
+}
+
 void Parser::parseAll()
 {
 	const char *word;
@@ -3522,6 +3566,7 @@ Parser::Parser()
 	invalR5();
 	text_mode = false;
 	currently_naked = false;
+	sp_offset = 0;
 }
 
 void Output::openOutFile(const char *name)

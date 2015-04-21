@@ -195,6 +195,13 @@ public:
 	void codeCallThumb(unsigned int dest, const char *ident);
 	void codeToThumb(bool save_lr = true);
 	void codeToArm();
+	void codePush(const char *reg);
+	void codePop(const char *reg);
+
+	void codeLocalLoad(int num, const char *reg);
+	void codeLocalStore(int num, const char *reg);
+	void codeGetLocalAddr(int num, const char *reg);
+	void codeAddLocalBase(const char *reg);
 
 	void resolveRelocs(const char *label);
 	void checkRelocs();
@@ -262,6 +269,7 @@ public:
 	unsigned int r5;
 
 	bool text_mode;
+	int sp_offset;
 	bool currently_naked;
 };
 
