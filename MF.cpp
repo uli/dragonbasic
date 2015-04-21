@@ -2753,24 +2753,25 @@ parse_next:
 		out->registerIwram(iwsym);
 	} else if (W("swap")) {
 		if (getNextWordIf("a!")) {
-			codeAsm("r1", "pop");
+			codePop("r1");
 		} else if (getNextWordIf("-")) {
-			codeAsm("r2", "pop");
+			codePop("r2");
 			codeAsm("r2", "r0", "r0", "sub,");
 		} else if (getNextWordIf("over")) {
 			codeAsm("sp", "0@", "r2", "ldr,");
-			codeAsm("r2", "push");
+			codePush("r2");
 			codeAsm("sp", "4", "#(", "r0", "str,");
 		} else if (getNextWordIf("!")) {
 			codeAsm("r2", "r3", "pop");
+			sp_offset -= 8;
 			codeAsm("r2", "0@", "r0", "str,");
 			codeAsm("r3", "r0", "mov,");
 		} else {
 			if (!thumb)
 				codeAsm("sp", "r0", "r0", "swp,");
 			else {
-				codeAsm("r2", "pop");
-				codeAsm("r0", "push");
+				codePop("r2");
+				codePush("r0");
 				codeAsm("r2", "r0", "mov,");
 			}
 		}
@@ -2789,7 +2790,7 @@ parse_next:
 			codeAsm("r0", "0@", "r2", "ldr,");
 			codeAsm(1, "##", "r2", "add,");
 			codeAsm("r0", "0@", "r2", "str,");
-			codeAsm("r0", "pop");
+			codePop("r0");
 		} else if (isWordN(0, "@") &&
 			   isNum(peekWordN(1)) &&
 			   isWordN(2, "#") &&
@@ -2806,16 +2807,16 @@ parse_next:
 			codeAsm("r0", "0@", "r2", "ldr,");
 			codeAsm(num, "##", "r2", op[0] == '+' ? "add," : "sub,");
 			codeAsm("r0", "0@", "r2", "str,");
-			codeAsm("r0", "pop");
+			codePop("r0");
 		} else {
-			codeAsm("r0", "push");
+			codePush("r0");
 		}
 	} else if (W("over")) {
 		if (getNextWordIf("-")) {
 			codeAsm("sp", "0@", "r2", "ldr,");
 			codeAsm("r2", "r0", "r0", "sub,");
 		} else if (getNextWordIf("!")) {
-			codeAsm("r2", "pop");
+			codePop("r2");
 			codeAsm("r2", "0@", "r0", "str,");
 			codeAsm("r2", "r0", "mov,");
 		} else if (isWordN(0, "@") && isWordN(1, "+")) {
@@ -2824,7 +2825,7 @@ parse_next:
 			if (isWordN(0, "over") && isWordN(1, "!")) {
 				getNextWord();
 				getNextWord();
-				codeAsm("r3", "pop");
+				codePop("r3");
 				codeAsm("r3", "0@", "r2", "ldr,");
 				codeAsm("r2", "r0", "r0", "add,");
 				codeAsm("r3", "0@", "r0", "str,");
@@ -2835,11 +2836,11 @@ parse_next:
 				codeAsm("r2", "r0", "r0", "add,");
 			}
 		} else {
-			codeAsm("r0", "push");
+			codePush("r0");
 			codeAsm("sp", "4", "#(", "r0", "ldr,");
 		}
 	} else if (W("pop")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		codeAsm("r6", "r0", "mov,");
 		codeAsm("r7", "ia!", "r6", "ldm,");
 	} else if (W("push")) {
@@ -2850,7 +2851,7 @@ parse_next:
 			codeAsm("r7", "0@", "r6", "str,");
 		}
 		codeAsm("r0", "r6", "mov,");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (W("0<")) {
 		if (!thumb)
 			codeAsm("r0", "31", "#asr", "r0", "mov,");
@@ -2865,17 +2866,17 @@ parse_next:
 			codeAsm("r0", "r0", "mvn,");
 		}
 	} else if (W("and")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r2", "r0", "and,");
 	} else if (W("nand")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r2", "r0", "and,");
 		codeAsm("r0", "r0", "mvn,");
 	} else if (W("or")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r2", "r0", "orr,");
 	} else if (W("nor")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r2", "r0", "orr,");
 		codeAsm("r0", "r0", "mvn,");
 	} else if ((sym = getSymbol(word)) && sym->is_const) {
@@ -2924,7 +2925,7 @@ handle_const:
 					codeAsm(num, "##", "r0", "r0", "asr,");
 			} else if (getNextWordIf("n*")) {
 				if (!thumb && getNextWordIf("+")) {
-					codeAsm("r2", "pop");
+					codePop("r2");
 					codeAsm("r0");
 					codeAsm(num, "#lsl", "r2", "r0",
 						"add,");
@@ -2980,7 +2981,7 @@ handle_const:
 					loadR5(num);
 					codeAsm("r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
-					codeAsm("r0", "push");
+					codePush("r0");
 					if (!thumb && can_immrot(num)) {
 						codeAsm(num, "##", "r0",
 							"mov,");
@@ -2991,7 +2992,7 @@ handle_const:
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					}
 				} else {
-					codeAsm("r0", "push");
+					codePush("r0");
 					if (!thumb && can_immrot(num)) {
 						codeAsm(num, "##", "r0",
 							"mvn,");
@@ -3017,21 +3018,21 @@ handle_const:
 					getNextWord();
 					if (getNextWordIf("@")) {
 						if (!skip_push && getNextWordIf("+")) {
-							codeAsm("r6", num, "#(", "r2", "ldr,");
+							codeLocalLoad(num, "r2");
 							codeAsm("r2", "r0", "r0", "add,");
 						} else if (!skip_push && getNextWordIf("-")) {
-							codeAsm("r6", num, "#(", "r2", "ldr,");
+							codeLocalLoad(num, "r2");
 							codeAsm("r2", "r0", "r0", "sub,");
 						} else {
 							// If a local store precedes,
 							// we don't have to push R0.
 							if (!skip_push)
-								codeAsm("r0", "push");
+								codePush("r0");
 							skip_push = false;
-							codeAsm("r6", num, "#(", "r0", "ldr,");
+							codeLocalLoad(num, "r0");
 						}
 					} else if (getNextWordIf("!")) {
-						codeAsm("r6", num, "#(", "r0", "str,");
+						codeLocalStore(num, "r0");
 						// If a local load follows, we
 						// don't have to pop R0.
 						if (isWordN(1, "#") &&
@@ -3049,22 +3050,22 @@ handle_const:
 							} else
 								skip_push = true;
 						} else
-							codeAsm("r0", "pop");
+							codePop("r0");
 					} else
 						GLB_error("internal error\n");
 				} else if (num == 0 && getNextWordIf("+r")) {
-					codeAsm("r0", "push");
-					codeAsm("r6", "r0", "mov,");
+					codePush("r0");
+					codeGetLocalAddr(0, "r0");
 				} else if (num < 8 && getNextWordIf("+r")) {
-					codeAsm("r0", "push");
-					codeAsm(num, "##", "r6", "r0", "add,");
+					codePush("r0");
+					codeGetLocalAddr(num, "r0");
 				} else if (num > 0xff) {
 					if (!can_immrot(num)) {
-						codeAsm("r0", "push");
+						codePush("r0");
 						literals.prependNew(num, out->addr, thumb);
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
 					} else {
-						codeAsm("r0", "push");
+						codePush("r0");
 						codeAsm(num, "r0", "movi");
 					}
 				} else {
@@ -3087,7 +3088,7 @@ handle_const:
 						codeAsm(num, "##", "r0", "cmp,");
 						goto do_ifwhile;
 					} else {
-						codeAsm("r0", "push");
+						codePush("r0");
 						codeAsm(num, "##", "r0", "mov,");
 					}
 				}
@@ -3134,11 +3135,11 @@ handle_const:
 			GLB_error("unimp num\n");
 		}
 	} else if (W("+r")) {
-		codeAsm("r0", "r6", "r0", "add,");
+		codeAddLocalBase("r0");
 	} else if (W("c\"")) {
 		unsigned int end_str;
 		const char *str = getNextWord();
-		codeAsm("r0", "push");
+		codePush("r0");
 		codeAsm("pc", "r0", "mov,");
 		unsigned int skip = out->ta();
 		codeBranch(out->addr, "b,");
@@ -3177,22 +3178,22 @@ handle_const:
 		} else if (getNextWordIf("over")) {
 			codeAsm("sp", "4", "#(", "r0", "ldr,");
 		} else {
-			codeAsm("r0", "pop");
+			codePop("r0");
 		}
 	} else if (W("+")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r0", "r2", "r0", "add,");
 	} else if (W("-")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r0", "r2", "r0", "sub,");
 	} else if (W("*")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r2", "r0", "mul,");
 	} else if (W("a!")) {
 		codeAsm("r0", "r1", "mov,");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (W("a@")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		// Thumb substitute for "movs"
 		codeAsm("0", "##", "r1", "r0", "add,");
 	} else if (W("c!a")) {
@@ -3202,11 +3203,11 @@ handle_const:
 			codeAsm("r1", "0@", "r0", "strb,");
 			codeAsm("1", "##", "r1", "add,");
 		}
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (W("@")) {
 		codeAsm("r0", "0@", "r0", "ldr,");
 	} else if (W("@a")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		if (thumb) {
 			codeAsm("r1", "0@", "r0", "ldr,");
 			codeAsm("4", "##", "r1", "add,");
@@ -3214,7 +3215,7 @@ handle_const:
 			codeAsm("r1", "4", "(#", "r0", "ldr,");
 		}
 	} else if (W("c@a")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		if (!thumb)
 			codeAsm("r1", "1", "(#", "r0", "ldrb,");
 		else {
@@ -3222,7 +3223,7 @@ handle_const:
 			codeAsm("1", "##", "r1", "add,");
 		}
 	} else if (W("h@a")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		if (!thumb)
 			codeAsm("r1", "2", "(#", "r0", "ldrh,");
 		else {
@@ -3230,12 +3231,12 @@ handle_const:
 			codeAsm("2", "##", "r1", "add,");
 		}
 	} else if (W("r@")) {
-		codeAsm("r0", "push");
-		codeAsm("r6", "r0", "mov,");
+		codePush("r0");
+		codeGetLocalAddr(0, "r0");
 	} else if (W("!")) {
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r0", "0@", "r2", "str,");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (W("variable")) {
 		const char *ident = getNextWord();
 
@@ -3282,7 +3283,7 @@ handle_const:
 	} else if (W("if") || W("while")) {
 		invalR5();
 		codeAsm("r0", "r0", "tst,");
-		codeAsm("r0", "pop");
+		codePop("r0");
 		if (thumb) {
 			codeBranch(out->ta() + 4, "ne?", "b,");
 			loop_stack[lpsp++] = out->ta();
@@ -3325,10 +3326,10 @@ handle_const:
 		    W("=")) &&
 		   (getNextWordIf("while") || getNextWordIf("if"))) {
 		cond = op2cond(word, !thumb);
-		codeAsm("r2", "pop");
+		codePop("r2");
 		codeAsm("r0", "r2", "cmp,");
 do_ifwhile:
-		codeAsm("r0", "pop");
+		codePop("r0");
 		if (thumb) {
 			codeBranch(out->ta() + 4, cond, "b,");
 			loop_stack[lpsp++] = out->ta();
@@ -3410,20 +3411,20 @@ do_ifwhile:
 			codeBranch(out->ta(), "b,");
 		}
 	} else if (out->use_pimp && W("modvblank")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		invalR5();
 		codeCallThumb(RT_pimp_vblank, "pimp_vblank");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (out->use_pimp && W("modframe")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		invalR5();
 		codeCallThumb(RT_pimp_frame, "pimp_frame");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (out->use_pimp && W("modclose")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		invalR5();
 		codeCallThumb(RT_pimp_close, "pimp_close");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (out->use_pimp && W("modinit")) {
 		if (!thumb)
 			codeAsm("r0", "4", "(#", "r1", "ldr,");
@@ -3433,19 +3434,19 @@ do_ifwhile:
 		}
 		invalR5();
 		codeCallThumb(RT_pimp_init, "pimp_init");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (out->use_pimp && W("modsetpos")) {
 		codeAsm("r0", "r1", "mov,");
-		codeAsm("r0", "pop");
+		codePop("r0");
 		invalR5();
 		codeCallThumb(RT_pimp_set_pos, "pimp_set_pos");
-		codeAsm("r0", "pop");
+		codePop("r0");
 	} else if (out->use_pimp && W("modgetrow")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		invalR5();
 		codeCallThumb(RT_pimp_get_row, "pimp_get_row");
 	} else if (out->use_pimp && W("modgetorder")) {
-		codeAsm("r0", "push");
+		codePush("r0");
 		invalR5();
 		codeCallThumb(RT_pimp_get_order, "pimp_get_order");
 	} else if ((sym = getSymbol(word))) {
@@ -3464,7 +3465,7 @@ do_ifwhile:
 						codeAsm("r5", "0@", "r1", "ldr,");
 					}
 				} else {
-					codeAsm("r0", "push");
+					codePush("r0");
 					if (!thumb && small_offset) {
 						loadR5(sym->lit_addr & 0xff000000);
 						codeAsm("r5", sym->lit_addr & 0x00ffffff, "#(", "r0", "ldr,");
@@ -3487,10 +3488,10 @@ do_ifwhile:
 					getNextWord();
 					getNextWord();
 				} else
-					codeAsm("r0", "pop");
+					codePop("r0");
 			} else {
 				// load from literal pool
-				codeAsm("r0", "push");
+				codePush("r0");
 				literals.prependNew(sym->lit_addr, out->addr, thumb);
 				codeAsm("pc", "0", "#(", "r0", "ldr,");
 			}
