@@ -1725,6 +1725,8 @@ bool Parser::parseThumb(const char *word)
 				insn = 0xa000;
 				if (TOS_VAL == REG_SP)
 					insn |= 0x800;
+				POP_VAL_TYPE(ASM_AMODE);
+				assert(TOS_VAL == AMODE_IMM);
 				insn |= POP_IMM >> 2;
 				assert(TOS_VAL < 1024);
 			}
