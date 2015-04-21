@@ -1115,13 +1115,13 @@ void Compiler::doCmdReturn(bool eof)
 			sub_head->is_function ? "FL" : "L");
 	}
 
-	if (eof)
+	if (eof) {
 		emitTin("; ");
-	else
+		if (sub_head->can_be_naked) {
+			sub_head->tin_start->text[1] = 'n';
+		}
+	} else
 		emitTin(";r ");
-
-	if (sub_head->can_be_naked)
-		sub_head->tin_start->text[1] = 'n';
 
 	if (!loop_stack.getStackPtr())
 		is_top_level = true;
@@ -1361,6 +1361,8 @@ void Compiler::doCmdEnd()
 		if (!is_top_level)
 			GLB_error(ERR_RETVAL);
 		emitTin(";l ");
+		if (sub_head->can_be_naked)
+			sub_head->tin_start->text[1] = 'n';
 		cur_seg = SEG_TOP;
 		break;
 	default:
