@@ -63,6 +63,7 @@ Subroutine::Subroutine(const char *ident, bool is_function,
 	num_args = 0;
 	num_locals = 0;
 	next = 0;
+	is_inline = false;
 }
 
 Subroutine::~Subroutine()
@@ -890,16 +891,22 @@ void Compiler::doCommand(BasicObject *bobj)
 void Compiler::doCmdPrototype()
 {
 	bool is_function;
+	bool is_inline = false;
 	BasicObject *next_bobj;
 	BasicObject *bobj;
 
 	bobj = parser->getObjectWithType(OBJ_CMD, "SUB or FUNCTION");
+	if (bobj->val.numeric == CMD_INLINE) {
+		is_inline = true;
+		bobj = parser->getObjectWithType(OBJ_CMD, "SUB or FUNCTION");
+	}
 	checkNotSegment(SEG_INTR | SEG_SUB, "PROTOTYPE");
 	if (bobj->val.numeric != CMD_SUB && bobj->val.numeric != CMD_FUNCTION)
 		GLB_error(ERR_NOTOKEN, "SUB or FUNCTION");
 	is_function = bobj->val.numeric == CMD_FUNCTION;
 	next_bobj = parser->consumeNextBasicObj();
 	doSubroutine(next_bobj, is_function, false);
+	sub_head->is_inline = is_inline;
 }
 
 void Compiler::doCmdWhile()
@@ -2487,6 +2494,8 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_SUB, cur_line);
 	} else if (!strcasecmp(token_name, "prototype")) {
 		bobj = new BasicObject(CMD_PROTOTYPE, cur_line);
+	} else if (!strcasecmp(token_name, "inline")) {
+		bobj = new BasicObject(CMD_INLINE, cur_line);
 	} else if (!strcasecmp(token_name, "dim") ||
 		   !strcasecmp(token_name, "global")) {
 		bobj = new BasicObject(CMD_DIM, cur_line);

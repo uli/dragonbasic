@@ -122,6 +122,7 @@ public:
 	int num_locals;
 	int local_vtype[32];
 	char local_name[32][168];
+	bool is_inline;
 };
 
 enum segment_t {
@@ -171,6 +172,7 @@ enum cmd_t {
 	CMD_READH,
 	CMD_IWRAM,
 	CMD_GOTO,
+	CMD_INLINE,
 };
 
 struct LoopStackEntry {
