@@ -3226,8 +3226,12 @@ handle_const:
 		codePop("r2");
 		codeAsm("r2", "r0", "mul,");
 	} else if (W("a!")) {
-		codeAsm("r0", "r1", "mov,");
-		codePop("r0");
+		if (getNextWordIf("a@")) {
+			codeAsm("r0", "r1", "mov,");
+		} else {
+			codeAsm("r0", "r1", "mov,");
+			codePop("r0");
+		}
 	} else if (W("a@")) {
 		codePush("r0");
 		// Thumb substitute for "movs"
