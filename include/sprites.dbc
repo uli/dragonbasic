@@ -53,7 +53,13 @@ FUNCTION spritex(n)
 	        + (512 - 240) AND 511) - (512 - 240)
 END FUNCTION
 
-PROTOTYPE FUNCTION	SPRITEY(n)
+; return the y coordinate of a sprite
+FUNCTION spritey(n)
+	; See spritex for the logic behind this.
+	RETURN (peek((n SL 3) + &3000000) _
+		+ (256 - 160) AND 255) - (256 - 160)
+END FUNCTION
+
 PROTOTYPE SUB		HIDESPRITE(n)
 PROTOTYPE FUNCTION	SPRITEHIDDEN(n)
 PROTOTYPE SUB		POSITIONSPRITE(n,x,y)

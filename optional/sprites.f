@@ -133,25 +133,6 @@ code-thumb flipsprite ( sprite x y -- )
 	ret
 end-code
 
-\ return the y coordinate of a sprite
-code-thumb spritey ( sprite -- y )
-	IWRAM w movi
-	3 ## tos tos lsl,
-	w tos tos add,
-	tos 0@ tos ldrh,
-	
-	\ y >= 160 then negate
-	$ff ## v0 mov,
-	v0 tos and,
-	160 ## tos cmp,
-	__done lt? b,
-	$80 ## tos sub,
-	$80 ## tos sub,
-	
-l: __done
-	ret
-end-code
-
 \ move the sprite offscreen so it is hidden
 code-thumb hidesprite ( sprite -- )
 	$30 ## w mov,
