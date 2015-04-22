@@ -14,10 +14,6 @@
 : loadsprite ( n a blocks -- )
 	3 # n* a! swap 5 # n* $6000000 # + $10000 # + swap a@ dmacopy ;
 
-\ returns the current frame character of a sprite
-:n spriteframe ( n -- char )
-	sprite 4 # + peek $fc00 # com and ;
-
 \ create a new sprite
 code-thumb makesprite ( sprite n -- )
 	v0 v1 pop

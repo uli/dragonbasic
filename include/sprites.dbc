@@ -50,3 +50,8 @@ PROTOTYPE SUB		MOVESPRITE(n,dx,dy)
 ; Animating and collision detection
 PROTOTYPE SUB		ANIMSPRITE(n,first,last,blocks)
 PROTOTYPE FUNCTION	BUMPSPRITES(n1,n2)
+
+; returns the current frame character of a sprite
+FUNCTION SPRITEFRAME(n)
+	RETURN peek(sprite(n) + 4) and (~ &fc00)
+END FUNCTION
