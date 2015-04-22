@@ -2962,6 +2962,16 @@ handle_const:
 				getNextWord();
 				getNextWord();
 				codeAsm("r0", num, "#(", "r0", "ldrb,");
+			} else if (isWordN(1, "#") && isWordN(2, "pokew")) {
+				unsigned int num2 = TIN_parseNum(getNextWord());
+				getNextWord();
+				getNextWord();
+				if (can_immrot(num2))
+					codeAsm(num2, "r2", "movi");
+				else
+					codeAsm(num2, "r2", "literal");
+				loadR5(num);
+				codeAsm("r5", "0@", "r2", "str,");
 			} else if (isWordN(0, "+") ||
 				   isWordN(0, "-")) {
 				const char *op;
