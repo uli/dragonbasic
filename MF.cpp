@@ -3342,7 +3342,9 @@ handle_const:
 			loop_stack[lpsp++] = out->ta();
 			codeBranch(out->ta(), "eq?", "b,");
 		}
+		loop_stack[lpsp++] = sp_offset;
 	} else if (W("else")) {
+		sp_offset = loop_stack[--lpsp];
 		invalR5();
 		codeBranch(out->ta(), "b,");
 		if (thumb) {
@@ -3352,7 +3354,9 @@ handle_const:
 			out->reloc24(loop_stack[--lpsp], out->ta());
 			loop_stack[lpsp++] = out->ta() - 4;
 		}
+		loop_stack[lpsp++] = sp_offset;
 	} else if (W("then")) {
+		sp_offset = loop_stack[--lpsp];
 		invalR5();
 		if (thumb)
 			out->reloc10(loop_stack[--lpsp], out->ta());
@@ -3364,6 +3368,7 @@ handle_const:
 			loop_stack[lpsp++] = out->ta() + 2;
 		else
 			loop_stack[lpsp++] = out->ta();
+		loop_stack[lpsp++] = sp_offset;
 	} else if (W("0=") && (getNextWordIf("if") || getNextWordIf("while"))) {
 		cond = thumb ? "eq?" : "ne?";
 		codeAsm("r0", "r0", "tst,");
@@ -3388,17 +3393,22 @@ do_ifwhile:
 			loop_stack[lpsp++] = out->ta();
 			codeBranch(out->ta(), cond, "b,");
 		}
+		loop_stack[lpsp++] = sp_offset;
 	} else if (W("repeat")) {
+		sp_offset = loop_stack[--lpsp];
 		invalR5();
 		if (thumb) {
 			unsigned int rel = loop_stack[--lpsp];
+			sp_offset = loop_stack[--lpsp];
 			codeBranch(loop_stack[--lpsp] - 2, "jmp");
 			out->reloc10(rel, out->ta());
 		} else {
 			out->reloc24(loop_stack[--lpsp], out->ta() + 4);
+			sp_offset = loop_stack[--lpsp];
 			codeBranch(loop_stack[--lpsp], "b,");
 		}
 	} else if (W("again")) {
+		sp_offset = loop_stack[--lpsp];
 		invalR5();
 		if (thumb)
 			codeBranch(loop_stack[--lpsp] - 2, "jmp");
