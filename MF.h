@@ -272,6 +272,7 @@ public:
 	int sp_offset;
 	bool currently_naked;
 	bool skip_push;
+	bool first_local_in_tos;
 };
 
 extern const char *current_file;

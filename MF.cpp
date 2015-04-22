@@ -2305,6 +2305,7 @@ void Parser::codeAsm(
 	if (w4) parseAsm(w4);
 	if (w5) parseAsm(w5);
 	if (w6) parseAsm(w6);
+	first_local_in_tos = false;
 }
 
 void Parser::codeAsm(
@@ -2488,6 +2489,11 @@ void Parser::codePop(const char *reg)
 
 void Parser::codeLocalLoad(int num, const char *reg)
 {
+	if (first_local_in_tos && num == 0) {
+		DEBUG("skipped load of local in TOS\n");
+		return;
+	}
+
 	if (currently_naked)
 		codeAsm("sp", num + sp_offset, "#(", reg, "ldr,");
 	else
@@ -3117,6 +3123,7 @@ handle_const:
 			// The current TOS value is a duplicate, so we skip the
 			// next push to eliminate it.
 			skip_push = true;
+			first_local_in_tos = true;
 		} else if (getNextWordIf("lepilog")) {
 			if (!currently_naked) {
 				// Restore return address.
@@ -3589,6 +3596,7 @@ Parser::Parser()
 	currently_naked = false;
 	sp_offset = 0;
 	skip_push = false;
+	first_local_in_tos = false;
 }
 
 void Output::openOutFile(const char *name)
