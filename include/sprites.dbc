@@ -28,7 +28,15 @@
 ; Memory
 PROTOTYPE INLINE FUNCTION	SPRITE(n)
 PROTOTYPE SUB		LOADSPRITE(n,label,blocks)
-PROTOTYPE SUB		UPDATESPRITES
+
+; copy all updated sprite data from IWRAM to OAM
+SUB updatesprites
+	; setup dma3 transfer addresses
+	pokew &40000d4, &3000000
+	pokew &40000d8, &7000000
+	; set control to 32-bit, increment both, 256 words
+	pokew &40000dc, &84000100
+END SUB
 
 ; Sprite creation
 PROTOTYPE SUB		MAKESPRITE(n,char)

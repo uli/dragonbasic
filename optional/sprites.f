@@ -494,22 +494,3 @@ l: __ret
 	r6 r7 pop
 	ret
 end-code
-
-\ copy all updated sprite data from IWRAM to OAM
-code-thumb updatesprites ( -- )
-	IWRAM v1 movi
-	$7000000 v2 movi	\ OAM
-	REGISTERS v0 movi
-	$d0 ## v0 add,		\ REGISTERS + $d0
-
-	\ setup dma3 transfer addresses
-	v0 $4 #( v1 str,
-	v0 $8 #( v2 str,
-
-	\ set control to 32-bit, increment both, 256 words
-	$84000100 v1 LITERAL
-	v0 $c #( v1 str,
-
-	\ done
-	ret
-end-code
