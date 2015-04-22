@@ -2476,15 +2476,22 @@ void Parser::codePush(const char *reg)
 {
 	if (!skip_push) {
 		sp_offset += 4;
-		codeAsm(reg, "push");
-	} else
+		if (sp_offset > 0)
+			codeAsm(reg, "push");
+		else
+			DEBUG("skipped underwater push\n");
+	} else {
 		skip_push = false;
+	}
 }
 
 void Parser::codePop(const char *reg)
 {
 	sp_offset -= 4;
-	codeAsm(reg, "pop");
+	if (sp_offset >= 0)
+		codeAsm(reg, "pop");
+	else
+		DEBUG("skipped underwater pop\n");
 }
 
 void Parser::codeLocalLoad(int num, const char *reg)
@@ -2629,6 +2636,7 @@ parse_next:
 		}
 		invalR5();
 		GLB_setCurrentWord(cur_icode->word);
+		sp_offset = 0xffff;
 	} else if (W("code") || W("code-thumb")) {
 		out->alignDword();
 		if (word[4] == '-' && word[5] == 't')
@@ -2658,6 +2666,7 @@ parse_next:
 		invalR5();
 		word_start = out->addr;
 		GLB_setCurrentWord(ident);
+		sp_offset = 0xffff;
 	} else if (W("end-code")|| (W(";") && cur_icode)) {
 		if (cur_icode) {
 			cur_icode = 0;
@@ -2718,6 +2727,7 @@ parse_next:
 		word_start = out->addr;
 		local_idx = 0;
 		GLB_setCurrentWord(ident);
+		sp_offset = 0xffff;
 	} else if (W("label")) {
 		out->alignDword();
 		sym = symbols.appendNew(out->addr, getNextWord());
@@ -3165,12 +3175,9 @@ handle_const:
 				if (num)
 					codeAsm(num, "##", "sp", "add,");
 			} else {
-				// Purge locals from stack.  One of them has
-				// already been popped into TOS, so we purge
-				// four bytes less.
-				assert(num > 0);
-				if (num - 4)
-					codeAsm(num - 4, "##", "sp", "add,");
+				// Purge locals from stack.
+				if (num)
+					codeAsm(num, "##", "sp", "add,");
 			}
 			codeAsm("r0", "pop");
 		} else if (getNextWordIf("flepilog")) {
