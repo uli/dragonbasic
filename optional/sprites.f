@@ -133,25 +133,6 @@ code-thumb flipsprite ( sprite x y -- )
 	ret
 end-code
 
-\ return the x coordinate of a sprite
-code-thumb spritex ( sprite -- x )
-	IWRAM w movi
-	3 ## tos tos lsl,
-	w tos tos add,
-	tos 2 #( tos ldrh,
-	
-	\ x >= 240 then negate
-	$fe00 v0 movi
-	v0 tos bic,
-	240 ## tos cmp,
-	__done lt? b,
-	$200 v0 movi
-	v0 tos tos sub,
-	
-l: __done
-	ret
-end-code
-
 \ return the y coordinate of a sprite
 code-thumb spritey ( sprite -- y )
 	IWRAM w movi

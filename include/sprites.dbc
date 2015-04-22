@@ -40,7 +40,19 @@ PROTOTYPE SUB		FLIPSPRITE(n,x,y)
 PROTOTYPE SUB		ORDERSPRITE(n,priority)
 
 ; Position
-PROTOTYPE FUNCTION	SPRITEX(n)
+
+; return the x coordinate of a sprite
+FUNCTION spritex(n)
+	; Get the OAM attributes, shift the coordinate so that 240
+	; becomes 512, then do a modulo 512 (and 511) and shift
+	; the coordinate back, resulting in negative values for
+	; coordinates above 240.
+	; The point of this convoluted arithmetic is to avoid
+	; costly conditionals.
+	RETURN (peek((n SL 3) + &3000000 + 2) _
+	        + (512 - 240) AND 511) - (512 - 240)
+END FUNCTION
+
 PROTOTYPE FUNCTION	SPRITEY(n)
 PROTOTYPE SUB		HIDESPRITE(n)
 PROTOTYPE FUNCTION	SPRITEHIDDEN(n)
