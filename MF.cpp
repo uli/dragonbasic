@@ -2298,6 +2298,7 @@ void Parser::codeAsm(
 	const char *w5,
 	const char *w6)
 {
+	assert(!skip_push);
 	if (w0) parseAsm(w0);
 	if (w1) parseAsm(w1);
 	if (w2) parseAsm(w2);
