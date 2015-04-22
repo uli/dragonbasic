@@ -3112,31 +3112,41 @@ handle_const:
 				codeAsm("sp", "r6", "mov,");
 				// Save return address.
 				codeAsm("lr", "push");
-				// NB: We now have a bogus value in TOS that we
-				// have to discard in the epilog!
 			} else
 				sp_offset = 0;
+			// The current TOS value is a duplicate, so we skip the
+			// next push to eliminate it.
+			skip_push = true;
 		} else if (getNextWordIf("lepilog")) {
+			if (!currently_naked) {
+				// Restore return address.
+				// Because we have skipped the first push after
+				// the prolog to dump the duplicate value, the
+				// return address is now in TOS.
+				codeAsm("r0", "r6", "mov,");
+				// Purge locals from stack.
+				if (num)
+					codeAsm(num, "##", "sp", "add,");
+			} else {
+				// Purge locals from stack.  One of them has
+				// already been popped into TOS, so we purge
+				// four bytes less.
+				assert(num > 0);
+				if (num - 4)
+					codeAsm(num - 4, "##", "sp", "add,");
+			}
+			codeAsm("r0", "pop");
+		} else if (getNextWordIf("flepilog")) {
+			// For non-naked functions the user stack looks like
+			// this:
+			// TOS		return value
+			// SP+0		return address
+			// SP+4 etc.	locals/arguments
+
 			if (!currently_naked) {
 				// Restore return address.
 				codeAsm("r6", "pop");
 			}
-			// Purge locals from stack...
-			codeAsm(num, "##", "sp", "add,");
-			// ...including bogus TOS.
-			codeAsm("r0", "pop");
-		} else if (getNextWordIf("flepilog")) {
-			// Here, the user stack looks like this:
-			// TOS		return value
-			// SP+0		bogus TOS
-			// SP+4		return address
-			// SP+8 etc.	locals/arguments
-
-			if (!currently_naked) {
-				// Dispose of bogus TOS and restore return address.
-				codeAsm("r2", "r6", "pop");
-			} else
-				codeAsm("r2", "pop");
 			// Purge locals and arguments from stack...
 			codeAsm(num, "##", "sp", "add,");
 			// ...and keep TOS because it contains the return
