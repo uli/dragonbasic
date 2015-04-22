@@ -2527,7 +2527,6 @@ void Parser::parseAll()
 	unsigned int word_start = out->addr;
 	unsigned int local_idx = 0;
 	unsigned int num;
-	bool skip_push = false;
 	const char *cond;
 
 parse_next:
@@ -3578,6 +3577,7 @@ Parser::Parser()
 	text_mode = false;
 	currently_naked = false;
 	sp_offset = 0;
+	skip_push = false;
 }
 
 void Output::openOutFile(const char *name)

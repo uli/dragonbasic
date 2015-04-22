@@ -271,6 +271,7 @@ public:
 	bool text_mode;
 	int sp_offset;
 	bool currently_naked;
+	bool skip_push;
 };
 
 extern const char *current_file;
