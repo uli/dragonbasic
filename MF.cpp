@@ -3633,6 +3633,7 @@ Output::Output(unsigned int code_addr, unsigned int var_addr)
 	sym_fp = NULL;
 	iwptr = 0;
 	iwaddr = 0x3001000;
+	currently_iwram = false;
 }
 
 void Output::openSymFile(const char *name)
