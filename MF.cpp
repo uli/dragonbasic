@@ -2814,7 +2814,12 @@ parse_next:
 			getNextWord();
 			getNextWord();
 			codeAsm("r0", "0@", "r2", "ldr,");
-			codeAsm(num, "##", "r2", op[0] == '+' ? "add," : "sub,");
+			if (num <= 0xff)
+				codeAsm(num, "##", "r2", op[0] == '+' ? "add," : "sub,");
+			else {
+				loadR5(num);
+				codeAsm("r5", "r2", "r2", op[0] == '+' ? "add," : "sub,");
+			}
 			codeAsm("r0", "0@", "r2", "str,");
 			codePop("r0");
 		} else {
