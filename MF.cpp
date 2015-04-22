@@ -3037,11 +3037,17 @@ handle_const:
 			} else if (isWordN(0, "*") ||
 				   isWordN(0, "and")) {
 				const char *word = getNextWord();
-				loadR5(num);
-				if (W("*"))
-					codeAsm("r5", "r0", "mul,");
-				else if (W("and"))
-					codeAsm("r5", "r0", "and,");
+				if (W("and") && isPow2(num + 1)) {
+					int l2 = log2(num + 1);
+					codeAsm(32 - l2, "##", "r0", "r0", "lsl,");
+					codeAsm(32 - l2, "##", "r0", "r0", "lsr,");
+				} else {
+					loadR5(num);
+					if (W("*"))
+						codeAsm("r5", "r0", "mul,");
+					else if (W("and"))
+						codeAsm("r5", "r0", "and,");
+				}
 			} else if (!thumb && can_immrot(num) && getNextWordIf("and")) {
 				codeAsm(num, "##", "r0", "r0", "and,");
 			} else {
