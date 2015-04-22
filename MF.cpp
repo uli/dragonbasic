@@ -2473,8 +2473,11 @@ void Parser::checkRelocs()
 
 void Parser::codePush(const char *reg)
 {
-	sp_offset += 4;
-	codeAsm(reg, "push");
+	if (!skip_push) {
+		sp_offset += 4;
+		codeAsm(reg, "push");
+	} else
+		skip_push = false;
 }
 
 void Parser::codePop(const char *reg)
@@ -3026,9 +3029,7 @@ handle_const:
 						} else {
 							// If a local store precedes,
 							// we don't have to push R0.
-							if (!skip_push)
-								codePush("r0");
-							skip_push = false;
+							codePush("r0");
 							codeLocalLoad(num, "r0");
 						}
 					} else if (getNextWordIf("!")) {
