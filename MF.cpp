@@ -2548,6 +2548,7 @@ parse_next:
 				break;
 		}
 		if (!word) {
+			codeBranch(out->ta(), "b,");
 			// DBC does not end "start" with a semicolon :/
 			literals.code(out);
 			checkRelocs();
