@@ -3010,11 +3010,13 @@ handle_const:
 					codeAsm("r5", "r0", "bic,");
 				} else if (getNextWordIf("1+")) {
 					codePush("r0");
-					if (!thumb && can_immrot(num)) {
-						codeAsm(num, "##", "r0",
-							"mov,");
-						codeAsm("0", "##", "r0", "r0",
-							"rsb,");
+					if (can_immrot(num)) {
+						codeAsm(num, "r0", "movi");
+						if (thumb)
+							codeAsm("r0", "r0", "neg,");
+						else
+							codeAsm("0", "##", "r0", "r0",
+								"rsb,");
 					} else {
 						literals.prependNew(-num, out->addr, thumb);
 						codeAsm("pc", "0", "#(", "r0", "ldr,");
