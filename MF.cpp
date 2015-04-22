@@ -2992,7 +2992,10 @@ handle_const:
 						loadR5(num);
 						if (getNextWordIf("a!")) {
 							codeAsm("r5", "r0", "r1", op);
-							codePop("r0");
+							if (getNextWordIf("a@"))
+								codeAsm("r1", "r0", "mov,");
+							else
+								codePop("r0");
 						} else
 							codeAsm("r5", "r0", "r0", op);
 					}
