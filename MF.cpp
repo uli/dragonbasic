@@ -2980,7 +2980,11 @@ handle_const:
 							"r0", op);
 					} else {
 						loadR5(num);
-						codeAsm("r5", "r0", "r0", op);
+						if (getNextWordIf("a!")) {
+							codeAsm("r5", "r0", "r1", op);
+							codePop("r0");
+						} else
+							codeAsm("r5", "r0", "r0", op);
 					}
 
 				}
