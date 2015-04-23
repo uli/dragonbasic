@@ -885,6 +885,9 @@ void Compiler::doCommand(BasicObject *bobj)
 	case CMD_GOTO:
 		doCmdGoto();
 		break;
+	case CMD_SWI:
+		doCmdSwi();
+		break;
 	default:
 		GLB_error(ERR_SYNTAX);
 		return;
@@ -1376,6 +1379,13 @@ void Compiler::doCmdEnd()
 void Compiler::doCmdReset()
 {
 	emitTin("[ASM RESET B, ASM] ");
+}
+
+void Compiler::doCmdSwi()
+{
+	BasicObject *bobj = parser->getObjectWithType(OBJ_NUM,
+					 "SWI number");
+	emitTin("[ASM %d SWI, ASM] ", bobj->val.numeric);
 }
 
 void Compiler::doCmdInterrupt()
@@ -2545,6 +2555,8 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_IWRAM, cur_line);
 	} else if (!strcasecmp(token_name, "goto")) {
 		bobj = new BasicObject(CMD_GOTO, cur_line);
+	} else if (!strcasecmp(token_name, "swi")) {
+		bobj = new BasicObject(CMD_SWI, cur_line);
 	} else {
 		// non-keyword
 		bobj = new BasicObject(OBJ_IDENT, cur_line);
