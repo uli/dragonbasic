@@ -3349,6 +3349,21 @@ handle_const:
 		codePush("r0");
 		// Thumb substitute for "movs"
 		codeAsm("0", "##", "r1", "r0", "add,");
+	} else if (W("+l")) {
+		if (getNextWordIf("@")) {
+			codePush("r0");
+			codeAsm("r4", "r0", "mov,");
+		} else if (getNextWordIf("!")) {
+			if (isWordN(0, "+l") && isWordN(1, "@")) {
+				getNextWord();
+				getNextWord();
+				codeAsm("r0", "r4", "mov,");
+			} else {
+				codeAsm("r0", "r4", "mov,");
+				codePop("r0");
+			}
+		} else
+			abort();
 	} else if (W("c!a")) {
 		if (!thumb)
 			codeAsm("r1", "1", "(#", "r0", "strb,");
