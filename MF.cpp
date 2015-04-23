@@ -2496,6 +2496,9 @@ void Parser::codeLoadConst(unsigned int num, const char *reg)
 	if (r5_const && r5 == num) {
 		DEBUG("loaded %s with 0x%x from r5\n", reg, num);
 		codeAsm("r5", reg, "mov,");
+	} else if (r5_const && num > r5 && num - r5 < 8) {
+		DEBUG("loaded %s with 0x%x using add r5\n", reg, num);
+		codeAsm(num - r5, "##", "r5", "r0", "add,");
 	} else if (can_immrot(num)) {
 		DEBUG("loaded %s with 0x%x using movi\n", reg, num);
 		codeAsm(num, reg, "movi");
