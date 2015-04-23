@@ -1173,6 +1173,11 @@ Icode *Parser::getIcode(const char *word)
 	asm_stack[asp][0] = (x); asm_stack[asp++][1] = (y); \
 } while (0)
 
+#define PUSH_ASM_REG(y) do { \
+	sprintf(asm_text[asp], "r%d", (y)); \
+	asm_stack[asp][0] = ASM_REG; asm_stack[asp++][1] = (y); \
+} while (0)
+
 // next-of-stack type/value macros
 #define NOS_TYPE (asm_stack[asp - 1][0])
 #define NOS_VAL (asm_stack[asp - 1][1])
@@ -1615,7 +1620,7 @@ bool Parser::parseArm(const char *word)
 	} else if (W("movi")) {
 		unsigned int rd = POP_REG;
 		unsigned int val = POP_IMM;
-		codeAsm(val, "##"); PUSH_ASM(ASM_REG, rd); codeAsm("mov,");
+		codeAsm(val, "##"); PUSH_ASM_REG(rd); codeAsm("mov,");
 	} else
 		return false;
 
@@ -2013,10 +2018,10 @@ short_branch:
 		unsigned int val = POP_IMM;
 		int lsl;
 		immshift(&val, &lsl);
-		codeAsm(val, "##"); PUSH_ASM(ASM_REG, rd); codeAsm("mov,");
+		codeAsm(val, "##"); PUSH_ASM_REG(rd); codeAsm("mov,");
 		if (lsl) {
-			codeAsm(lsl, "##"); PUSH_ASM(ASM_REG, rd);
-			PUSH_ASM(ASM_REG, rd); codeAsm("lsl,");
+			codeAsm(lsl, "##"); PUSH_ASM_REG(rd);
+			PUSH_ASM_REG(rd); codeAsm("lsl,");
 		}
 	} else if (W("tothumb")) {
 		// We have been called as ARM, but want to be Thumb.
@@ -2095,37 +2100,37 @@ void Parser::parseAsm(const char *word)
 #endif
 
 	if (W("r0") || W("tos"))
-		PUSH_ASM(ASM_REG, REG_TOS);
+		PUSH_ASM_REG(REG_TOS);
 	else if (W("r1") || W("a"))
-		PUSH_ASM(ASM_REG, REG_R1);
+		PUSH_ASM_REG(REG_R1);
 	else if (W("r2") || W("v0"))
-		PUSH_ASM(ASM_REG, REG_V0);
+		PUSH_ASM_REG(REG_V0);
 	else if (W("r3") || W("v1"))
-		PUSH_ASM(ASM_REG, REG_V1);
+		PUSH_ASM_REG(REG_V1);
 	else if (W("r4") || W("v2"))
-		PUSH_ASM(ASM_REG, REG_V2);
+		PUSH_ASM_REG(REG_V2);
 	else if (W("r5") || W("w"))
-		PUSH_ASM(ASM_REG, REG_W);
+		PUSH_ASM_REG(REG_W);
 	else if (W("r6") || W("u"))
-		PUSH_ASM(ASM_REG, REG_U);
+		PUSH_ASM_REG(REG_U);
 	else if (W("r7") || W("rsp"))
-		PUSH_ASM(ASM_REG, REG_RSP);
+		PUSH_ASM_REG(REG_RSP);
 	else if (W("r8") || W("v3"))
-		PUSH_ASM(ASM_REG, REG_V3);
+		PUSH_ASM_REG(REG_V3);
 	else if (W("r9") || W("v4"))
-		PUSH_ASM(ASM_REG, REG_V4);
+		PUSH_ASM_REG(REG_V4);
 	else if (W("r10") || W("v5"))
-		PUSH_ASM(ASM_REG, REG_V5);
+		PUSH_ASM_REG(REG_V5);
 	else if (W("r11") || W("v6"))
-		PUSH_ASM(ASM_REG, REG_V6);
+		PUSH_ASM_REG(REG_V6);
 	else if (W("r12") || W("v7"))
-		PUSH_ASM(ASM_REG, REG_R12);
+		PUSH_ASM_REG(REG_R12);
 	else if (W("r13") || W("sp"))
-		PUSH_ASM(ASM_REG, REG_SP);
+		PUSH_ASM_REG(REG_SP);
 	else if (W("r14") || W("lr"))
-		PUSH_ASM(ASM_REG, REG_LR);
+		PUSH_ASM_REG(REG_LR);
 	else if (W("r15") || W("pc"))
-		PUSH_ASM(ASM_REG, REG_PC);
+		PUSH_ASM_REG(REG_PC);
 
 	else if (W("da"))
 		PUSH_ASM(ASM_DIR, DIR_DA);
