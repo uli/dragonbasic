@@ -3531,6 +3531,17 @@ do_ifwhile:
 			rsp++;
 			codeBranch(out->ta(), "b,");
 		}
+	} else if (W("poke") || W("pokeb") || W("pokew")) {
+		codePop("r2");
+		const char *op;
+		switch (word[4]) {
+			case 0: op = "strh,"; break;
+			case 'b': op = "strb,"; break;
+			case 'w': op = "str," ; break;
+			default: abort();
+		}
+		codeAsm("r2", "0@", "r0", op);
+		codePop("r0");
 	} else if (out->use_pimp && W("modvblank")) {
 		codePush("r0");
 		invalR5();
