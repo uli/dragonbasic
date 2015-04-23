@@ -1174,7 +1174,12 @@ Icode *Parser::getIcode(const char *word)
 } while (0)
 
 #define PUSH_ASM_REG(y) do { \
-	sprintf(asm_text[asp], "r%d", (y)); \
+	switch (y) { \
+		case REG_SP: strcpy(asm_text[asp], "sp"); break; \
+		case REG_LR: strcpy(asm_text[asp], "lr"); break; \
+		case REG_PC: strcpy(asm_text[asp], "pc"); break; \
+		default: sprintf(asm_text[asp], "r%d", (y)); break; \
+	} \
 	asm_stack[asp][0] = ASM_REG; asm_stack[asp++][1] = (y); \
 } while (0)
 
