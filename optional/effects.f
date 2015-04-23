@@ -125,10 +125,10 @@ code-thumb fadein ( -- )
 	w $4 #( a strh,		\ REGISTERS + $54
 	1 ## v1 v1 add,
 	
-	v0 v1 push
+	v0 v1 w push
 	vblank bl,
 	vblank bl,
-	v0 v1 pop
+	v0 v1 w pop
 
 	\ Loop 16 times
 	$10 ## v1 cmp,
