@@ -2990,6 +2990,10 @@ handle_const:
 				getNextWord();
 				getNextWord();
 				codeAsm("r0", num, "#(", "r0", "ldrb,");
+			} else if (getNextWordIf("peek")) {
+				codePush("r0");
+				loadR5(num);
+				codeAsm("r5", "0@", "r0", "ldrh,");
 			} else if (isWordN(1, "#") && isWordN(2, "pokew")) {
 				unsigned int num2 = TIN_parseNum(getNextWord());
 				getNextWord();
