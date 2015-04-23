@@ -3159,6 +3159,10 @@ handle_const:
 						} else if (!skip_push && getNextWordIf("-")) {
 							codeLocalLoad(num, "r2");
 							codeAsm("r2", "r0", "r0", "sub,");
+						} else if (!skip_push && getNextWordIf("poke")) {
+							codeLocalLoad(num, "r2");
+							codeAsm("r0", "0@", "r2", "strh,");
+							codePop("r0");
 						} else {
 							// If a local store precedes,
 							// we don't have to push R0.
