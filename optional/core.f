@@ -123,41 +123,6 @@ code-thumb erase ( a u -- )
 	ret
 end-code
 
-\ set the graphics mode
-code-thumb graphics ( mode sprites -- )
-	v1 pop
-	
-	\ ready r2
-	0 ## v2 mov,
-	0 ## tos cmp,
-	
-	\ set the sprite bit
-	4 #offset eq? b,
-	$1040 tos literal
-	
-	\ bitmapped modes enable bg 2
-	3 ## v1 cmp,
-	8 #offset lt? b,
-	$4 ## v2 mov,
-	8 ## v2 v2 lsl,
-	
-	\ write mode to REG_DISPCNT
-	v1 v2 orr,
-	tos v2 orr,
-	$40 ## tos mov,
-	20 ## tos tos lsl,	\ REGISTERS
-	tos 0@ v2 strh,
-
-	\ store VRAM address
-	$60 ## tos mov,
-	20 ## tos tos lsl,	\ VRAM
-	tos push
-	
-	\ erase VRAM
-	$17fff tos literal
-	erase b,
-end-code
-
 \ return the current scanline
 icode-thumb scanline 4 ( -- n )
 	tos push

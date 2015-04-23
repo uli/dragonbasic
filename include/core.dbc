@@ -22,7 +22,18 @@ PROTOTYPE SUB       COPY(address,source,bytes)
 PROTOTYPE SUB       ERASE(address,bytes)
 
 ; Graphics mode routines
-PROTOTYPE SUB       GRAPHICS(mode,sprites)
+
+; set the graphics mode
+SUB graphics(mode, sprites)
+	; for bitmapped modes enable BG 2
+	IF mode >= 3 THEN mode = mode OR &400
+	; set the sprite bit
+	IF sprites THEN mode = mode OR &1040
+	; set REG_DISPCNT
+	poke &4000000, mode
+	; erase VRAM
+	erase &6000000, &18000
+END SUB
 
 ; wait for the next vertical blank
 ; XXX: This assumes that the user vblank handler does not touch DISPCNT or
