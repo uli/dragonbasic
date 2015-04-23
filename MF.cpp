@@ -78,6 +78,7 @@ Icode::Icode()
 	len = 0;
 	next = NULL;
 	thumb = false;
+	sp_offset = 0;
 }
 
 Icode::Icode(const char *word)
@@ -2634,8 +2635,10 @@ parse_next:
 	} else if (W("icode") || W("icode-thumb") || W(":i")) {
 		cur_icode = icodes.appendNew(getNextWord());
 		DEBUG("===start icode %s\n", cur_icode->word);
-		if (word[0] != ':')
+		if (word[0] != ':') {
+			cur_icode->sp_offset = TIN_parseNum(getNextWord());
 			asm_mode = true;
+		}
 		if ((word[5] == '-' && word[6] == 't') || word[0] == ':') {
 			thumb = true;
 			cur_icode->thumb = true;
@@ -2678,6 +2681,11 @@ parse_next:
 		sp_offset = 0xffff;
 	} else if (W("end-code")|| (W(";") && cur_icode)) {
 		if (cur_icode) {
+			if (word[0] == ';') {
+				cur_icode->sp_offset = sp_offset - 0xffff;
+				DEBUG("icode TIN sp_offset %d\n", cur_icode->sp_offset);
+			} else
+				DEBUG("icode ASM sp_offset %d\n", cur_icode->sp_offset);
 			cur_icode = 0;
 			if (literals.next)
 				GLB_error("literals not allowed in inlined code\n");
@@ -3620,8 +3628,30 @@ do_ifwhile:
 			memcpy(cur_icode->cp, icode->code, icode->len);
 			cur_icode->cp += icode->len;
 			cur_icode->len += icode->len;
-		} else
+			if (asm_mode)
+				cur_icode->sp_offset += icode->sp_offset;
+			else
+				sp_offset += icode->sp_offset;
+		} else {
+			if (sp_offset < 0 && icode->sp_offset > 0) {
+				// We skipped the pop, but the inlined code
+				// assumes we didn't, so we add an extra
+				// pop.
+				DEBUG("extra pop to get under water\n");
+				codeAsm("r0", "pop");
+			}
 			out->emitString(icode->code, icode->len);
+			sp_offset += icode->sp_offset;
+			if (sp_offset < 0) {
+				// We're underwater, so the next push will be
+				// skipped.  That is incorrect, though, because
+				// the inline code has actually performed
+				// the corresponding pop, so we sneak in an
+				// extra push to correct that.
+				DEBUG("extra push to get to the surface\n");
+				codeAsm("r0", "push");
+			}
+		}
 
 		if (change) {
 			if (icode->thumb)

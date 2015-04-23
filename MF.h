@@ -53,6 +53,7 @@ public:
 	int len;
 	bool thumb;
 	Icode *next;
+	int sp_offset;
 };
 
 class Symbol {

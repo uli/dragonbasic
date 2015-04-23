@@ -17,7 +17,7 @@ code-thumb display-mode ( -- n )
 end-code
 
 \ return the width (in bytes) of the display (inlined)
-icode-thumb view-width ( mode -- u )
+icode-thumb view-width 0 ( mode -- u )
 	\ works for only modes 3 and 5!
 	tos w mov,
 	160 ## tos mov,
@@ -28,7 +28,7 @@ icode-thumb view-width ( mode -- u )
 end-code
 
 \ return the size (in words) of the display (inlined)
-icode-thumb view-size ( mode -- u )
+icode-thumb view-size 0 ( mode -- u )
 	\ set mode 3 display size
 	$4b ## w mov,
 	8 ## w w lsl,	\ $4b00

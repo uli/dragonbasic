@@ -2,12 +2,12 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ return the length of a string (inlined)
-icode-thumb len ( a -- u )
+icode-thumb len 0 ( a -- u )
 	tos 0@ tos ldrb,
 end-code
 
 \ return the address and length of a string (inlined)
-icode-thumb count ( a -- a+1 u )
+icode-thumb count 4 ( a -- a+1 u )
 	tos w mov,
 	w 0@ tos ldrb,
 	1 ## w w add,
@@ -15,7 +15,7 @@ icode-thumb count ( a -- a+1 u )
 end-code
 
 \ resize the length of a string
-icode-thumb resize ( a u -- )
+icode-thumb resize -8 ( a u -- )
 	w pop
 	w 0@ tos strb,
 	tos pop

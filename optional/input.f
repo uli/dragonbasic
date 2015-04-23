@@ -26,7 +26,7 @@ code-thumb input ( n -- )
 end-code
 
 \ return the status of a button (0=released)
-icode-thumb key ( n1 -- n2 )
+icode-thumb key 0 ( n1 -- n2 )
 	REGISTERS v1 movi
 	$f8 ## v1 add,		\ REGISTERS + $f8
 	v1 $38 #( v2 ldrh,	\ REGISTERS + $130

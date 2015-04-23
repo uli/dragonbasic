@@ -2,7 +2,7 @@
   -- Copyright (c) 2003 by Jeff Massung }
 
 \ return the VRAM address of tile data (inlined)
-icode-thumb charblock ( n -- a )
+icode-thumb charblock 0 ( n -- a )
 	$60 ## v2 mov,
 	20 ## v2 v2 lsl,
 	14 ## tos tos lsl,
@@ -10,7 +10,7 @@ icode-thumb charblock ( n -- a )
 end-code
 
 \ return the VRAM address of map data (inlined)
-icode-thumb screenblock ( n -- a )
+icode-thumb screenblock 0 ( n -- a )
 	VRAM w movi
 	11 ## tos tos lsl,
 	w tos tos add,
@@ -43,7 +43,7 @@ code-thumb tile ( screen x y -- a )
 end-code
 
 \ returns the index of a tile (inlined)
-icode-thumb gettile ( a -- u )
+icode-thumb gettile 0 ( a -- u )
 	tos 0@ tos ldrh,
 	$fc00 v0 movi
 	v0 tos bic,
@@ -67,7 +67,7 @@ code-thumb settile ( a u -- )
 end-code
 
 \ sets the index of a tile without preserving palette number
-icode-thumb settilefast ( a u -- )
+icode-thumb settilefast -8 ( a u -- )
 	w pop
 	w 0@ tos strh,
 	tos pop

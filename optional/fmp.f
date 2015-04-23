@@ -21,30 +21,30 @@
   -- Ulrich Hecht
   -- ulrich.hecht@gmail.com }
 
-icode-thumb fmppaladdr ( fmp -- v )
+icode-thumb fmppaladdr 0 ( fmp -- v )
 	tos 0@ tos ldr,
 end-code
 
-icode-thumb fmptileaddr ( fmp -- v )
+icode-thumb fmptileaddr 0 ( fmp -- v )
 	tos 4 #( tos ldr,
 end-code
 
-icode-thumb fmptilesize ( fmp -- v )
+icode-thumb fmptilesize 0 ( fmp -- v )
 	tos 12 #( tos ldrb,
 end-code
 
-icode-thumb fmpwidth ( fmp -- v )
+icode-thumb fmpwidth 0 ( fmp -- v )
 	tos 14 #( tos ldrb,
 end-code
 
-icode-thumb fmpheight ( fmp -- v)
+icode-thumb fmpheight 0 ( fmp -- v)
 	tos 15 #( tos ldrb,
 end-code
 
-icode-thumb fmptiles ( fmp -- v )
+icode-thumb fmptiles 0 ( fmp -- v )
 	tos 16 #( tos ldrh,
 end-code
 
-icode-thumb fmplayers ( fmp -- v )
+icode-thumb fmplayers 0 ( fmp -- v )
 	tos 18 #( tos ldrh,
 end-code

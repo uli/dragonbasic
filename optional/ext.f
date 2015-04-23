@@ -2,7 +2,7 @@
   -- Original code by Jeff Massung, 2003 }
 
 \ word aligned address
-icode-thumb aligned ( a1 -- a2 )
+icode-thumb aligned 0 ( a1 -- a2 )
 	3 ## tos add,
 	3 ## v0 mov,
 	v0 tos bic,
@@ -65,29 +65,29 @@ code-thumb blocks ( w h d -- u )
 end-code
 
 \ return the number of bytes used by blocks (inlined)
-icode-thumb tileoffset ( n -- u )
+icode-thumb tileoffset 0 ( n -- u )
 	5 ## tos tos lsl,
 end-code
 
 \ inlined absolute value
-icode-thumb abs ( n1 -- n2 )
+icode-thumb abs 0 ( n1 -- n2 )
 	0 ## tos cmp,
 	4 #offset pl? b,
 	tos tos neg,
 end-code
 
 \ inlined square root
-icode-thumb sqrt ( n1 -- n2 )
+icode-thumb sqrt 0 ( n1 -- n2 )
 	8 swi,
 end-code
 
 \ convert an integer to a fixed-point number (inline)
-icode-thumb fix# ( n -- f )
+icode-thumb fix# 0 ( n -- f )
 	8 ## tos tos lsl,
 end-code
 
 \ convert a fixed-point value to an integer (inline)
-icode-thumb int ( f -- n )
+icode-thumb int 0 ( f -- n )
 	8 ## tos tos asr,
 end-code
 
@@ -95,7 +95,7 @@ end-code
 :i round ( f -- n ) $80 # + int ;
 
 \ fixed-point square root
-icode-thumb fsqrt# ( f1 -- f2 )
+icode-thumb fsqrt# 0 ( f1 -- f2 )
 	8 swi,
 	4 ## tos tos lsl,
 end-code
