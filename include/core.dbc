@@ -29,7 +29,7 @@ PROTOTYPE SUB       GRAPHICS(mode,sprites)
 ; IE...
 SUB vblank
 	LOCAL old_dispcnt, old_ie
-	LOCAL ie, dispcnt
+	LOCAL REGISTER ie, dispcnt
 
 	; Loading the constants here is more work overall, but makes for a
 	; faster return when the halt SWI is finished.
