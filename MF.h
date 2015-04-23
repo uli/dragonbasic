@@ -215,6 +215,7 @@ public:
 		r5_const = false;
 	}
 	void loadR5(unsigned int num);
+	void codeLoadConst(unsigned int num, const char *reg);
 
 private:
 	// These numbers reflect the instruction groups as defined in the

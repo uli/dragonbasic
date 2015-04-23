@@ -2465,6 +2465,25 @@ void Parser::loadR5(unsigned int num)
 	}
 }
 
+void Parser::codeLoadConst(unsigned int num, const char *reg)
+{
+	if (r5_const && r5 == num) {
+		DEBUG("loaded %s with 0x%x from r5\n", reg, num);
+		codeAsm("r5", reg, "mov,");
+	} else if (can_immrot(num)) {
+		DEBUG("loaded %s with 0x%x using movi\n", reg, num);
+		codeAsm(num, reg, "movi");
+	} else if (can_immrot(num & 0xffffff00)) {
+		DEBUG("loaded %s with 0x%x using movi/add\n", reg, num);
+		codeAsm(num & 0xffffff00, reg, "movi");
+		codeAsm(num & 0xff, "##", reg, "add,");
+	} else {
+		DEBUG("loaded %s with 0x%x using ldr pc\n", reg, num);
+		literals.prependNew(num, out->addr, thumb);
+		codeAsm("pc", "0", "#(", reg, "ldr,");
+	}
+}
+
 void Parser::checkRelocs()
 {
 	for (int i = 0; i < rsp; i++) {
