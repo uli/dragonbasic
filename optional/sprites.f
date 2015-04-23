@@ -162,40 +162,6 @@ code-thumb hidesprite ( sprite -- )
 	ret
 end-code
 
-\ returns -1 if sprite is offscreen or 0 if onscreen
-code-thumb spritehidden ( sprite -- flag )
-	$30 ## w mov,
-	20 ## w w lsl,	\ IWRAM
-	3 ## tos tos lsl,
-	w tos tos add,
-	
-	\ check y >= 160
-	tos 0@ w ldrh,
-	$ff ## r1 mov,
-	8 ## r1 r1 lsl,	\ $ff00
-	r1 w bic,
-	$a0 ## w cmp,
-	8 #offset lt? b,
-	0 ## tos mov,
-	tos tos mvn,	\ tos = -1
-	ret
-	
-	\ check x >= 240
-	tos 2 #( w ldrh,
-	$fe ## r1 mov,
-	8 ## r1 r1 lsl,
-	r1 w bic,
-	$f0 ## w cmp,
-	8 #offset lt? b,
-	0 ## tos mov,
-	tos tos mvn,	\ tos = -1
-	ret
-	
-	\ done
-	0 ## tos mov, \ tos = 0
-	ret
-end-code
-
 \ set the absolute position of a sprite
 code-thumb iwram positionsprite ( sprite x y -- )
 	v1 v2 pop

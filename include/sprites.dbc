@@ -69,7 +69,16 @@ FUNCTION spritey(n)
 END FUNCTION
 
 PROTOTYPE SUB		HIDESPRITE(n)
-PROTOTYPE FUNCTION	SPRITEHIDDEN(n)
+
+; returns -1 if sprite is offscreen or 0 if onscreen
+FUNCTION spritehidden(n)
+	LOCAL REGISTER x
+	x = (n SL 3) + &3000000
+	IF peekb(x) >= 160 THEN RETURN -1
+	IF (peek(x + 2) AND &1ff) >= 240 THEN RETURN -1
+	RETURN 0
+END FUNCTION
+
 PROTOTYPE SUB		POSITIONSPRITE(n,x,y)
 PROTOTYPE SUB		MOVESPRITE(n,dx,dy)
 
