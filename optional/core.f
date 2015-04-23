@@ -5,9 +5,6 @@
 icode-thumb peek 0 ( a -- h ) tos 0@ tos ldrh, end-code
 icode-thumb peekb 0 ( a -- h ) tos 0@ tos ldrb, end-code
 icode-thumb peekw 0 ( a -- h ) tos 0@ tos ldr, end-code
-icode-thumb poke -8 ( a h -- ) w pop w 0@ tos strh, tos pop end-code
-icode-thumb pokeb -8 ( a h -- ) w pop w 0@ tos strb, tos pop end-code
-icode-thumb pokew -8 ( a h -- ) w pop w 0@ tos str, tos pop end-code
 
 \ divide and modulo
 :i / ( n1 n2 -- n3 ) swap a! 7 swi ;
