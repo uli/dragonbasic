@@ -2060,12 +2060,38 @@ void Parser::resolveRelocs(const char *label)
 	}
 }
 
+void Parser::debugAsm(const char *word, bool pseudo)
+{
+#ifndef NDEBUG
+	if (!pseudo) {
+		unsigned int addr;
+		if (cur_icode)
+			addr = cur_icode->cp - cur_icode->code -
+			       (thumb ? 2 : 4);
+		else
+			addr = debug_old_addr;
+		DEBUG("%07X  ", addr);
+		if (thumb)
+			DEBUGN("    %04x", last_insn);
+		else
+			DEBUGN("%08x", last_insn);
+	} else
+		DEBUG("                 ");
+
+	DEBUGN("  %s", word);
+	for (int i = debug_old_asp - 1; i >= 0; i--) {
+		DEBUGN(" %s", asm_text[i]);
+	}
+	DEBUGN("\n");
+#endif
+}
+
 void Parser::parseAsm(const char *word)
 {
 	Symbol *sym;
 #ifndef NDEBUG
-	int old_asp = asp;
-	unsigned int old_addr = out->ta();
+	debug_old_asp = asp;
+	debug_old_addr = out->ta();
 #endif
 
 	if (W("r0") || W("tos"))
@@ -2173,24 +2199,6 @@ void Parser::parseAsm(const char *word)
 			GLB_error("too many operands\n");
 		else if (asp < 0)
 			GLB_error("too few operands\n");
-#ifndef NDEBUG
-		unsigned int addr;
-		if (cur_icode)
-			addr = cur_icode->cp - cur_icode->code -
-			       (thumb ? 2 : 4);
-		else
-			addr = old_addr;
-		DEBUG("%07X  ", addr);
-		if (thumb)
-			DEBUGN("    %04x", last_insn);
-		else
-			DEBUGN("%08x", last_insn);
-		DEBUGN("  %s", word);
-		for (int i = old_asp - 1; i >= 0; i--) {
-			DEBUGN(" %s", asm_text[i]);
-		}
-		DEBUGN("\n");
-#endif
 	} else if (W("l:")) {
 		const char *label = getNextWord();
 		asm_labels[lsp].label = strdup(label);
@@ -3729,6 +3737,8 @@ Parser::Parser()
 	skip_push = false;
 	first_local_in_tos = -1;
 	underwater = false;
+	debug_old_addr = 0;
+	debug_old_asp = 0;
 }
 
 void Output::openOutFile(const char *name)

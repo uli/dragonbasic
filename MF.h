@@ -179,6 +179,7 @@ public:
 	Symbol *getSymbol(const char *word);
 	Icode *getIcode(const char *word);
 	void parseAsm(const char *word);
+	void debugAsm(const char *word, bool pseudo = false);
 	void parseAll();
 	void codeAsm(const char *w0, const char *w1 = NULL,
 		     const char *w2 = NULL, const char *w3 = NULL,
@@ -235,6 +236,8 @@ private:
 
 	unsigned int POP_VAL_TYPE(unsigned int x);
 	unsigned int POP_TREG();
+
+	int debug_old_addr, debug_old_asp;
 
 public:
 	Output *out;
