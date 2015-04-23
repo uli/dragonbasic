@@ -3018,16 +3018,20 @@ handle_const:
 				codePush("r0");
 				loadR5(num);
 				codeAsm("r5", "0@", "r0", "ldrh,");
-			} else if (isWordN(1, "#") && isWordN(2, "pokew")) {
+			} else if (isWordN(1, "#") && (isWordN(2, "pokew") ||
+				   isWordN(2, "poke") || isWordN(2, "pokeb"))) {
 				unsigned int num2 = TIN_parseNum(getNextWord());
 				getNextWord();
-				getNextWord();
-				if (can_immrot(num2))
-					codeAsm(num2, "r2", "movi");
-				else
-					codeAsm(num2, "r2", "literal");
+				const char *op;
+				switch (getNextWord()[4]) {
+					case 0: op = "strh,"; break;
+					case 'b': op = "strb,"; break;
+					case 'w': op = "str,"; break;
+					default: abort();
+				}
+				codeLoadConst(num2, "r2");
 				loadR5(num);
-				codeAsm("r5", "0@", "r2", "str,");
+				codeAsm("r5", "0@", "r2", op);
 			} else if (isWordN(0, "+") ||
 				   isWordN(0, "-")) {
 				const char *op;
