@@ -66,6 +66,7 @@ Subroutine::Subroutine(const char *ident, bool is_function,
 	can_be_naked = true;
 	tin_start = NULL;
 	is_inline = false;
+	has_regvar = false;
 }
 
 Subroutine::~Subroutine()
@@ -1099,16 +1100,25 @@ void Compiler::doCmdDim()
 void Compiler::doCmdLocal()
 {
 	BasicObject *bobj;
+	bool regvar = false;
 
 	// Locals can only be declared at the start of a subroutine.
 	checkNotSegment(SEG_INTR | SEG_SUB, "LOCAL");
 
 	do {
+		if (parser->getNextCmd(CMD_REGISTER)) {
+			if (sub_head->has_regvar)
+				GLB_error("more than one register variable\n");
+			sub_head->has_regvar = regvar = true;
+		} else
+			regvar = false;
 		bobj = parser->getObjectWithType(OBJ_IDENT, "Identifier");
 		if (bobj->vtype == VAR_ARRAY)
 			GLB_error(ERR_TYPE_MISMATCH);
-		sub_head->addLocal(bobj->val.symbolic, bobj->vtype);
+		if (!regvar)
+			sub_head->addLocal(bobj->val.symbolic, bobj->vtype);
 		addSubLocal(bobj->val.symbolic, bobj->vtype);
+		sub_locals_head->is_regvar = regvar;
 	} while (parser->requireRop(ROP_COMMA));
 }
 
@@ -1129,9 +1139,10 @@ void Compiler::doCmdReturn(bool eof)
 
 	if (eof) {
 		emitTin("; ");
-		if (sub_head->can_be_naked) {
+		if (sub_head->can_be_naked)
 			sub_head->tin_start->text[1] = 'n';
-		}
+		else if (sub_head->has_regvar)
+			GLB_error("register variables only allowed in leaf routines\n");
 	} else
 		emitTin(";r ");
 
@@ -1373,8 +1384,12 @@ void Compiler::doCmdEnd()
 		if (!is_top_level)
 			GLB_error(ERR_RETVAL);
 		emitTin(";l ");
+
 		if (sub_head->can_be_naked)
 			sub_head->tin_start->text[1] = 'n';
+		else if (sub_head->has_regvar)
+			GLB_error("register variables only allowed in leaf routines\n");
+
 		cur_seg = SEG_TOP;
 		break;
 	default:
@@ -1593,6 +1608,7 @@ void Compiler::doRval(BasicObject *bobj)
 {
 	Variable *arr;
 	Variable *global;
+	Variable *local;
 
 	if (bobj->otype == OBJ_ARR) {
 		arr = var_head->findByIdent(bobj->val.symbolic);
@@ -1607,9 +1623,12 @@ void Compiler::doRval(BasicObject *bobj)
 		if (sub_args_head->findByIdent(bobj->val.symbolic)) {
 			emitTin("%s::%s # +R ", sub_head->ident,
 				bobj->val.symbolic);
-		} else if (sub_locals_head->findByIdent(bobj->val.symbolic)) {
-			emitTin("%s::%s # +R ", sub_head->ident,
-				bobj->val.symbolic);
+		} else if ((local = sub_locals_head->findByIdent(bobj->val.symbolic))) {
+			if (local->is_regvar)
+				emitTin("+L ");
+			else
+				emitTin("%s::%s # +R ", sub_head->ident,
+					bobj->val.symbolic);
 		} else {
 			global = var_head->findByIdent(bobj->val.symbolic);
 			if (!global)
@@ -1700,8 +1719,11 @@ void Compiler::doOperand(BasicObject *bobj)
 
 	if (sub_args_head->findByIdent(bobj->val.symbolic)) {
 		emitTin("%s::%s # +R @ ", sub_head->ident, bobj->val.symbolic);
-	} else if (sub_locals_head->findByIdent(bobj->val.symbolic)) {
-		emitTin("%s::%s # +R @ ", sub_head->ident, bobj->val.symbolic);
+	} else if ((var = sub_locals_head->findByIdent(bobj->val.symbolic))) {
+		if (var->is_regvar)
+			emitTin("+L @ ");
+		else
+			emitTin("%s::%s # +R @ ", sub_head->ident, bobj->val.symbolic);
 	} else {
 		var = var_head->findByIdent(bobj->val.symbolic);
 		if (var) {
@@ -2567,6 +2589,8 @@ BasicObject *Parser::parseToken()
 		bobj = new BasicObject(CMD_GOTO, cur_line);
 	} else if (!strcasecmp(token_name, "swi")) {
 		bobj = new BasicObject(CMD_SWI, cur_line);
+	} else if (!strcasecmp(token_name, "register")) {
+		bobj = new BasicObject(CMD_REGISTER, cur_line);
 	} else {
 		// non-keyword
 		bobj = new BasicObject(OBJ_IDENT, cur_line);

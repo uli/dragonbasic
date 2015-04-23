@@ -125,6 +125,7 @@ public:
 	bool can_be_naked;
 	TIN *tin_start;
 	bool is_inline;
+	bool has_regvar;
 };
 
 enum segment_t {
@@ -176,6 +177,7 @@ enum cmd_t {
 	CMD_GOTO,
 	CMD_INLINE,
 	CMD_SWI,
+	CMD_REGISTER,
 };
 
 struct LoopStackEntry {
@@ -208,6 +210,7 @@ public:
 	char ident[256];
 	int vtype;
 	Variable *next;
+	bool is_regvar;
 };
 
 enum op_t {
