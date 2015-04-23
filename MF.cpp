@@ -2479,8 +2479,10 @@ void Parser::codePush(const char *reg)
 		sp_offset += 4;
 		if (sp_offset > 0)
 			codeAsm(reg, "push");
-		else
+		else {
 			DEBUG("skipped underwater push\n");
+			underwater = false;
+		}
 	} else {
 		skip_push = false;
 	}
@@ -2491,12 +2493,15 @@ void Parser::codePop(const char *reg)
 	sp_offset -= 4;
 	if (sp_offset >= 0)
 		codeAsm(reg, "pop");
-	else
+	else {
 		DEBUG("skipped underwater pop\n");
+		underwater = true;
+	}
 }
 
 void Parser::codeLocalLoad(int num, const char *reg)
 {
+	assert(!underwater);
 	if (first_local_in_tos >= 0 && num == first_local_in_tos) {
 		DEBUG("skipped load of local in TOS\n");
 		return;
@@ -2510,6 +2515,7 @@ void Parser::codeLocalLoad(int num, const char *reg)
 
 void Parser::codeLocalStore(int num, const char *reg)
 {
+	assert(!underwater);
 	if (currently_naked)
 		codeAsm("sp", num + sp_offset, "#(", reg, "str,");
 	else
@@ -2518,6 +2524,7 @@ void Parser::codeLocalStore(int num, const char *reg)
 
 void Parser::codeGetLocalAddr(int num, const char *reg)
 {
+	assert(!underwater);
 	if (currently_naked)
 		codeAsm(num + sp_offset, "##", "sp", reg, "add,");
 	else
@@ -2526,6 +2533,7 @@ void Parser::codeGetLocalAddr(int num, const char *reg)
 
 void Parser::codeAddLocalBase(const char *reg)
 {
+	assert(!underwater);
 	if (currently_naked)
 		codeAsm(sp_offset, "##", "sp", reg, "add,");
 	else
@@ -2729,6 +2737,7 @@ parse_next:
 		local_idx = 0;
 		GLB_setCurrentWord(ident);
 		sp_offset = 0xffff;
+		underwater = false;
 	} else if (W("label")) {
 		out->alignDword();
 		sym = symbols.appendNew(out->addr, getNextWord());
@@ -3649,6 +3658,7 @@ Parser::Parser()
 	sp_offset = 0;
 	skip_push = false;
 	first_local_in_tos = -1;
+	underwater = false;
 }
 
 void Output::openOutFile(const char *name)

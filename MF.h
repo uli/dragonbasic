@@ -273,6 +273,7 @@ public:
 	bool currently_naked;
 	bool skip_push;
 	int first_local_in_tos;
+	bool underwater;
 };
 
 extern const char *current_file;
