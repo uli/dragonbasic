@@ -23,5 +23,32 @@ PROTOTYPE SUB       ERASE(address,bytes)
 
 ; Graphics mode routines
 PROTOTYPE SUB       GRAPHICS(mode,sprites)
-PROTOTYPE SUB       VBLANK
+
+; wait for the next vertical blank
+; XXX: This assumes that the user vblank handler does not touch DISPCNT or
+; IE...
+SUB vblank
+	LOCAL old_dispcnt, old_ie
+	LOCAL ie, dispcnt
+
+	; Loading the constants here is more work overall, but makes for a
+	; faster return when the halt SWI is finished.
+	dispcnt = &4000004
+	ie = &4000200
+
+	; enable vblank interrupt in DISPCNT
+	old_dispcnt = peek(dispcnt)
+	poke dispcnt, old_dispcnt OR 8
+
+	; enable vblank interrupt in IE
+	old_ie = peek(ie)
+	poke ie, old_ie OR 1
+
+	swi 5	; VBlankIntrWait
+
+	; restore old settings
+	poke dispcnt, old_dispcnt
+	poke ie, old_ie
+END SUB
+
 PROTOTYPE INLINE FUNCTION	SCANLINE

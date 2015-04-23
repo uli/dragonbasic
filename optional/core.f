@@ -158,39 +158,6 @@ code-thumb graphics ( mode sprites -- )
 	erase b,
 end-code
 
-\ wait for the next vertical blank
-\ XXX: This assumes that the user vblank handler does not touch DISPCNT or
-\ IE...
-code-thumb vblank ( -- )
-	tos push
-
-	\ enable vblank interrupt in DISPCNT
-	$4000000 v0 movi
-	v0 4 #( v1 ldrh,
-	v1 push		\ push current setting for later
-	8 ## v2 mov,
-	v2 v1 orr,
-	v0 4 #( v1 strh,
-
-	\ enable vblank interrupt in IE
-	$4000200 v0 literal
-	v0 0@ v1 ldrh,
-	v0 v1 push		\ push IE setting and address for later
-	1 ## v2 mov,
-	v2 v1 orr,
-	v0 0@ v1 strh,	\ enable vblank interrupt
-
-	5 swi,		\ VBlankIntrWait
-
-	v0 v1 v2 pop		\ pop IE address, IE setting, DISPCNT setting
-	v0 0@ v1 strh,		\ restore IE value
-	$4000000 v0 movi
-	v0 4 #( v2 strh,	\ restore DISPCNT value
-
-	tos pop
-	ret
-end-code
-
 \ return the current scanline
 icode-thumb scanline 4 ( -- n )
 	tos push
