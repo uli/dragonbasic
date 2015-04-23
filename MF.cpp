@@ -3091,7 +3091,8 @@ handle_const:
 					}
 				}
 			} else if (isWordN(0, "*") ||
-				   isWordN(0, "and")) {
+				   isWordN(0, "and") ||
+				   isWordN(0, "or")) {
 				const char *word = getNextWord();
 				if (W("and") && isPow2(num + 1)) {
 					int l2 = log2(num + 1);
@@ -3103,6 +3104,8 @@ handle_const:
 						codeAsm("r5", "r0", "mul,");
 					else if (W("and"))
 						codeAsm("r5", "r0", "and,");
+					else if (W("or"))
+						codeAsm("r5", "r0", "orr,");
 				}
 			} else if (!thumb && can_immrot(num) && getNextWordIf("and")) {
 				codeAsm(num, "##", "r0", "r0", "and,");
