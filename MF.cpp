@@ -3153,14 +3153,8 @@ handle_const:
 					codePush("r0");
 					codeGetLocalAddr(num, "r0");
 				} else if (num > 0xff) {
-					if (!can_immrot(num)) {
-						codePush("r0");
-						literals.prependNew(num, out->addr, thumb);
-						codeAsm("pc", "0", "#(", "r0", "ldr,");
-					} else {
-						codePush("r0");
-						codeAsm(num, "r0", "movi");
-					}
+					codePush("r0");
+					codeLoadConst(num, "r0");
 				} else {
 					DEBUG("small num 0x%x\n", num);
 					if (isWordN(0, "over") && isWordN(1, "!")) {
