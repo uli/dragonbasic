@@ -203,6 +203,16 @@ void GLB_error(enum error_t error_code, ...)
 	GLB_failWithMbox(err_buf, gCompiler->parser->filename,
 			 gCompiler->line_no);
 }
+void GLB_error(const char *msg, ...)
+{
+	va_list va;
+
+	va_start(va, msg);
+	my_errno = -1;
+	vsprintf(err_buf, msg, va);
+	GLB_failWithMbox(err_buf, gCompiler->parser->filename,
+			 gCompiler->line_no);
+}
 
 void GLB_failWithMbox(const char *msg, const char *func, int line)
 {
