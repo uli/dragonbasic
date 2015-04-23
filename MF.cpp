@@ -1620,10 +1620,14 @@ bool Parser::parseArm(const char *word)
 	} else if (W("movi")) {
 		unsigned int rd = POP_REG;
 		unsigned int val = POP_IMM;
+		debugAsm(word, true);
 		codeAsm(val, "##"); PUSH_ASM_REG(rd); codeAsm("mov,");
+		// skip re-listing of pseudo insn
+		return true;
 	} else
 		return false;
 
+	debugAsm(word);
 	return true;
 }
 
@@ -2016,6 +2020,7 @@ short_branch:
 	} else if (W("movi")) {
 		unsigned int rd = POP_TREG();
 		unsigned int val = POP_IMM;
+		debugAsm(word, true);
 		int lsl;
 		immshift(&val, &lsl);
 		codeAsm(val, "##"); PUSH_ASM_REG(rd); codeAsm("mov,");
@@ -2023,6 +2028,8 @@ short_branch:
 			codeAsm(lsl, "##"); PUSH_ASM_REG(rd);
 			PUSH_ASM_REG(rd); codeAsm("lsl,");
 		}
+		// skip re-listing of pseudo insn
+		return true;
 	} else if (W("tothumb")) {
 		// We have been called as ARM, but want to be Thumb.
 		// Used by assembly language interrupt handlers.
@@ -2037,6 +2044,7 @@ short_branch:
 	} else
 		return false;
 
+	debugAsm(word);
 	return true;
 }
 
