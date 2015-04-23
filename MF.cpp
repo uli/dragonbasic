@@ -3045,8 +3045,13 @@ handle_const:
 				codeAsm("r0", num, "#(", "r0", "ldrb,");
 			} else if (getNextWordIf("peek")) {
 				codePush("r0");
-				loadR5(num);
-				codeAsm("r5", "0@", "r0", "ldrh,");
+				if (can_immrot(num & ~(64 - 1))) {
+					loadR5(num & ~(64 - 1));
+					codeAsm("r5", num & (64 - 1), "#(", "r0", "ldrh,");
+				} else {
+					loadR5(num);
+					codeAsm("r5", "0@", "r0", "ldrh,");
+				}
 			} else if (isWordN(1, "#") && (isWordN(2, "pokew") ||
 				   isWordN(2, "poke") || isWordN(2, "pokeb"))) {
 				unsigned int num2 = TIN_parseNum(getNextWord());
