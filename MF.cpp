@@ -2698,6 +2698,11 @@ parse_next:
 		invalR5();
 		out->registerIwram(iwsym);
 		GLB_setCurrentWord(NULL);
+	} else if (W("[asm")) {
+		invalR5();
+		asm_mode = true;
+	} else if (W("asm]")) {
+		asm_mode = false;
 	} else if (asm_mode) {
 		parseAsm(word);
 	} else if (W(":") || W(":n")) {
