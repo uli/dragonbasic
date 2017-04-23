@@ -1455,11 +1455,11 @@ unsigned int Parser::armCodeCond()
 #ifndef NDEBUG
 static bool can_branch(unsigned int from, unsigned int to)
 {
-	return abs(to - from) < (32 << 20);
+	return abs((int64_t)to - from) < (32 << 20);
 }
 static bool can_branch_thumb(unsigned int from, unsigned int to)
 {
-	return abs(to - from) < (4 << 20);
+	return abs((int64_t)to - from) < (4 << 20);
 }
 #endif
 
