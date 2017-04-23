@@ -1,6 +1,14 @@
 VERSION = 2.0
 
 DEVKITPRO ?= $(HOME)/devkitPro
+ifeq ($(PLATFORM), win32)
+ifeq ($(CROSS),)
+DEVKITPRO := /c/devkitPro
+endif
+endif
+
+DEVKITARM ?= $(DEVKITPRO)/devkitARM
+
 PIMPMOBILE = ./pimpmobile_r1
 
 # only used on Linux
@@ -16,17 +24,15 @@ CXXFLAGS += -DBUG_FOR_BUG
 
 CXX = $(CROSS)g++
 
-ARMCC = arm-none-eabi-gcc
+ARMCC = $(DEVKITARM)/bin/arm-none-eabi-gcc
+ARMOBJCOPY = $(DEVKITARM)/bin/arm-none-eabi-objcopy
 CRTDIR=$(DEVKITPRO)/devkitARM/lib/gcc/arm-none-eabi/$(shell $(ARMCC) -dumpversion)
 
-LIBS = -lsndfile
+LIBS = -lsndfile -lfreeimage
 ifeq ($(PLATFORM), win32)
 SUFF = .exe
-LDFLAGS = -static
-LIBS += -lFreeImage
 else
 SUFF =
-LIBS += -lfreeimage
 endif
 
 BOBJS = DBC.o.$(PLATFORM)
@@ -35,12 +41,10 @@ MOBJS = MF.o.$(PLATFORM) MF_mappy.o.$(PLATFORM)
 all: win_cross linux runtime.gba runpimp.gba
 	$(MAKE) -C examples
 
-win:
-	$(MAKE) _all PLATFORM=win32
 win_cross:
-	$(MAKE) _all CROSS=i686-pc-mingw32- PLATFORM=win32
+	$(MAKE) _all CROSS=i686-w64-mingw32- PLATFORM=win32
 linux:
-	$(MAKE) _all PLATFORM=linux
+	if test `uname -s` = Linux ; then $(MAKE) _all PLATFORM=linux ; fi
 
 _all:	dbc$(SUFF) mf$(SUFF) converter$(SUFF)
 
