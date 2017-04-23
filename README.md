@@ -113,8 +113,9 @@ You need:
 
 - Some sort of C++ compiler for your host system. (MinGW should work for
   Windows users.)
-- The FreeImage library.
-- The libsndfile library.
+- The FreeImage and libsndfile libraries.
+  For Linux users, these should come with your distribution. Windows users
+  can get them from the MSYS2 package repository.
 - devkitPro to build the runtime environment.
 - Free Pascal to build the documentation CHM file. (Dragon BASIC
   traditionally uses documentation in CHM format, and Free Pascal contains
@@ -126,7 +127,7 @@ Run `make linux`.
 
 ### For Win32 platforms
 
-Run `make win`. (untested)
+Run `make win_cross`.
 
 ### For my own system
 
