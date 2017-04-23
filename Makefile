@@ -80,7 +80,7 @@ $(MOBJS): %.o.$(PLATFORM): %.cpp
 runtime.elf: runtime/runtime.s runtime/runtime_common.s
 	$(ARMCC) $(AFLAGS) -Ttext=0x8000000 -nostdlib $< -o runtime.elf
 runtime.gba: runtime.elf
-	objcopy -O binary $< $@
+	$(ARMOBJCOPY) -O binary $< $@
 
 runtime_syms.h: runpimp.elf extract_syms.sh
 	./extract_syms.sh $< >$@
@@ -92,7 +92,7 @@ runpimp.elf: runtime/runpimp.c runtime/runtime_common.s runtime/gba_crt0.s runti
 	$(DEVKITPRO)/libgba/lib -lgcc -lsysbase -lc -lgba $(CRTDIR)/crtend.o \
 	$(CRTDIR)/crtn.o -o $@
 runpimp.gba: runpimp.elf
-	objcopy -O binary $< $@
+	$(ARMOBJCOPY) -O binary $< $@
 
 converter$(SUFF):
 	$(MAKE) -C $(PIMPMOBILE)/converter TARGET=$@ CXX=$(CXX) LD=$(CXX)
