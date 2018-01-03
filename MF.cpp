@@ -708,6 +708,8 @@ void Output::emitPalette(const char *bmp)
 		GLB_error("unable to load bitmap %s\n", bmp);
 	int bpp = FreeImage_GetBPP(img);
 	RGBQUAD *pal = FreeImage_GetPalette(img);
+	if (!pal)
+	  GLB_error("no palette in bitmap %s\n", bmp);
 	unsigned char pp[3];
 	for (i = 0; i < (1 << bpp); i++) {
 		pp[0] = pal->rgbBlue;
