@@ -3261,13 +3261,18 @@ handle_const:
 				// return address is now in TOS.
 				codeAsm("r0", "r6", "mov,");
 				// Purge locals from stack.
+				if (skip_push)	// Happens with empty bodies.
+					num -= 4;
 				if (num)
 					codeAsm(num, "##", "sp", "add,");
 			} else {
 				// Purge locals from stack.
+				if (skip_push)	// Happens with empty bodies.
+					num -= 4;
 				if (num)
 					codeAsm(num, "##", "sp", "add,");
 			}
+			skip_push = false;
 			codeAsm("r0", "pop");
 		} else if (getNextWordIf("flepilog")) {
 			// For non-naked functions the user stack looks like
