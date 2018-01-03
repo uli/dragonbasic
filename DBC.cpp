@@ -1652,7 +1652,7 @@ enum vartype_t Compiler::compileExpression()
 	enum vartype_t ret;
 	BasicObject *first_bobj;
 	BasicObject *next_bobj;
-	Expression expr(tin_tail);
+	Expression expr(tin_tail, this);
 
 	first_bobj = parser->cur_basic_obj;
 	while (true) {
@@ -1746,7 +1746,7 @@ void Compiler::doOperand(BasicObject *bobj)
 
 			emitTin("%s ", bobj->val.symbolic);
 			if (!sub->is_inline)
-				sub_head->can_be_naked = false;
+				subNotLeaf();
 		}
 	}
 }
@@ -1768,7 +1768,7 @@ void Compiler::callSubroutine(Subroutine *sub)
 	}
 	emitTin("%s ", sub->ident);
 	if (!sub->is_inline)
-		sub_head->can_be_naked = false;
+		subNotLeaf();
 }
 
 int LoopStack::getStackPtr()
@@ -1776,11 +1776,12 @@ int LoopStack::getStackPtr()
 	return stack_ptr;
 }
 
-Expression::Expression(TIN *tin_head)
+Expression::Expression(TIN *tin_head, Compiler *c)
 {
 	this->tin_head = tin_head;
 	operation_idx = 0;
 	operand_idx = 0;
+	comp = c;
 }
 
 void Expression::compileOperation(int num_ops, const char *tin_op,
@@ -1890,9 +1891,11 @@ void Expression::compileScalarOp()
 		break;
 	case OP_EQ:
 		compileOperation(2, "= ", VAR_SCALAR);
+		comp->subNotLeaf();
 		break;
 	case OP_NE:
 		compileOperation(2, "<> ", VAR_SCALAR);
+		comp->subNotLeaf();
 		break;
 	case OP_LT:
 		compileOperation(2, "< ", VAR_SCALAR);
@@ -1970,6 +1973,7 @@ void Expression::compileFixedPointOp()
 		break;
 	case OP_DIV:
 		compileOperation(2, "F/ ", VAR_FIXEDP);
+		comp->subNotLeaf();
 		break;
 	case OP_MULT:
 		compileOperation(2, "F* ", VAR_FIXEDP);

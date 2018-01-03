@@ -238,10 +238,12 @@ enum op_t {
 	OP_UMINUS = 21,
 };
 
+class Compiler;
+
 class Expression
 {
 public:
-	Expression(TIN *tin_head);
+	Expression(TIN *tin_head, Compiler *c);
 	void compileOperation(int num_ops, const char *tin_op,
 			      enum vartype_t vtype);
 	void addOperand(enum vartype_t vtype);
@@ -258,6 +260,7 @@ private:
 	int operation_idx;
 	int operand_idx;
 	TIN *tin_head;
+        Compiler *comp;
 };
 
 enum directive_t {
@@ -433,6 +436,10 @@ public:
 	enum vartype_t compileExpression();
 	void doOperand(BasicObject *bobj);
 	void callSubroutine(Subroutine *sub);
+	void subNotLeaf() {
+		if (sub_head)
+			sub_head->can_be_naked = false;
+	}
 
 	Parser *parser;
 	int line_no;
