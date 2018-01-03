@@ -2648,7 +2648,9 @@ parse_next:
 	} else if (W("title\"")) {
 		out->setTitle(getNextWord());
 	} else if (W("entry")) {
-		Symbol *sym = getSymbol(getNextWord());
+		Symbol *sym = getSymbol((word = getNextWord()));
+		if (!sym)
+			GLB_error("missing entry symbol %s\n", word);
 		out->setEntry(sym->addr);
 	} else if (W("program\"")) {
 		/* ignore */
