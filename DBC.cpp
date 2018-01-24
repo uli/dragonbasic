@@ -1050,7 +1050,7 @@ void Compiler::doCmdDim()
 		if (parser->checkNextBasicObjType(OBJ_IDENT)) {
 			bobj = parser->consumeNextBasicObj();
 			if (bobj->vtype == VAR_ARRAY)
-				emitTin("CREATE %s 1 STRINGS RESERVE\n",
+				emitTin("CREATE %s 64 STRINGS RESERVE\n",
 					bobj->val.symbolic);
 			else
 				emitTin("VARIABLE %s\n", bobj->val.symbolic);
