@@ -84,12 +84,12 @@ Subroutine *Subroutine::findByIdent(const char *ident)
 {
 	Subroutine *result;
 
-	if (!this)
-		return NULL;
-
-	if (strcasecmp(ident, this->ident))
-		result = next->findByIdent(ident);
-	else
+	if (strcasecmp(ident, this->ident)) {
+		if (next)
+			result = next->findByIdent(ident);
+		else
+			result = NULL;
+	} else
 		result = this;
 	return result;
 }
@@ -787,7 +787,7 @@ void Compiler::doDirConstant()
 
 	bobj = parser->getObjectWithType(OBJ_IDENT, "Identifier");
 	checkNotSegment(SEG_INTR | SEG_SUB, "#SOUND"); // XXX: #SOUND?
-	if (sub_head->findByIdent(bobj->val.symbolic)
+	if ((sub_head && sub_head->findByIdent(bobj->val.symbolic))
 	    || var_head->findByIdent(bobj->val.symbolic))
 		GLB_error(ERR_DUP_IDENT, bobj->val.symbolic);
 	parser->addNewSymbol(bobj->val.symbolic);
@@ -1514,7 +1514,7 @@ void Compiler::doLval(BasicObject *bobj)
 {
 	Subroutine *sub;
 
-	sub = sub_head->findByIdent(bobj->val.symbolic);
+	sub = sub_head ? sub_head->findByIdent(bobj->val.symbolic) : NULL;
 	if (sub) {
 		checkNotSegment(SEG_TOP, bobj->val.symbolic);
 		if (is_top_level == true)
