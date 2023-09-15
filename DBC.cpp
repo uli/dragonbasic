@@ -128,7 +128,7 @@ void Subroutine::addLocal(const char *name, enum vartype_t vtype)
 
 TIN *Subroutine::declareTinLocals(TIN *tin)
 {
-	char buf[256];
+	char buf[384];
 	int argc;
 
 	// MF assigns addresses incrementally from 0.  The arguments are
@@ -259,7 +259,7 @@ void GLB_getAppDir(char *lpFilename)
 void GLB_checkFileInAppdir(const char *filename)
 {
 	char appdir[256];
-	char buf[256];
+	char buf[512];
 	FILE *fp;
 
 	GLB_getAppDir(appdir);
@@ -321,7 +321,7 @@ void GLB_runProgramWithArgs(const char *lpApplicationName, const char *options,
 			    bool del_output)
 {
 	char buf[256];
-	char args[256];
+	char args[780];
 
 	getcwd(buf, 256);
 	sprintf(args, "%s\"%s" PATHSEP "%s\" \"%s" PATHSEP "%s\"", options, buf,
@@ -1040,7 +1040,7 @@ void Compiler::doCmdDim()
 	int argc;
 	int total_size;
 	bool is_string;
-	char accessor_ident[168];
+	char accessor_ident[170];
 	BasicObject *bobj;
 	char buf[168];
 	int i, j;
@@ -1574,7 +1574,7 @@ void Compiler::doRvalFunction(BasicObject *bobj)
 void Compiler::doRvalArray(BasicObject *bobj)
 {
 	Subroutine *sub;
-	char buf[256];
+	char buf[258];
 
 	sprintf(buf, "%s[]", bobj->val.symbolic);
 	sub = sub_head->findByIdent(buf);
