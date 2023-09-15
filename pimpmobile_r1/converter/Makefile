@@ -9,8 +9,8 @@ LD      = g++
 AS      = as
 
 CPPFLAGS = 
-CFLAGS   = 
-CXXFLAGS = 
+CFLAGS   = -Wall
+CXXFLAGS = -Wall
 LDFLAGS  = 
 ASFLAGS  = 
 
@@ -30,8 +30,8 @@ ifeq ($(DEBUG), 1)
 	CFLAGS   += -g3 -ggdb
 else
 	CPPFLAGS += -DRELEASE -DNDEBUG
-	CXXFLAGS += -O3 -fomit-frame-pointer
-	CFLAGS   += -O3 -fomit-frame-pointer
+	CXXFLAGS += -O3 -g
+	CFLAGS   += -O3 -g
 endif
 	
 .PHONY: all clean
