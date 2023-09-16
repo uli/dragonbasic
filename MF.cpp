@@ -263,10 +263,10 @@ const char *Parser::_getNextWord(bool skip_line)
 		}
 	}
 
-	if (idx == 0)
+	if (!text_mode && idx == 0)
 		return NULL;
 
-	if (buf[idx - 1] == '"') {
+	if (!text_mode && buf[idx - 1] == '"') {
 		text_mode = true;
 		assert(isspace(*tptr));
 		tptr++;
