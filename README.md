@@ -53,8 +53,8 @@ and a lot of new features have been added:
 
 ### BASIC Language
 
-- addition of local variables (which are, incidentally, much faster than
-  globals, so use them!)
+- addition of local variables which are, incidentally, much faster than
+  globals, so use them! (not implemented for arrays and strings)
 - byte and halfword-sized DATA and READ commands
 - support for a default include path; no need to state the full path anymore
 - allows leading underscores in identifiers
