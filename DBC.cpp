@@ -1074,9 +1074,10 @@ void Compiler::doCmdDim()
 			} while (parser->requireRop(ROP_COMMA));
 			if (!parser->requireRop(ROP_CPAREN))
 				GLB_error(ERR_NOTOKEN, ")");
-			if (is_string)
+			if (is_string) {
 				tin_type = "STRINGS";
-			else
+				total_size *= 64;
+			} else
 				tin_type = "CELLS";
 			emitTin("%d %s RESERVE\n", total_size, tin_type);
 			addNewSub(accessor_ident, true, VAR_SCALAR);
