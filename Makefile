@@ -38,12 +38,12 @@ endif
 BOBJS = DBC.o.$(PLATFORM)
 MOBJS = MF.o.$(PLATFORM) MF_mappy.o.$(PLATFORM)
 
-all: win_cross linux runtime.gba runpimp.gba
+all: win_cross linux
 	$(MAKE) -C examples
 
-win_cross:
+win_cross: runtime.gba runpimp.gba
 	$(MAKE) _all CROSS=i686-w64-mingw32- PLATFORM=win32
-linux:
+linux: runtime.gba runpimp.gba
 	if test `uname -s` = Linux ; then $(MAKE) _all PLATFORM=linux ; fi
 
 _all:	dbc$(SUFF) mf$(SUFF) converter$(SUFF)
