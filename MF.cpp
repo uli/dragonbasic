@@ -3648,6 +3648,10 @@ do_ifwhile:
 		codePush("r0");
 		invalR5();
 		codeCallThumb(RP_pimp_get_order, "pimp_get_order");
+	} else if (W("compare")) {
+		codePop("r1");
+		invalR5();
+		codeCallArm(out->use_pimp ? RP_rt_compare : RT_rt_compare);
 	} else if ((sym = getSymbol(word))) {
 		//DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x thumb %d\n", sym->word, sym->addr,
 		//      out->addr, sym->is_addr, sym->lit_addr, sym->thumb);

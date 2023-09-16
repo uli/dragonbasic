@@ -77,8 +77,8 @@ $(BOBJS): %.o.$(PLATFORM): %.cpp
 $(MOBJS): %.o.$(PLATFORM): %.cpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
-runtime.elf: runtime/runtime.s runtime/runtime_common.s
-	$(ARMCC) $(AFLAGS) -Ttext=0x8000000 -nostdlib $< -o runtime.elf
+runtime.elf: runtime/runtime.s runtime/runtime_common.s runtime/helpers.c
+	$(ARMCC) $(AFLAGS) -Ttext=0x8000000 -nostdlib $< runtime/helpers.c -o runtime.elf
 runtime.gba: runtime.elf
 	$(ARMOBJCOPY) -O binary $< $@
 
@@ -87,10 +87,10 @@ runtime_syms_pimp.h: runpimp.elf extract_syms.sh
 runtime_syms_rt.h: runtime.elf extract_syms.sh
 	./extract_syms.sh $< RT >$@
 
-runpimp.elf: runtime/runpimp.c runtime/runtime_common.s runtime/gba_crt0.s runtime/gba_cart.ld $(PIMPMOBILE)/lib/libpimpmobile.a
+runpimp.elf: runtime/runpimp.c runtime/helpers.c runtime/runtime_common.s runtime/gba_crt0.s runtime/gba_cart.ld $(PIMPMOBILE)/lib/libpimpmobile.a
 	$(ARMCC) $(AFLAGS) -nostdlib -I$(DEVKITPRO)/libgba/include \
 	-I$(PIMPMOBILE)/include -marm -T runtime/gba_cart.ld runtime/gba_crt0.s $(CRTDIR)/crti.o \
-	$(CRTDIR)/crtbegin.o $< $(PIMPMOBILE)/lib/libpimpmobile.a -L \
+	$(CRTDIR)/crtbegin.o $< runtime/helpers.c $(PIMPMOBILE)/lib/libpimpmobile.a -L \
 	$(DEVKITPRO)/libgba/lib -lgcc -lsysbase -lc -lgba $(CRTDIR)/crtend.o \
 	$(CRTDIR)/crtn.o -o $@
 runpimp.gba: runpimp.elf
