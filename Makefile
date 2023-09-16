@@ -49,7 +49,7 @@ linux:
 _all:	dbc$(SUFF) mf$(SUFF) converter$(SUFF)
 
 clean:
-	rm -f dbc.exe dbc mf.exe mf *.o.* run*.gba run*.elf runtime_syms.h
+	rm -f dbc.exe dbc mf.exe mf *.o.* run*.gba run*.elf runtime_syms_*.h
 	rm -f converter converter.exe
 	rm -f dbapi/dbapi.chm docs/dbapi.chm
 	$(MAKE) -C $(PIMPMOBILE) clean
@@ -70,7 +70,7 @@ dbc$(SUFF): $(BOBJS)
 	$(CXX) -o $@ DBC.o.$(PLATFORM) $(LDFLAGS)
 
 DBC.o.$(PLATFORM): DBC.h os.h
-MF.o.$(PLATFORM): os.h runtime_syms.h MF.h
+MF.o.$(PLATFORM): os.h runtime_syms_pimp.h runtime_syms_rt.h MF.h
 
 $(BOBJS): %.o.$(PLATFORM): %.cpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@
@@ -82,8 +82,10 @@ runtime.elf: runtime/runtime.s runtime/runtime_common.s
 runtime.gba: runtime.elf
 	$(ARMOBJCOPY) -O binary $< $@
 
-runtime_syms.h: runpimp.elf extract_syms.sh
-	./extract_syms.sh $< >$@
+runtime_syms_pimp.h: runpimp.elf extract_syms.sh
+	./extract_syms.sh $< RP >$@
+runtime_syms_rt.h: runtime.elf extract_syms.sh
+	./extract_syms.sh $< RT >$@
 
 runpimp.elf: runtime/runpimp.c runtime/runtime_common.s runtime/gba_crt0.s runtime/gba_cart.ld $(PIMPMOBILE)/lib/libpimpmobile.a
 	$(ARMCC) $(AFLAGS) -nostdlib -I$(DEVKITPRO)/libgba/include \

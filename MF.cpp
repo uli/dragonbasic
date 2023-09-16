@@ -37,7 +37,8 @@
 
 #include "os.h"
 
-#include "runtime_syms.h"
+#include "runtime_syms_pimp.h"
+#include "runtime_syms_rt.h"
 #include "MF.h"
 
 bool option_debug = false;
@@ -425,7 +426,7 @@ unsigned int Output::addIwram(unsigned int from, int size)
 	DEBUG("addiwram from 0x%x to 0x%x size %d now 0x%x\n",
 		from, start, size, iwaddr);
 	start_iwram += size;
-	if (start_iwram >= RT___iwram_start)
+	if (start_iwram >= RP___iwram_start)
 		GLB_error("IWRAM overflow");
 	return start;
 }
@@ -2271,7 +2272,7 @@ void Parser::parseAsm(const char *word)
 	} else if (W("iwram")) {
 		PUSH_ASM(ASM_IMM, 0x3000000);
 	} else if (W("string_ring")) {
-		PUSH_ASM(ASM_IMM, RT___ewram_start - 4096);
+		PUSH_ASM(ASM_IMM, RP___ewram_start - 4096);
 	} else if (W("string_ring_size")) {
 		PUSH_ASM(ASM_IMM, 4096);
 	} else if (W("registers")) {
@@ -3611,17 +3612,17 @@ do_ifwhile:
 	} else if (out->use_pimp && W("modvblank")) {
 		codePush("r0");
 		invalR5();
-		codeCallThumb(RT_pimp_vblank, "pimp_vblank");
+		codeCallThumb(RP_pimp_vblank, "pimp_vblank");
 		codePop("r0");
 	} else if (out->use_pimp && W("modframe")) {
 		codePush("r0");
 		invalR5();
-		codeCallThumb(RT_pimp_frame, "pimp_frame");
+		codeCallThumb(RP_pimp_frame, "pimp_frame");
 		codePop("r0");
 	} else if (out->use_pimp && W("modclose")) {
 		codePush("r0");
 		invalR5();
-		codeCallThumb(RT_pimp_close, "pimp_close");
+		codeCallThumb(RP_pimp_close, "pimp_close");
 		codePop("r0");
 	} else if (out->use_pimp && W("modinit")) {
 		if (!thumb)
@@ -3631,22 +3632,22 @@ do_ifwhile:
 			codeAsm("4", "##", "r0", "add,");
 		}
 		invalR5();
-		codeCallThumb(RT_pimp_init, "pimp_init");
+		codeCallThumb(RP_pimp_init, "pimp_init");
 		codePop("r0");
 	} else if (out->use_pimp && W("modsetpos")) {
 		codeAsm("r0", "r1", "mov,");
 		codePop("r0");
 		invalR5();
-		codeCallThumb(RT_pimp_set_pos, "pimp_set_pos");
+		codeCallThumb(RP_pimp_set_pos, "pimp_set_pos");
 		codePop("r0");
 	} else if (out->use_pimp && W("modgetrow")) {
 		codePush("r0");
 		invalR5();
-		codeCallThumb(RT_pimp_get_row, "pimp_get_row");
+		codeCallThumb(RP_pimp_get_row, "pimp_get_row");
 	} else if (out->use_pimp && W("modgetorder")) {
 		codePush("r0");
 		invalR5();
-		codeCallThumb(RT_pimp_get_order, "pimp_get_order");
+		codeCallThumb(RP_pimp_get_order, "pimp_get_order");
 	} else if ((sym = getSymbol(word))) {
 		//DEBUG("syma %s 0x%x oa 0x%x is_addr %d lit_addr 0x%x thumb %d\n", sym->word, sym->addr,
 		//      out->addr, sym->is_addr, sym->lit_addr, sym->thumb);
