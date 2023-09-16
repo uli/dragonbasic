@@ -3434,7 +3434,7 @@ handle_const:
 		const char *type = getNextWord();
 		(void)type;
 		// XXX: What about CELLS/STRINGS?
-		DEBUG("reserve type %s at 0x%x\n", type, out->vaddr);
+		DEBUG("reserve type %s size %d at 0x%x\n", type, size, out->vaddr);
 		if (strcmp(getNextWord(), "reserve"))
 			GLB_error("create without reserve\n");
 		sym->is_addr = true;
