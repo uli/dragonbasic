@@ -1543,9 +1543,10 @@ void Compiler::doLvalNotSub(BasicObject *bobj, bool array)
 		if (array || bobj->vtype == VAR_ARRAY) {
 			// Use unoptimized path for array/string lvalues.
 			doAssign(bobj);
-			if (bobj->vtype == VAR_ARRAY)
+			if (bobj->vtype == VAR_ARRAY) {
 				emitTin("MOVE ");
-			else
+				subNotLeaf();
+			} else
 				emitTin("SWAP ! ");
 		} else {
 			if (parser->getObjectWithType(OBJ_OP, "=")->val.numeric != OP_EQ)
